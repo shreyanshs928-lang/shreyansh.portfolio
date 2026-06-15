@@ -243,12 +243,28 @@ export const seedDefaultData = async () => {
   console.log('Database seeded successfully!');
 };
 
+// Helper to wrap promises with a timeout
+const withTimeout = (promise, ms = 6000) => {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Database connection timed out. Please check your Firebase configuration and database rules.")), ms)
+    )
+  ]);
+};
+
 // --- DATA ACCESS LAYER ---
 
 // Fetch full portfolio payload
 export const fetchPortfolioData = async () => {
-  // Check if hero exists first
-  const heroSnap = await getDoc(doc(db, 'portfolio', 'hero'));
+  // Check for missing/dummy environment variables to fail fast
+  const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+  if (!projectId || projectId === "dummy-project-id") {
+    throw new Error("Firebase Environment Variables are not configured. Please add your VITE_FIREBASE_* environment variables in your Vercel project settings.");
+  }
+
+  // Check if hero exists first with a timeout to prevent hanging
+  const heroSnap = await withTimeout(getDoc(doc(db, 'portfolio', 'hero')), 6000);
   
   if (!heroSnap.exists()) {
     console.log('No database found. Autoseeding initial portfolio content...');

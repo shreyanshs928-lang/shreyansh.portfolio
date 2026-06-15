@@ -74,9 +74,11 @@ const PortfolioHome = () => {
 
   if (error) {
     return (
-      <div style={{ display: 'flex', height: '100vh', backgroundColor: '#0D0D0D', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem' }}>
-        <h2 className="display-font" style={{ color: 'red' }}>Connection Error</h2>
-        <p style={{ color: 'var(--text-muted)' }}>Could not load portfolio contents. Make sure environment variables are set.</p>
+      <div style={{ display: 'flex', height: '100vh', backgroundColor: '#0D0D0D', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1.2rem', padding: '2rem' }}>
+        <h2 className="display-font" style={{ color: '#ef4444', fontSize: '1.8rem', fontWeight: 'bold' }}>Connection Error</h2>
+        <p style={{ color: '#a1a1aa', maxWidth: '500px', textAlign: 'center', lineHeight: '1.6', fontSize: '0.95rem' }}>
+          {error.message || "Could not load portfolio contents. Make sure your database credentials and internet connection are correct."}
+        </p>
       </div>
     );
   }
