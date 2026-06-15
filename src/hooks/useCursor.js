@@ -13,13 +13,37 @@ export const useCursor = () => {
   const isFirstMove = useRef(true);
   
   useEffect(() => {
-    // Check user accessibility preference
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(mediaQuery.matches);
-    
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      return;
+    }
+
+    let mediaQuery = null;
+    try {
+      mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      setPrefersReducedMotion(mediaQuery.matches);
+    } catch (e) {
+      console.warn('matchMedia check failed in useCursor:', e);
+    }
+
     const listener = (e) => setPrefersReducedMotion(e.matches);
-    mediaQuery.addEventListener('change', listener);
-    return () => mediaQuery.removeEventListener('change', listener);
+
+    if (mediaQuery) {
+      if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener('change', listener);
+      } else if (mediaQuery.addListener) {
+        mediaQuery.addListener(listener);
+      }
+    }
+
+    return () => {
+      if (mediaQuery) {
+        if (mediaQuery.removeEventListener) {
+          mediaQuery.removeEventListener('change', listener);
+        } else if (mediaQuery.removeListener) {
+          mediaQuery.removeListener(listener);
+        }
+      }
+    };
   }, []);
 
   useEffect(() => {

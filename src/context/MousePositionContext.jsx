@@ -15,22 +15,48 @@ export const MousePositionProvider = ({ children }) => {
   const animFrameIdRef = useRef(null);
 
   useEffect(() => {
-    // Check if device supports hover (desktop cursor) and doesn't prefer reduced motion
-    const hoverQuery = window.matchMedia('(hover: hover)');
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      setIsSupported(false);
+      return;
+    }
+
+    let hoverQuery = null;
+    let motionQuery = null;
+    try {
+      hoverQuery = window.matchMedia('(hover: hover)');
+      motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    } catch (e) {
+      console.warn('matchMedia check failed in MousePositionContext:', e);
+    }
 
     const checkSupport = () => {
-      setIsSupported(hoverQuery.matches && !motionQuery.matches);
+      const hoverMatches = hoverQuery ? hoverQuery.matches : false;
+      const motionMatches = motionQuery ? motionQuery.matches : false;
+      setIsSupported(hoverMatches && !motionMatches);
     };
 
     checkSupport();
 
-    hoverQuery.addEventListener('change', checkSupport);
-    motionQuery.addEventListener('change', checkSupport);
+    if (hoverQuery && motionQuery) {
+      if (hoverQuery.addEventListener) {
+        hoverQuery.addEventListener('change', checkSupport);
+        motionQuery.addEventListener('change', checkSupport);
+      } else if (hoverQuery.addListener) {
+        hoverQuery.addListener(checkSupport);
+        motionQuery.addListener(checkSupport);
+      }
+    }
 
     return () => {
-      hoverQuery.removeEventListener('change', checkSupport);
-      motionQuery.removeEventListener('change', checkSupport);
+      if (hoverQuery && motionQuery) {
+        if (hoverQuery.removeEventListener) {
+          hoverQuery.removeEventListener('change', checkSupport);
+          motionQuery.removeEventListener('change', checkSupport);
+        } else if (hoverQuery.removeListener) {
+          hoverQuery.removeListener(checkSupport);
+          motionQuery.removeListener(checkSupport);
+        }
+      }
     };
   }, []);
 
