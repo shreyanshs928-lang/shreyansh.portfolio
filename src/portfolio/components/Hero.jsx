@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { CursorContext } from '../../context/CursorContext';
+import { useMousePosition } from '../../context/MousePositionContext';
 import { Linkedin, Instagram, Mail } from 'lucide-react';
 
 export const Hero = ({ heroData, isLoading }) => {
@@ -81,6 +82,83 @@ export const Hero = ({ heroData, isLoading }) => {
     );
   }
 
+  const heroRef = useRef(null);
+  const spotlightRef = useRef(null);
+  const portraitRef = useRef(null);
+  const spotlightPos = useRef({ x: 0, y: 0 });
+  const mouseCoords = useRef({ rawX: 0, rawY: 0, x: 0 });
+
+  const { x, y, rawX, rawY, isSupported } = useMousePosition();
+  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0, glowX: 0, glowY: 0 });
+
+  // Sync latest coordinates to ref to prevent animation frame teardowns
+  useEffect(() => {
+    mouseCoords.current = { rawX, rawY, x };
+  }, [rawX, rawY, x]);
+
+  // RequestAnimationFrame spotlight tracker loop
+  useEffect(() => {
+    if (!isSupported || !heroRef.current) return;
+
+    let animId;
+
+    const updateSpotlight = () => {
+      if (!spotlightRef.current || !heroRef.current) {
+        animId = requestAnimationFrame(updateSpotlight);
+        return;
+      }
+
+      const rect = heroRef.current.getBoundingClientRect();
+      const targetX = mouseCoords.current.rawX - rect.left;
+      const targetY = mouseCoords.current.rawY - rect.top;
+
+      // Smooth lerp (12% catch-up factor)
+      spotlightPos.current.x += (targetX - spotlightPos.current.x) * 0.12;
+      spotlightPos.current.y += (targetY - spotlightPos.current.y) * 0.12;
+
+      const spotlightEl = spotlightRef.current;
+      spotlightEl.style.transform = `translate3d(${spotlightPos.current.x}px, ${spotlightPos.current.y}px, 0)`;
+
+      // Dynamic color interpolation: Violet (139, 92, 246) -> Amber (255, 138, 76)
+      const t = (mouseCoords.current.x + 1) / 2;
+      const r = Math.round(139 + (255 - 139) * t);
+      const g = Math.round(92 + (138 - 92) * t);
+      const b = Math.round(246 + (76 - 246) * t);
+
+      spotlightEl.style.setProperty('--spotlight-color', `rgba(${r}, ${g}, ${b}, 0.12)`);
+
+      animId = requestAnimationFrame(updateSpotlight);
+    };
+
+    animId = requestAnimationFrame(updateSpotlight);
+    return () => cancelAnimationFrame(animId);
+  }, [isSupported]);
+
+  const handleCardMouseMove = (e) => {
+    if (!isSupported || !portraitRef.current) return;
+
+    const rect = portraitRef.current.getBoundingClientRect();
+    const cardX = e.clientX - rect.left;
+    const cardY = e.clientY - rect.top;
+
+    const normCardX = (cardX - rect.width / 2) / (rect.width / 2);
+    const normCardY = (cardY - rect.height / 2) / (rect.height / 2);
+
+    // Max 3D tilt: ±6 degrees
+    const rotateY = normCardX * 6;
+    const rotateX = -normCardY * 6;
+
+    // Shift background glow opposite to tilt (max ±12px)
+    const glowX = -normCardX * 12;
+    const glowY = -normCardY * 12;
+
+    setTilt({ rotateX, rotateY, glowX, glowY });
+  };
+
+  const handleCardMouseLeave = () => {
+    setTilt({ rotateX: 0, rotateY: 0, glowX: 0, glowY: 0 });
+  };
+
   const eyebrowText = heroData?.eyebrowText || "Hey, I'm Shreyansh";
   const headlineLine1 = heroData?.headlineLine1 || "Multidisciplinary Designer +";
   const headlineLine2 = heroData?.headlineLine2 || "Chemical Engineer";
@@ -99,9 +177,44 @@ export const Hero = ({ heroData, isLoading }) => {
     { icon: <Mail size={20} />, url: socialLinksData.email ? `mailto:${socialLinksData.email}` : null, label: 'Email' }
   ];
 
+  const deltaX = typeof window !== 'undefined' ? rawX - window.innerWidth / 2 : 0;
+  const deltaY = typeof window !== 'undefined' ? rawY - window.innerHeight / 2 : 0;
+
   return (
-    <section id="hero" style={{ overflow: 'hidden', minHeight: '92vh', display: 'flex', alignItems: 'center', padding: '8rem 0 4rem 0' }}>
-      <div className="container hero-wrapper w-full">
+    <section ref={heroRef} id="hero" style={{ overflow: 'hidden', minHeight: '92vh', display: 'flex', alignItems: 'center', padding: '8rem 0 4rem 0', position: 'relative' }}>
+      {/* 3D Parallax Ambient Background System */}
+      <div className="ambient-lighting-container">
+        {/* Layer 1 (5% Speed): Blurred Blobs */}
+        <div 
+          className="ambient-blob-layer"
+          style={{
+            transform: isSupported ? `translate3d(${deltaX * 0.05}px, ${deltaY * 0.05}px, 0)` : 'none'
+          }}
+        >
+          <div className="ambient-blob-1" />
+          <div className="ambient-blob-2" />
+        </div>
+
+        {/* Layer 2 (12% Speed): Geometric Grid */}
+        <div 
+          className="ambient-grid-layer"
+          style={{
+            transform: isSupported ? `translate3d(${deltaX * 0.12}px, ${deltaY * 0.12}px, 0)` : 'none'
+          }}
+        />
+
+        {/* Layer 3 (25% Speed): Spotlight wrapper */}
+        <div 
+          className="ambient-spotlight-layer"
+          style={{
+            transform: isSupported ? `translate3d(${deltaX * 0.25}px, ${deltaY * 0.25}px, 0)` : 'none'
+          }}
+        >
+          <div ref={spotlightRef} className="ambient-spotlight" />
+        </div>
+      </div>
+
+      <div className="container hero-wrapper w-full relative z-10">
         {/* Main Split Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
@@ -205,7 +318,7 @@ export const Hero = ({ heroData, isLoading }) => {
             </div>
           </div>
 
-          {/* Right Column: Glowing Portrait Frame */}
+          {/* Right Column: Glowing Portrait Frame with 3D Tilt */}
           <div 
             className="lg:col-span-5 flex justify-center items-center relative will-animate"
             style={{
@@ -215,9 +328,24 @@ export const Hero = ({ heroData, isLoading }) => {
               transitionDelay: '200ms'
             }}
           >
-            <div className="relative w-full max-w-[320px] sm:max-w-[340px]">
-              {/* Background ambient glow pulse */}
-              <div className="ambient-glow-pulse"></div>
+            <div 
+              ref={portraitRef}
+              onMouseMove={handleCardMouseMove}
+              onMouseLeave={handleCardMouseLeave}
+              className="relative w-full max-w-[320px] sm:max-w-[340px]"
+              style={{
+                transform: isSupported ? `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)` : 'none',
+                transition: 'transform 0.3s ease-out'
+              }}
+            >
+              {/* Background ambient glow pulse with shifting transform */}
+              <div 
+                className="ambient-glow-pulse"
+                style={{
+                  transform: isSupported ? `translate3d(${tilt.glowX}px, ${tilt.glowY}px, 0)` : 'none',
+                  transition: 'transform 0.3s ease-out'
+                }}
+              ></div>
 
               {/* Rotating Gradient Frame */}
               <div className="rotating-gradient-border aspect-square w-full">

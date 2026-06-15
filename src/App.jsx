@@ -2,6 +2,7 @@ import React, { Suspense, useContext, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CursorProvider } from './context/CursorContext';
+import { MousePositionProvider } from './context/MousePositionContext';
 import { Cursor } from './components/Cursor';
 import { Header } from './portfolio/components/Header';
 import { Hero } from './portfolio/components/Hero';
@@ -130,38 +131,40 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <CursorProvider>
-          {/* Custom lagging cursor portal */}
-          <Cursor />
+          <MousePositionProvider>
+            {/* Custom lagging cursor portal */}
+            <Cursor />
 
-          <Routes>
-            {/* Public Portfolio Route */}
-            <Route path="/" element={<PortfolioHome />} />
+            <Routes>
+              {/* Public Portfolio Route */}
+              <Route path="/" element={<PortfolioHome />} />
 
-            {/* Admin Login Route */}
-            <Route
-              path="/admin/login"
-              element={
-                <Suspense fallback={<AdminLoadingScreen />}>
-                  <Login />
-                </Suspense>
-              }
-            />
-
-            {/* Admin Dashboard Protected Route */}
-            <Route
-              path="/admin/*"
-              element={
-                <ProtectedRoute>
+              {/* Admin Login Route */}
+              <Route
+                path="/admin/login"
+                element={
                   <Suspense fallback={<AdminLoadingScreen />}>
-                    <Dashboard />
+                    <Login />
                   </Suspense>
-                </ProtectedRoute>
-              }
-            />
+                }
+              />
 
-            {/* Wildcard Catchall redirects to homepage */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+              {/* Admin Dashboard Protected Route */}
+              <Route
+                path="/admin/*"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<AdminLoadingScreen />}>
+                      <Dashboard />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Wildcard Catchall redirects to homepage */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </MousePositionProvider>
         </CursorProvider>
       </AuthProvider>
     </BrowserRouter>
