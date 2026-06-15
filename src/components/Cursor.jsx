@@ -26,10 +26,10 @@ export const Cursor = () => {
 
   useEffect(() => {
     if (isMobile || prefersReducedMotion || isAdminRoute) {
-      document.body.classList.remove('custom-cursor-active');
+      document.documentElement.classList.remove('custom-cursor-active');
       return;
     }
-    document.body.classList.add('custom-cursor-active');
+    document.documentElement.classList.add('custom-cursor-active');
     
     const handleMouseDown = () => setIsClicked(true);
     const handleMouseUp = () => setIsClicked(false);
@@ -39,7 +39,7 @@ export const Cursor = () => {
     return () => {
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
-      document.body.classList.remove('custom-cursor-active');
+      document.documentElement.classList.remove('custom-cursor-active');
     };
   }, [isMobile, prefersReducedMotion, isAdminRoute]);
 

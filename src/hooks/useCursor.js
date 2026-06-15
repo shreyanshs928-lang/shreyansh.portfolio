@@ -88,13 +88,13 @@ export const useCursor = () => {
       const glowEl = document.getElementById('custom-cursor-glow');
 
       if (dotEl) {
-        dotEl.style.transform = `translate3d(calc(${dotPosRef.current.x}px - 50%), calc(${dotPosRef.current.y}px - 50%), 0)`;
+        dotEl.style.transform = `translate3d(${dotPosRef.current.x}px, ${dotPosRef.current.y}px, 0) translate(-50%, -50%)`;
       }
       if (ringEl) {
-        ringEl.style.transform = `translate3d(calc(${ringPosRef.current.x}px - 50%), calc(${ringPosRef.current.y}px - 50%), 0)`;
+        ringEl.style.transform = `translate3d(${ringPosRef.current.x}px, ${ringPosRef.current.y}px, 0) translate(-50%, -50%)`;
       }
       if (glowEl) {
-        glowEl.style.transform = `translate3d(calc(${glowPosRef.current.x}px - 50%), calc(${glowPosRef.current.y}px - 50%), 0)`;
+        glowEl.style.transform = `translate3d(${glowPosRef.current.x}px, ${glowPosRef.current.y}px, 0) translate(-50%, -50%)`;
       }
 
       animFrameId = requestAnimationFrame(updateCursorPositions);

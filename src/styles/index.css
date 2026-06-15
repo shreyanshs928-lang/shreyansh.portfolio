@@ -74,8 +74,8 @@ body {
 }
 
 /* Hide native cursor when custom cursor is active */
-body.custom-cursor-active,
-body.custom-cursor-active * {
+html.custom-cursor-active,
+html.custom-cursor-active * {
   cursor: none !important;
 }
 
