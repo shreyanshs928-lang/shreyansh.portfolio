@@ -232,7 +232,7 @@ export const seedDefaultData = async () => {
   // 7. Work subcollections (run sequentially to avoid overloading)
   for (const [category, projects] of Object.entries(defaultPortfolioData.work)) {
     for (const project of projects) {
-      const projRef = doc(db, 'portfolio', 'work', category, 'projects', project.id);
+      const projRef = doc(db, 'portfolio', 'work', category, project.id);
       await setDoc(projRef, {
         ...project,
         lastEdited: serverTimestamp()
@@ -287,7 +287,7 @@ export const fetchPortfolioData = async () => {
 
   await Promise.all(
     categories.map(async (cat) => {
-      const q = query(collection(db, 'portfolio', 'work', cat, 'projects'), orderBy('orderIndex', 'asc'));
+      const q = query(collection(db, 'portfolio', 'work', cat), orderBy('orderIndex', 'asc'));
       const querySnap = await getDocs(q);
       const list = [];
       querySnap.forEach((doc) => {
@@ -359,7 +359,7 @@ export const saveFooter = async (data) => {
 };
 
 export const saveWorkProject = async (category, projectId, data) => {
-  const ref = doc(db, 'portfolio', 'work', category, 'projects', projectId);
+  const ref = doc(db, 'portfolio', 'work', category, projectId);
   await setDoc(ref, {
     ...data,
     lastEdited: serverTimestamp()
@@ -367,14 +367,14 @@ export const saveWorkProject = async (category, projectId, data) => {
 };
 
 export const deleteWorkProject = async (category, projectId) => {
-  const ref = doc(db, 'portfolio', 'work', category, 'projects', projectId);
+  const ref = doc(db, 'portfolio', 'work', category, projectId);
   await deleteDoc(ref);
 };
 
 export const saveWorkProjectOrder = async (category, projects) => {
   const batch = writeBatch(db);
   projects.forEach((proj, index) => {
-    const ref = doc(db, 'portfolio', 'work', category, 'projects', proj.id);
+    const ref = doc(db, 'portfolio', 'work', category, proj.id);
     batch.update(ref, {
       orderIndex: index,
       lastEdited: serverTimestamp()
