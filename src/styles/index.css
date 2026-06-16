@@ -6,20 +6,29 @@
    DESIGN SYSTEM & TOKENS
    ------------------------------------------------------------- */
 :root {
-  --bg-color: #0A0E1A;
-  --bg-card: #141416;
-  --bg-card-hover: #1A1A1E;
-  --text-main: #E8E8E8;
-  --text-muted: #8E8E93;
-  --text-white: #FFFFFF;
-  
-  /* Dual Accent Colors - Violet & Amber */
-  --accent: hsl(250, 84%, 60%);
+  /* Defined CSS Custom Properties */
+  --bg-base: #0A0E1A;
+  --bg-elevated: #12172A;
   --accent-violet: #8B5CF6;
   --accent-amber: #FF8A4C;
-  --accent-gradient: linear-gradient(135deg, var(--accent-violet) 0%, var(--accent-amber) 100%);
-  --accent-hover: hsl(250, 95%, 70%);
-  --accent-glow: rgba(139, 92, 246, 0.15);
+  --text-primary: #F4F4F8;
+  --text-secondary: #9CA3B8;
+  --gradient-text: linear-gradient(135deg, var(--accent-violet), var(--accent-amber));
+  --glow-violet: rgba(139, 92, 246, 0.15);
+  --glow-amber: rgba(255, 138, 76, 0.15);
+
+  /* Legacy Mapping for compatibility */
+  --bg-color: var(--bg-base);
+  --bg-card: var(--bg-elevated);
+  --bg-card-hover: #1D243D;
+  --text-main: var(--text-primary);
+  --text-muted: var(--text-secondary);
+  --text-white: #FFFFFF;
+  
+  --accent: var(--accent-violet);
+  --accent-gradient: var(--gradient-text);
+  --accent-hover: #9d75f7;
+  --accent-glow: var(--glow-violet);
   --accent-border: rgba(139, 92, 246, 0.25);
   
   --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -29,6 +38,17 @@
   --transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-fast: all 0.2s ease;
 }
+
+/* Gradient Text Utility Class */
+.gradient-text {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+}
+
 
 /* Reset & Base Styles */
 *, *::before, *::after {

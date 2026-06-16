@@ -248,7 +248,7 @@ export const Hero = ({ heroData, isLoading }) => {
               </span>
               <span className="block overflow-hidden pb-1">
                 <span
-                  className="block text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#FF8A4C] will-animate"
+                  className="block gradient-text will-animate"
                   style={{
                     transform: isLoaded ? 'translateY(0)' : 'translateY(100%)',
                     opacity: isLoaded ? 1 : 0,
@@ -418,7 +418,7 @@ export const Hero = ({ heroData, isLoading }) => {
           >
             {stats.map((stat, idx) => (
               <div key={idx} className="flex flex-col text-left">
-                <span className="text-3xl md:text-4xl font-extrabold text-white display-font mb-1 tracking-tight">
+                <span className="text-3xl md:text-4xl font-extrabold gradient-text display-font mb-1 tracking-tight">
                   {stat.value}
                 </span>
                 <span className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-widest font-bold font-sans">
