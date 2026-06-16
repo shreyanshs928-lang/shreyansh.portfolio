@@ -23,65 +23,6 @@ export const Hero = ({ heroData, isLoading }) => {
     </svg>
   );
 
-  if (isLoading) {
-    // High-fidelity inline skeleton loading layout to prevent layout shifts
-    return (
-      <section id="hero" style={{ overflow: 'hidden', minHeight: '92vh', display: 'flex', alignItems: 'center', padding: '8rem 0 4rem 0' }}>
-        <div className="container hero-wrapper w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            
-            {/* Left Column Skeleton */}
-            <div className="lg:col-span-7 flex flex-col justify-center text-left">
-              {/* Eyebrow */}
-              <div className="h-4 w-28 bg-zinc-800/60 rounded animate-pulse mb-6" />
-              {/* Headline Line 1 */}
-              <div className="h-12 w-[85%] bg-zinc-800/60 rounded animate-pulse mb-3" />
-              {/* Headline Line 2 */}
-              <div className="h-12 w-[65%] bg-zinc-800/60 rounded animate-pulse mb-8" />
-              {/* Bio Paragraph Lines */}
-              <div className="space-y-3 mb-8">
-                <div className="h-4 w-full bg-zinc-800/60 rounded animate-pulse" />
-                <div className="h-4 w-[95%] bg-zinc-800/60 rounded animate-pulse" />
-                <div className="h-4 w-[75%] bg-zinc-800/60 rounded animate-pulse" />
-              </div>
-              {/* CTA & Socials */}
-              <div className="flex items-center gap-5 flex-wrap">
-                <div className="h-12 w-48 bg-zinc-800/60 rounded-full animate-pulse" />
-                <div className="flex items-center gap-3">
-                  <div className="h-11 w-11 bg-zinc-800/60 rounded-full animate-pulse" />
-                  <div className="h-11 w-11 bg-zinc-800/60 rounded-full animate-pulse" />
-                  <div className="h-11 w-11 bg-zinc-800/60 rounded-full animate-pulse" />
-                  <div className="h-11 w-11 bg-zinc-800/60 rounded-full animate-pulse" />
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column Skeleton */}
-            <div className="lg:col-span-5 flex justify-center items-center">
-              <div className="w-full max-w-[340px] aspect-square bg-zinc-800/60 rounded-[16px] animate-pulse relative">
-                {/* Optional badge placeholder */}
-                <div className="absolute -bottom-3 -right-3 h-10 w-44 bg-zinc-800/80 border border-zinc-700/50 rounded-full animate-pulse" />
-              </div>
-            </div>
-          </div>
-
-          {/* Marquee Ticker Skeleton */}
-          <div className="h-8 w-full bg-zinc-800/40 rounded animate-pulse mt-16 lg:mt-24" />
-
-          {/* Stats Row Skeleton */}
-          <div className="mt-12 pt-10 border-t border-[#27272a]/20 grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="flex flex-col text-left space-y-2">
-                <div className="h-10 w-20 bg-zinc-800/60 rounded animate-pulse" />
-                <div className="h-3 w-28 bg-zinc-800/60 rounded animate-pulse" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   const heroRef = useRef(null);
   const spotlightRef = useRef(null);
   const portraitRef = useRef(null);
@@ -158,6 +99,65 @@ export const Hero = ({ heroData, isLoading }) => {
   const handleCardMouseLeave = () => {
     setTilt({ rotateX: 0, rotateY: 0, glowX: 0, glowY: 0 });
   };
+
+  if (isLoading) {
+    // High-fidelity inline skeleton loading layout to prevent layout shifts
+    return (
+      <section id="hero" style={{ overflow: 'hidden', minHeight: '92vh', display: 'flex', alignItems: 'center', padding: '8rem 0 4rem 0' }}>
+        <div className="container hero-wrapper w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+            
+            {/* Left Column Skeleton */}
+            <div className="lg:col-span-7 flex flex-col justify-center text-left">
+              {/* Eyebrow */}
+              <div className="h-4 w-28 bg-zinc-800/60 rounded animate-pulse mb-6" />
+              {/* Headline Line 1 */}
+              <div className="h-12 w-[85%] bg-zinc-800/60 rounded animate-pulse mb-3" />
+              {/* Headline Line 2 */}
+              <div className="h-12 w-[65%] bg-zinc-800/60 rounded animate-pulse mb-8" />
+              {/* Bio Paragraph Lines */}
+              <div className="space-y-3 mb-8">
+                <div className="h-4 w-full bg-zinc-800/60 rounded animate-pulse" />
+                <div className="h-4 w-[95%] bg-zinc-800/60 rounded animate-pulse" />
+                <div className="h-4 w-[75%] bg-zinc-800/60 rounded animate-pulse" />
+              </div>
+              {/* CTA & Socials */}
+              <div className="flex items-center gap-5 flex-wrap">
+                <div className="h-12 w-48 bg-zinc-800/60 rounded-full animate-pulse" />
+                <div className="flex items-center gap-3">
+                  <div className="h-11 w-11 bg-zinc-800/60 rounded-full animate-pulse" />
+                  <div className="h-11 w-11 bg-zinc-800/60 rounded-full animate-pulse" />
+                  <div className="h-11 w-11 bg-zinc-800/60 rounded-full animate-pulse" />
+                  <div className="h-11 w-11 bg-zinc-800/60 rounded-full animate-pulse" />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column Skeleton */}
+            <div className="lg:col-span-5 flex justify-center items-center">
+              <div className="w-full max-w-[340px] aspect-square bg-zinc-800/60 rounded-[16px] animate-pulse relative">
+                {/* Optional badge placeholder */}
+                <div className="absolute -bottom-3 -right-3 h-10 w-44 bg-zinc-800/80 border border-zinc-700/50 rounded-full animate-pulse" />
+              </div>
+            </div>
+          </div>
+
+          {/* Marquee Ticker Skeleton */}
+          <div className="h-8 w-full bg-zinc-800/40 rounded animate-pulse mt-16 lg:mt-24" />
+
+          {/* Stats Row Skeleton */}
+          <div className="mt-12 pt-10 border-t border-[#27272a]/20 grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex flex-col text-left space-y-2">
+                <div className="h-10 w-20 bg-zinc-800/60 rounded animate-pulse" />
+                <div className="h-3 w-28 bg-zinc-800/60 rounded animate-pulse" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const eyebrowText = heroData?.eyebrowText || "Hey, I'm Shreyansh";
   const headlineLine1 = heroData?.headlineLine1 || "Multidisciplinary Designer +";
