@@ -135,8 +135,12 @@ export default function Dashboard() {
       socialLinks: payload.hero.socialLinks || { linkedin: '', instagram: '', behance: '', email: '' },
       portraitImage: payload.hero.portraitImage || '',
       badgeText: payload.hero.badgeText || '',
-      stats: payload.hero.stats || [],
-      tickerInput: (payload.hero.ticker || []).join(', ')
+      stats: (payload.hero.stats || []).map((s, idx) => ({
+        id: s.id || `stat-${idx}-${Date.now()}`,
+        value: s.value,
+        label: s.label
+      })),
+      disciplineTags: payload.hero.disciplineTags || []
     });
 
     // About tab
@@ -223,6 +227,22 @@ export default function Dashboard() {
     });
   };
 
+  const handleDragEndStats = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    setHeroForm((prev) => {
+      const oldIndex = prev.stats.findIndex((item) => item.id === active.id);
+      const newIndex = prev.stats.findIndex((item) => item.id === over.id);
+      const reorderedStats = arrayMove(prev.stats, oldIndex, newIndex);
+      setHasUnsavedChanges(true);
+      return {
+        ...prev,
+        stats: reorderedStats
+      };
+    });
+  };
+
   // 4. Section Save Handlers (Mutating Firestore)
   const triggerSave = async (e) => {
     if (e) e.preventDefault();
@@ -244,8 +264,8 @@ export default function Dashboard() {
           },
           portraitImage: heroForm.portraitImage || '',
           badgeText: (heroForm.badgeText || '').trim(),
-          stats: heroForm.stats || [],
-          ticker: heroForm.tickerInput.split(',').map((t) => t.trim()).filter(Boolean)
+          stats: (heroForm.stats || []).map(s => ({ value: s.value, label: s.label })),
+          disciplineTags: heroForm.disciplineTags || []
         };
         await saveHero(payload);
       } 
@@ -656,17 +676,83 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-[#a1a1aa]">Ticker disciplines (Comma separated)</label>
-                  <input
-                    type="text"
-                    className="w-full bg-[#18181b]/40 border border-[#27272a] rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-[#6366f1] transition-colors"
-                    value={heroForm.tickerInput}
-                    onChange={(e) => {
-                      setHeroForm({ ...heroForm, tickerInput: e.target.value });
+                <div className="space-y-4 pt-4 border-t border-[#27272a]">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-semibold uppercase tracking-wider text-[#a1a1aa]">Discipline Tags (Max 8)</label>
+                    <span className="text-xs text-[#a1a1aa]">({(heroForm.disciplineTags || []).length} of 8)</span>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {(heroForm.disciplineTags || []).map((tag, idx) => (
+                      <div key={idx} className="flex gap-3 items-center bg-[#18181b]/20 p-3 rounded border border-[#27272a]/60">
+                        <div className="flex-1 space-y-1">
+                          <label className="text-[10px] text-[#71717a] uppercase font-bold">Tag Label</label>
+                          <input
+                            type="text"
+                            className="w-full bg-[#18181b]/60 border border-[#27272a] rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#6366f1] transition-colors"
+                            placeholder="e.g. Creative Direction"
+                            value={tag.label}
+                            onChange={(e) => {
+                              const newTags = [...heroForm.disciplineTags];
+                              newTags[idx] = { ...newTags[idx], label: e.target.value };
+                              setHeroForm({ ...heroForm, disciplineTags: newTags });
+                              setHasUnsavedChanges(true);
+                            }}
+                          />
+                        </div>
+                        
+                        <div className="w-32 space-y-1">
+                          <label className="text-[10px] text-[#71717a] uppercase font-bold">Accent Color</label>
+                          <select
+                            className="w-full bg-[#18181b]/60 border border-[#27272a] rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#6366f1] transition-colors"
+                            value={tag.color || 'neutral'}
+                            onChange={(e) => {
+                              const newTags = [...heroForm.disciplineTags];
+                              newTags[idx] = { ...newTags[idx], color: e.target.value };
+                              setHeroForm({ ...heroForm, disciplineTags: newTags });
+                              setHasUnsavedChanges(true);
+                            }}
+                          >
+                            <option value="violet">Violet</option>
+                            <option value="amber">Amber</option>
+                            <option value="neutral">Neutral</option>
+                          </select>
+                        </div>
+
+                        <button
+                          type="button"
+                          className="text-red-500 hover:text-red-400 p-2 mt-4 self-center transition-colors"
+                          onClick={() => {
+                            const newTags = heroForm.disciplineTags.filter((_, i) => i !== idx);
+                            setHeroForm({ ...heroForm, disciplineTags: newTags });
+                            setHasUnsavedChanges(true);
+                          }}
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    className={`admin-btn-add flex items-center gap-2 mt-2 ${(heroForm.disciplineTags || []).length >= 8 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    disabled={(heroForm.disciplineTags || []).length >= 8}
+                    onClick={() => {
+                      const newTags = [...(heroForm.disciplineTags || []), { label: '', color: 'neutral' }];
+                      setHeroForm({ ...heroForm, disciplineTags: newTags });
                       setHasUnsavedChanges(true);
                     }}
-                  />
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    Add Tag
+                  </button>
                 </div>
 
                 {/* Social Links Sub-Form */}
@@ -757,56 +843,63 @@ export default function Dashboard() {
                     <span className="text-xs text-[#a1a1aa]">({(heroForm.stats || []).length} of 4)</span>
                   </div>
                   <div className="space-y-3">
-                    {heroForm.stats && heroForm.stats.map((stat, index) => (
-                      <div key={index} className="flex items-end gap-3 bg-[#1c1c1f] p-4 rounded border border-[#27272a]">
-                        <div className="flex-1 grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-wider text-[#a1a1aa]">Stat Value (e.g. 10+)</label>
-                            <input
-                              type="text"
-                              required
-                              className="w-full bg-[#18181b]/60 border border-[#27272a] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-[#6366f1] transition-colors"
-                              value={stat.value}
-                              onChange={(e) => {
-                                const newStats = [...heroForm.stats];
-                                newStats[index] = { ...newStats[index], value: e.target.value };
-                                setHeroForm({ ...heroForm, stats: newStats });
-                                setHasUnsavedChanges(true);
-                              }}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-wider text-[#a1a1aa]">Stat Label (e.g. Projects Shipped)</label>
-                            <input
-                              type="text"
-                              required
-                              className="w-full bg-[#18181b]/60 border border-[#27272a] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-[#6366f1] transition-colors"
-                              value={stat.label}
-                              onChange={(e) => {
-                                const newStats = [...heroForm.stats];
-                                newStats[index] = { ...newStats[index], label: e.target.value };
-                                setHeroForm({ ...heroForm, stats: newStats });
-                                setHasUnsavedChanges(true);
-                              }}
-                            />
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          className="text-[#FF5F56] hover:text-[#ff4b40] p-2 transition-colors mb-0.5"
-                          onClick={() => {
-                            const newStats = heroForm.stats.filter((_, i) => i !== index);
-                            setHeroForm({ ...heroForm, stats: newStats });
-                            setHasUnsavedChanges(true);
-                          }}
-                        >
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
-                    ))}
-                    {(!heroForm.stats || heroForm.stats.length === 0) && (
+                    {heroForm.stats && heroForm.stats.length > 0 ? (
+                      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndStats}>
+                        <SortableContext items={heroForm.stats.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+                          {heroForm.stats.map((stat, index) => (
+                            <SortableItem key={stat.id} id={stat.id}>
+                              <div className="flex items-end gap-3 grow">
+                                <div className="flex-1 grid grid-cols-2 gap-4">
+                                  <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#a1a1aa]">Stat Value (e.g. 10+)</label>
+                                    <input
+                                      type="text"
+                                      required
+                                      className="w-full bg-[#18181b]/60 border border-[#27272a] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-[#6366f1] transition-colors"
+                                      value={stat.value}
+                                      onChange={(e) => {
+                                        const newStats = [...heroForm.stats];
+                                        newStats[index] = { ...newStats[index], value: e.target.value };
+                                        setHeroForm({ ...heroForm, stats: newStats });
+                                        setHasUnsavedChanges(true);
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#a1a1aa]">Stat Label (e.g. Projects Shipped)</label>
+                                    <input
+                                      type="text"
+                                      required
+                                      className="w-full bg-[#18181b]/60 border border-[#27272a] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-[#6366f1] transition-colors"
+                                      value={stat.label}
+                                      onChange={(e) => {
+                                        const newStats = [...heroForm.stats];
+                                        newStats[index] = { ...newStats[index], label: e.target.value };
+                                        setHeroForm({ ...heroForm, stats: newStats });
+                                        setHasUnsavedChanges(true);
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  className="text-[#FF5F56] hover:text-[#ff4b40] p-2 transition-colors mb-0.5 shrink-0"
+                                  onClick={() => {
+                                    const newStats = heroForm.stats.filter((_, i) => i !== index);
+                                    setHeroForm({ ...heroForm, stats: newStats });
+                                    setHasUnsavedChanges(true);
+                                  }}
+                                >
+                                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </SortableItem>
+                          ))}
+                        </SortableContext>
+                      </DndContext>
+                    ) : (
                       <p className="text-sm text-zinc-500 italic">No stats defined yet. Click "Add Stat Card" below.</p>
                     )}
                   </div>
@@ -815,7 +908,7 @@ export default function Dashboard() {
                     className={`admin-btn-add flex items-center gap-2 mt-2 ${heroForm.stats && heroForm.stats.length >= 4 ? 'opacity-50 cursor-not-allowed' : ''}`}
                     disabled={heroForm.stats && heroForm.stats.length >= 4}
                     onClick={() => {
-                      const newStats = [...(heroForm.stats || []), { value: '', label: '' }];
+                      const newStats = [...(heroForm.stats || []), { id: `stat-${Date.now()}`, value: '', label: '' }];
                       setHeroForm({ ...heroForm, stats: newStats });
                       setHasUnsavedChanges(true);
                     }}

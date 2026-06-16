@@ -84,14 +84,14 @@ export const About = ({ profileData }) => {
     <section
       ref={containerRef}
       id="about"
-      className={`reveal-item ${isRevealed ? 'revealed' : ''}`}
+      className={`reveal-item ${isRevealed ? 'revealed' : ''} section-grid-overlay`}
     >
       <div className="container">
-        <div className="about-grid">
+        <div className="about-grid glass-card p-8 md:p-12">
           
           <div className="about-left">
             <span className="section-eyebrow">Brief</span>
-            <h2 className="section-title display-font">About Me</h2>
+            <h2 className="section-title display-font section-title-3d">About Me</h2>
             <p className="section-desc">Who I am and what drives my work.</p>
             
             <p

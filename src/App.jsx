@@ -1,4 +1,4 @@
-import React, { Suspense, useContext, useEffect } from 'react';
+import React, { Suspense, useContext, useEffect, useState, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CursorProvider } from './context/CursorContext';
@@ -68,10 +68,172 @@ const PortfolioSkeleton = () => (
   </div>
 );
 
+// Scroll Progress Bar Tracker Component
+const ScrollProgressBar = ({ activeSection, showLabel, sectionOffsets }) => {
+  const sections = [
+    { id: 'hero', name: 'Intro' },
+    { id: 'about', name: 'About' },
+    { id: 'work', name: 'Projects' },
+    { id: 'skills', name: 'Skills' },
+    { id: 'experience', name: 'Experience' },
+    { id: 'background', name: 'Education' }
+  ];
+
+  return (
+    <div className="scroll-progress-line-container">
+      <div className="scroll-progress-bg" />
+      <div className="scroll-progress-fill" />
+      <div className="scroll-progress-tip" />
+      
+      {sections.map((sec) => {
+        const percent = sectionOffsets[sec.id] || 0;
+        const isActive = activeSection === sec.id;
+        return (
+          <React.Fragment key={sec.id}>
+            <div 
+              className={`section-marker-dot ${isActive ? 'active' : ''}`}
+              style={{ top: `${percent}%` }}
+            />
+            <span 
+              className={`section-marker-label ${isActive && showLabel ? 'visible' : ''}`}
+              style={{ top: `${percent}%` }}
+            >
+              {sec.name}
+            </span>
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+};
+
+// Scroll Horizontal Divider Component
+const ScrollDivider = () => {
+  const dividerRef = useRef(null);
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsActive(true);
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
+
+    if (dividerRef.current) {
+      observer.observe(dividerRef.current);
+    }
+
+    return () => {
+      if (dividerRef.current) {
+        observer.unobserve(dividerRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <div className="horizontal-divider-container">
+      <div 
+        ref={dividerRef} 
+        className={`horizontal-divider ${isActive ? 'active' : ''}`} 
+      />
+    </div>
+  );
+};
+
 // Visitor Main Portfolio Wrapper
 const PortfolioHome = () => {
   const { portfolioData, isLoading, error } = usePortfolioData();
   const navigate = useNavigate();
+
+  const [activeSection, setActiveSection] = useState('hero');
+  const [lastActiveSection, setLastActiveSection] = useState('');
+  const [showLabel, setShowLabel] = useState(false);
+  const [sectionOffsets, setSectionOffsets] = useState({
+    hero: 0,
+    about: 20,
+    work: 40,
+    skills: 60,
+    experience: 75,
+    background: 90
+  });
+
+  // Handle scroll tracking, blend shifts, active section
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progressFraction = docHeight > 0 ? scrollY / docHeight : 0;
+      const progressPercent = Math.min(100, Math.max(0, progressFraction * 100));
+
+      // 1. Update scroll progress CSS custom property
+      document.documentElement.style.setProperty('--scroll-progress', progressPercent.toFixed(2));
+
+      // 2. Update split background blend position (shifts slightly: 42.5% to 57.5%)
+      const blendPos = 42.5 + progressFraction * 15;
+      document.documentElement.style.setProperty('--split-blend-position', `${blendPos.toFixed(2)}%`);
+
+      // 3. Active Section Tracking
+      const sections = ['hero', 'about', 'work', 'skills', 'experience', 'background'];
+      let currentSection = 'hero';
+
+      for (const sectionId of sections) {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= window.innerHeight * 0.4) {
+            currentSection = sectionId;
+          }
+        }
+      }
+
+      setActiveSection(currentSection);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Show progress indicator label briefly when section changes
+  useEffect(() => {
+    if (activeSection && activeSection !== lastActiveSection) {
+      setLastActiveSection(activeSection);
+      setShowLabel(true);
+      const timer = setTimeout(() => setShowLabel(false), 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [activeSection, lastActiveSection]);
+
+  // Dynamically calculate markers top percentages
+  useEffect(() => {
+    const measureSectionPositions = () => {
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (docHeight <= 0) return;
+
+      const sections = ['hero', 'about', 'work', 'skills', 'experience', 'background'];
+      const offsets = {};
+      sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          offsets[id] = Math.min(100, Math.max(0, (el.offsetTop / docHeight) * 100));
+        }
+      });
+      setSectionOffsets(prev => ({ ...prev, ...offsets }));
+    };
+
+    if (!isLoading && portfolioData) {
+      const timer = setTimeout(measureSectionPositions, 500);
+      window.addEventListener('resize', measureSectionPositions);
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('resize', measureSectionPositions);
+      };
+    }
+  }, [isLoading, portfolioData]);
 
   if (error) {
     return (
@@ -97,6 +259,33 @@ const PortfolioHome = () => {
       {/* 2. GPU-animated background radial gradient mesh canvas */}
       <div className="bg-mesh-canvas-animated" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: -1 }} />
 
+      {/* Organic SVG Filter for Blobs */}
+      <svg style={{ position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }} aria-hidden="true">
+        <filter id="organic-blob-filter">
+          <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise">
+            <animate attributeName="baseFrequency" values="0.012;0.018;0.012" dur="30s" repeatCount="indefinite" />
+          </feTurbulence>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="80" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </svg>
+
+      {/* Edge-anchored Ambient Blobs */}
+      <div className="ambient-blobs-container">
+        <div className="organic-blob blob-a" />
+        <div className="organic-blob blob-b" />
+        <div className="organic-blob blob-c" />
+        <div className="organic-blob blob-d" />
+      </div>
+
+      {/* Primary vertical scroll-linked progress tracker */}
+      {!isLoading && portfolioData && (
+        <ScrollProgressBar 
+          activeSection={activeSection} 
+          showLabel={showLabel} 
+          sectionOffsets={sectionOffsets} 
+        />
+      )}
+
       {/* 3. Sticky header nav */}
       <Header />
 
@@ -106,13 +295,19 @@ const PortfolioHome = () => {
         
         {!isLoading && portfolioData && (
           <>
+            <ScrollDivider />
             <About profileData={{ about: portfolioData.about }} />
             
-            {/* Render Work Projects (filter draft vs published) */}
+            <ScrollDivider />
             <Work portfolioData={{ work: portfolioData.work }} />
             
+            <ScrollDivider />
             <Skills skillsData={portfolioData.skills} />
+            
+            <ScrollDivider />
             <Experience experienceData={portfolioData.experience} />
+            
+            <ScrollDivider />
             <Background backgroundData={portfolioData.background} />
           </>
         )}

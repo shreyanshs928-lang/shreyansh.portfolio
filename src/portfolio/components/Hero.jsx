@@ -3,6 +3,93 @@ import { CursorContext } from '../../context/CursorContext';
 import { useMousePosition } from '../../context/MousePositionContext';
 import { Linkedin, Instagram, Mail } from 'lucide-react';
 
+const AnimatedStatCard = ({ value, label, delay }) => {
+  const cardRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [displayValue, setDisplayValue] = useState("0");
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => {
+      if (cardRef.current) {
+        observer.unobserve(cardRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const matches = value.match(/\d+/);
+    if (!matches) {
+      setDisplayValue(value);
+      return;
+    }
+
+    const endVal = parseInt(matches[0], 10);
+    const prefix = value.substring(0, value.indexOf(matches[0]));
+    const suffix = value.substring(value.indexOf(matches[0]) + matches[0].length);
+
+    let startTimestamp = null;
+    const duration = 1200; // 1.2s
+
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const currentVal = Math.floor(progress * endVal);
+      
+      setDisplayValue(`${prefix}${currentVal}${suffix}`);
+
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      } else {
+        setDisplayValue(value);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      window.requestAnimationFrame(step);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [isVisible, value, delay]);
+
+  const floatDelay = `${(delay % 1000) / 100}s`;
+
+  return (
+    <div 
+      ref={cardRef}
+      className="flex flex-col text-left glass-card p-5 transition-all duration-1000"
+      style={{
+        transform: isVisible ? 'rotateY(0deg)' : 'rotateY(15deg)',
+        opacity: isVisible ? 1 : 0,
+        transitionDelay: `${delay}ms`,
+        animation: isVisible ? 'floatStatCard 3s ease-in-out infinite alternate' : 'none',
+        animationDelay: floatDelay
+      }}
+    >
+      <span className="text-3xl md:text-4xl font-extrabold gradient-text display-font mb-1 tracking-tight">
+        {displayValue}
+      </span>
+      <span className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-widest font-bold font-sans">
+        {label}
+      </span>
+    </div>
+  );
+};
+
 export const Hero = ({ heroData, isLoading }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const { setMagneticElement, triggerHover, triggerDefault } = useContext(CursorContext);
@@ -167,8 +254,22 @@ export const Hero = ({ heroData, isLoading }) => {
   const badgeText = heroData?.badgeText || "";
   const portraitImage = heroData?.portraitImage || "";
   const stats = heroData?.stats || [];
-  const disciplines = heroData?.ticker || [];
   const socialLinksData = heroData?.socialLinks || {};
+
+  const fallbackTags = [
+    { label: 'Creative Direction', color: 'violet' },
+    { label: 'UI/UX Layouts', color: 'violet' },
+    { label: 'Motion & Video', color: 'violet' },
+    { label: 'Brand Systems', color: 'amber' },
+    { label: 'Editorial Design', color: 'amber' },
+    { label: 'Print Media', color: 'amber' },
+    { label: 'Social Content', color: 'neutral' }
+  ];
+  const tags = heroData?.disciplineTags && heroData.disciplineTags.length > 0
+    ? heroData.disciplineTags
+    : fallbackTags;
+  const row1Tags = tags.slice(0, 3);
+  const row2Tags = tags.slice(3, 8);
 
   const socialLinks = [
     { icon: <Linkedin size={20} />, url: socialLinksData.linkedin, label: 'LinkedIn' },
@@ -181,7 +282,7 @@ export const Hero = ({ heroData, isLoading }) => {
   const deltaY = typeof window !== 'undefined' ? rawY - window.innerHeight / 2 : 0;
 
   return (
-    <section ref={heroRef} id="hero" style={{ overflow: 'hidden', minHeight: '92vh', display: 'flex', alignItems: 'center', padding: '8rem 0 4rem 0', position: 'relative' }}>
+    <section ref={heroRef} id="hero" style={{ overflow: 'hidden', minHeight: '92vh', display: 'flex', alignItems: 'center', padding: '8rem 0 4rem 0', position: 'relative' }} className="section-grid-overlay">
       {/* 3D Parallax Ambient Background System */}
       <div className="ambient-lighting-container">
         {/* Layer 1 (5% Speed): Blurred Blobs */}
@@ -212,6 +313,31 @@ export const Hero = ({ heroData, isLoading }) => {
         >
           <div ref={spotlightRef} className="ambient-spotlight" />
         </div>
+      </div>
+
+      {/* 3D Floating Background Geometric Shapes */}
+      <div className="floating-shapes-layer">
+        {/* Shape 1: Cube wireframe behind photo */}
+        <div className="cube-wrapper sm:right-[10%] lg:right-[15%] top-[20%]">
+          <div className="cube-wireframe">
+            <div className="face front"></div>
+            <div className="face back"></div>
+            <div className="face left"></div>
+            <div className="face right"></div>
+            <div className="face top"></div>
+            <div className="face bottom"></div>
+          </div>
+        </div>
+
+        {/* Shape 2: Tilted spinning Torus behind headline */}
+        <div className="torus-shape top-[20%] left-[5%]" />
+
+        {/* Shape 3: Scattered light dust particles */}
+        <div className="dust-particle violet" />
+        <div className="dust-particle amber" />
+        <div className="dust-particle white" />
+        <div className="dust-particle violet" />
+        <div className="dust-particle amber" />
       </div>
 
       <div className="container hero-wrapper w-full relative z-10">
@@ -272,6 +398,36 @@ export const Hero = ({ heroData, isLoading }) => {
             >
               {bioText}
             </p>
+
+            {/* Static Staggered Tag Cloud */}
+            {tags.length > 0 && (
+              <div 
+                className="hero-tag-cloud will-animate"
+                style={{
+                  opacity: isLoaded ? 1 : 0,
+                  transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
+                  transition: 'opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1)',
+                  transitionDelay: '550ms'
+                }}
+              >
+                {/* Row 1: slightly left-offset */}
+                <div className="flex flex-wrap gap-2.5 pl-2">
+                  {row1Tags.map((tag, idx) => (
+                    <div key={idx} className={`glass-chip chip-${tag.color || 'neutral'}`}>
+                      {tag.label}
+                    </div>
+                  ))}
+                </div>
+                {/* Row 2: slightly right-offset, smaller text */}
+                <div className="flex flex-wrap gap-2.5 pl-6">
+                  {row2Tags.map((tag, idx) => (
+                    <div key={idx} className={`glass-chip chip-${tag.color || 'neutral'} text-[10px]`}>
+                      {tag.label}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div
               className="hero-ctas will-animate flex items-center gap-5 flex-wrap"
@@ -349,7 +505,7 @@ export const Hero = ({ heroData, isLoading }) => {
 
               {/* Rotating Gradient Frame */}
               <div className="rotating-gradient-border aspect-square w-full">
-                <div className="w-full h-full bg-[#0A0E1A] rounded-[15px] overflow-hidden flex items-center justify-center p-1.5">
+                <div className="w-full h-full bg-[var(--bg-base)] rounded-[15px] overflow-hidden flex items-center justify-center p-1.5">
                   {portraitImage && !portraitImage.startsWith('svg:') ? (
                     <img 
                       src={portraitImage} 
@@ -385,46 +541,16 @@ export const Hero = ({ heroData, isLoading }) => {
           </div>
         </div>
 
-        {/* Disciplines Marquee Ticker */}
-        {disciplines.length > 0 && (
-          <div 
-            className="hero-marquee-container mt-16 lg:mt-24 will-animate"
-            style={{
-              opacity: isLoaded ? 1 : 0,
-              transition: 'opacity 1s ease',
-              transitionDelay: '800ms'
-            }}
-          >
-            <div className="hero-marquee-track">
-              {disciplines.concat(disciplines).map((disc, idx) => (
-                <div key={idx} className="hero-marquee-item">
-                  <span style={{ color: 'var(--accent-amber)', marginRight: '6px' }}>·</span> {disc}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Dynamic Stats Row at bottom */}
+        {/* Dynamic Stats Row at bottom with countUp and staggered tilt */}
         {stats && stats.length > 0 && (
-          <div 
-            className="mt-12 pt-10 border-t border-[#27272a]/20 grid grid-cols-2 md:grid-cols-4 gap-6 will-animate"
-            style={{
-              opacity: isLoaded ? 1 : 0,
-              transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
-              transition: 'opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
-              transitionDelay: '900ms'
-            }}
-          >
+          <div className="mt-12 pt-10 border-t border-[#27272a]/20 grid grid-cols-2 md:grid-cols-4 gap-6">
             {stats.map((stat, idx) => (
-              <div key={idx} className="flex flex-col text-left">
-                <span className="text-3xl md:text-4xl font-extrabold gradient-text display-font mb-1 tracking-tight">
-                  {stat.value}
-                </span>
-                <span className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-widest font-bold font-sans">
-                  {stat.label}
-                </span>
-              </div>
+              <AnimatedStatCard 
+                key={idx}
+                value={stat.value}
+                label={stat.label}
+                delay={idx * 120} // Staggered 120ms
+              />
             ))}
           </div>
         )}

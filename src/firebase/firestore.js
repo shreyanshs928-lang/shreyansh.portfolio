@@ -36,12 +36,14 @@ export const defaultPortfolioData = {
       { value: "IIT Bombay '27", label: 'Student Core' }
     ]
   },
-  disciplines: [
-    'Creative Direction',
-    'Brand Systems',
-    'Editorial Design',
-    'UI/UX Layouts',
-    'Motion & Kinetic Video'
+  disciplineTags: [
+    { label: 'Creative Direction', color: 'violet' },
+    { label: 'UI/UX Layouts', color: 'violet' },
+    { label: 'Motion & Video', color: 'violet' },
+    { label: 'Brand Systems', color: 'amber' },
+    { label: 'Editorial Design', color: 'amber' },
+    { label: 'Print Media', color: 'amber' },
+    { label: 'Social Content', color: 'neutral' }
   ],
   about: {
     paragraph: 'I am a self-taught multidisciplinary designer currently studying Chemical Engineering at <strong>IIT Bombay</strong>. My design process is defined by high contrast grids, modern typographic rhythm, and clean execution. From branding campaigns for college festivals to telemetry dashboards for rockets, I design functional art.<br><br>I specialize in translating complex systems into clean interfaces and visual guides. For the last 2 years, I have built design architectures for festival teams, student groups, and independent clients.',
@@ -175,7 +177,7 @@ export const seedDefaultData = async () => {
     socialLinks: defaultPortfolioData.profile.socialLinks,
     portraitImage: defaultPortfolioData.profile.portraitImage,
     badgeText: defaultPortfolioData.profile.badgeText,
-    ticker: defaultPortfolioData.disciplines,
+    disciplineTags: defaultPortfolioData.disciplineTags,
     stats: defaultPortfolioData.profile.stats,
     lastEdited: serverTimestamp()
   });

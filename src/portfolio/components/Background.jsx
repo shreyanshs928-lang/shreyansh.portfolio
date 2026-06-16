@@ -11,11 +11,11 @@ export const Background = ({ backgroundData }) => {
   const { degree, institution, year, philosophy, achievements = [] } = backgroundData || {};
 
   return (
-    <section ref={sectionRef} id="background" className="background-section">
+    <section ref={sectionRef} id="background" className="background-section section-grid-overlay">
       <div className="container">
         <div className="section-header-reveal" style={{ marginBottom: '3.5rem' }}>
           <span className="section-eyebrow">Academic & Creed</span>
-          <h2 className="section-title display-font">Background</h2>
+          <h2 className="section-title display-font section-title-3d">Background</h2>
         </div>
 
         <div className="background-content">

@@ -191,7 +191,7 @@ const WorkCard = ({ project, index, type, isRevealed }) => {
   return (
     <article
       ref={cardRef}
-      className={`card darkroom-item ${isRevealed ? 'revealed' : ''}`}
+      className={`card glass-card darkroom-item ${isRevealed ? 'revealed' : ''}`}
       style={{ transitionDelay: `${index * 80}ms` }}
       onClick={handleClick}
       onMouseEnter={(e) => {
@@ -275,7 +275,7 @@ const BrandingCard = ({ project, index, isRevealed }) => {
   return (
     <article
       ref={cardRef}
-      className={`card brand-card darkroom-item ${isRevealed ? 'revealed' : ''}`}
+      className={`card glass-card brand-card darkroom-item ${isRevealed ? 'revealed' : ''}`}
       style={{ transitionDelay: `${index * 80}ms` }}
       onClick={handleClick}
       onMouseEnter={(e) => {
@@ -323,7 +323,7 @@ const WorkSection = ({ id, eyebrow, title, desc, viewAllLink = "https://behance.
   if (publishedProjects.length === 0) return null;
 
   return (
-    <section ref={sectionRef} id={id} className={`work-section reveal-item ${isRevealed ? 'revealed' : ''}`}>
+    <section ref={sectionRef} id={id} className={`work-section reveal-item ${isRevealed ? 'revealed' : ''} section-grid-overlay`}>
       <div className="container">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
@@ -377,10 +377,10 @@ export const Work = ({ portfolioData }) => {
   return (
     <div id="work">
       {/* SECTION MAIN HEADER */}
-      <section ref={sectionHeaderRef} className={`reveal-item ${isHeaderRevealed ? 'revealed' : ''}`} style={{ paddingBottom: '2rem', borderBottom: 'none' }}>
+      <section ref={sectionHeaderRef} className={`reveal-item ${isHeaderRevealed ? 'revealed' : ''} section-grid-overlay`} style={{ paddingBottom: '2rem', borderBottom: 'none' }}>
         <div className="container">
           <span className="section-eyebrow">Portfolio</span>
-          <h2 className="section-title display-font">Selected Works</h2>
+          <h2 className="section-title display-font section-title-3d">Selected Works</h2>
           <p className="section-desc" style={{ marginBottom: 0 }}>
             A deep dive into cross-disciplinary projects shipped for real products, festivals, and campus teams.
           </p>

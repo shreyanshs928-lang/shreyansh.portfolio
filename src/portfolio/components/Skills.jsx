@@ -10,18 +10,18 @@ export const Skills = ({ skillsData }) => {
   const { tools = [], other = [] } = skillsData || {};
 
   return (
-    <section ref={sectionRef} id="skills" className="skills-section">
+    <section ref={sectionRef} id="skills" className="skills-section section-grid-overlay">
       <div className="container">
         <div className="section-header-reveal" style={{ marginBottom: '3.5rem' }}>
           <span className="section-eyebrow">Expertise</span>
-          <h2 className="section-title display-font">Skills & Tools</h2>
+          <h2 className="section-title display-font section-title-3d">Skills & Tools</h2>
         </div>
 
         <div className="skills-grid">
           {/* Column 1: Design Tools */}
           <div>
             <h3 className="skills-column-title display-font">Design & Tech Stack</h3>
-            <div className="skills-pills">
+            <div className="skills-pills glass-card p-6">
               {tools.map((tool, idx) => (
                 <div
                   key={idx}
@@ -46,7 +46,7 @@ export const Skills = ({ skillsData }) => {
           {/* Column 2: Other Skills / Disciplines */}
           <div>
             <h3 className="skills-column-title display-font">Disciplines & Specialties</h3>
-            <div className="skills-pills">
+            <div className="skills-pills glass-card p-6">
               {other.map((skill, idx) => (
                 <div
                   key={idx}
