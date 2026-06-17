@@ -6,7 +6,6 @@ import { MousePositionProvider } from './context/MousePositionContext';
 import { Cursor } from './components/Cursor';
 import { Header } from './portfolio/components/Header';
 import { Hero } from './portfolio/components/Hero';
-import { About } from './portfolio/components/About';
 import { Work } from './portfolio/components/WorkSection';
 import { Skills } from './portfolio/components/Skills';
 import { Experience } from './portfolio/components/Experience';
@@ -72,7 +71,6 @@ const PortfolioSkeleton = () => (
 const ScrollProgressBar = ({ activeSection, showLabel, sectionOffsets }) => {
   const sections = [
     { id: 'hero', name: 'Intro' },
-    { id: 'about', name: 'About' },
     { id: 'work', name: 'Projects' },
     { id: 'skills', name: 'Skills' },
     { id: 'experience', name: 'Experience' },
@@ -153,7 +151,6 @@ const PortfolioHome = () => {
   const [showLabel, setShowLabel] = useState(false);
   const [sectionOffsets, setSectionOffsets] = useState({
     hero: 0,
-    about: 20,
     work: 40,
     skills: 60,
     experience: 75,
@@ -176,7 +173,7 @@ const PortfolioHome = () => {
       document.documentElement.style.setProperty('--split-blend-position', `${blendPos.toFixed(2)}%`);
 
       // 3. Active Section Tracking
-      const sections = ['hero', 'about', 'work', 'skills', 'experience', 'background'];
+      const sections = ['hero', 'work', 'skills', 'experience', 'background'];
       let currentSection = 'hero';
 
       for (const sectionId of sections) {
@@ -214,7 +211,7 @@ const PortfolioHome = () => {
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       if (docHeight <= 0) return;
 
-      const sections = ['hero', 'about', 'work', 'skills', 'experience', 'background'];
+      const sections = ['hero', 'work', 'skills', 'experience', 'background'];
       const offsets = {};
       sections.forEach(id => {
         const el = document.getElementById(id);
@@ -295,9 +292,6 @@ const PortfolioHome = () => {
         
         {!isLoading && portfolioData && (
           <>
-            <ScrollDivider />
-            <About profileData={{ about: portfolioData.about }} />
-            
             <ScrollDivider />
             <Work portfolioData={{ work: portfolioData.work }} />
             

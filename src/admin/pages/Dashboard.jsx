@@ -460,7 +460,6 @@ export default function Dashboard() {
   // Sidebar link details
   const sidebarLinks = [
     { id: 'hero', label: 'Hero Section' },
-    { id: 'about', label: 'About Details' },
     { id: 'work-social', label: 'Work: Campaigns' },
     { id: 'work-print', label: 'Work: Print Editorial' },
     { id: 'work-ui', label: 'Work: UI/UX Platform' },
