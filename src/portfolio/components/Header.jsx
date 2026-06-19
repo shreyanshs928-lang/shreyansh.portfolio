@@ -1,19 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { CursorContext } from '../../context/CursorContext';
 
-export const Header = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
+export const Header = ({ floating = false }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { setMagneticElement, triggerHover, triggerDefault } = useContext(CursorContext);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const navItems = [
     { label: 'Work', href: '#work' },
@@ -22,8 +12,10 @@ export const Header = () => {
     { label: 'Contact', href: '#contact' }
   ];
 
+  const headerClass = floating ? 'header header--floating' : 'header header--embedded';
+
   return (
-    <header className={`header ${isScrolled ? 'scrolled' : ''}`} id="main-header">
+    <header className={headerClass} id="main-header">
       <div className="container header-container">
         <a
           href="#hero"

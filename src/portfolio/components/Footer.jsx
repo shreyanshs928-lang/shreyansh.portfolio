@@ -107,19 +107,6 @@ export const Footer = ({ footerData, onSecretClick }) => {
             <ul className="footer-nav">
               <li>
                 <a
-                  href="#about"
-                  className="footer-nav-link"
-                  onMouseEnter={(e) => {
-                    setMagneticElement(e.currentTarget);
-                    triggerHover('Go');
-                  }}
-                  onMouseLeave={triggerDefault}
-                >
-                  About
-                </a>
-              </li>
-              <li>
-                <a
                   href="#work"
                   className="footer-nav-link"
                   onMouseEnter={(e) => {

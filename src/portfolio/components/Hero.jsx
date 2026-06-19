@@ -190,7 +190,7 @@ export const Hero = ({ heroData, isLoading }) => {
   if (isLoading) {
     // High-fidelity inline skeleton loading layout to prevent layout shifts
     return (
-      <section id="hero" style={{ overflow: 'hidden', minHeight: '92vh', display: 'flex', alignItems: 'center', padding: '8rem 0 4rem 0' }}>
+      <section id="hero" style={{ display: 'flex', alignItems: 'center', padding: '8rem 0 4rem 0' }}>
         <div className="container hero-wrapper w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
@@ -282,7 +282,7 @@ export const Hero = ({ heroData, isLoading }) => {
   const deltaY = typeof window !== 'undefined' ? rawY - window.innerHeight / 2 : 0;
 
   return (
-    <section ref={heroRef} id="hero" style={{ overflow: 'hidden', minHeight: '92vh', display: 'flex', alignItems: 'center', padding: '8rem 0 4rem 0', position: 'relative' }} className="section-grid-overlay">
+    <section ref={heroRef} id="hero" style={{ display: 'flex', alignItems: 'center', padding: '6rem 0 4rem 0', position: 'relative' }} className="section-grid-overlay">
       {/* 3D Parallax Ambient Background System */}
       <div className="ambient-lighting-container">
         {/* Layer 1 (5% Speed): Blurred Blobs */}

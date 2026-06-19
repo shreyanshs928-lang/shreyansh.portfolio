@@ -248,32 +248,24 @@ const PortfolioHome = () => {
     navigate('/admin/dashboard');
   };
 
+  // Track whether user has scrolled past the Hero panel
+  const heroPanelRef = useRef(null);
+  const [isPastHero, setIsPastHero] = useState(false);
+
+  useEffect(() => {
+    if (!heroPanelRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsPastHero(!entry.isIntersecting);
+      },
+      { threshold: 0, rootMargin: '-90px 0px 0px 0px' }
+    );
+    observer.observe(heroPanelRef.current);
+    return () => observer.disconnect();
+  }, [isLoading, portfolioData]);
+
   return (
     <>
-      {/* 1. Base Noise Film Grain Filter Overlay */}
-      <div className="noise-overlay" />
-
-      {/* 2. GPU-animated background radial gradient mesh canvas */}
-      <div className="bg-mesh-canvas-animated" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: -1 }} />
-
-      {/* Organic SVG Filter for Blobs */}
-      <svg style={{ position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }} aria-hidden="true">
-        <filter id="organic-blob-filter">
-          <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise">
-            <animate attributeName="baseFrequency" values="0.012;0.018;0.012" dur="30s" repeatCount="indefinite" />
-          </feTurbulence>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="80" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-      </svg>
-
-      {/* Edge-anchored Ambient Blobs */}
-      <div className="ambient-blobs-container">
-        <div className="organic-blob blob-a" />
-        <div className="organic-blob blob-b" />
-        <div className="organic-blob blob-c" />
-        <div className="organic-blob blob-d" />
-      </div>
-
       {/* Primary vertical scroll-linked progress tracker */}
       {!isLoading && portfolioData && (
         <ScrollProgressBar 
@@ -283,34 +275,65 @@ const PortfolioHome = () => {
         />
       )}
 
-      {/* 3. Sticky header nav */}
-      <Header />
+      {/* Floating header — visible after scrolling past hero */}
+      {isPastHero && <Header floating={true} />}
 
-      {/* 4. Modular Visual Sections mapped to Firestore data */}
-      <main>
-        <Hero heroData={portfolioData?.hero} isLoading={isLoading} />
-        
+      <div className="page-panels-wrapper">
+        {/* PANEL 1: Hero (Dark) */}
+        <div ref={heroPanelRef} className="page-panel page-panel--dark page-panel--hero">
+          {/* Organic SVG Filter for Blobs */}
+          <svg style={{ position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }} aria-hidden="true">
+            <filter id="organic-blob-filter">
+              <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise">
+                <animate attributeName="baseFrequency" values="0.012;0.018;0.012" dur="30s" repeatCount="indefinite" />
+              </feTurbulence>
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="80" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+          </svg>
+
+          {/* Edge-anchored Ambient Blobs */}
+          <div className="ambient-blobs-container">
+            <div className="organic-blob blob-a" />
+            <div className="organic-blob blob-b" />
+            <div className="organic-blob blob-c" />
+            <div className="organic-blob blob-d" />
+          </div>
+
+          {/* Embedded header inside hero panel */}
+          <Header floating={false} />
+
+          <Hero heroData={portfolioData?.hero} isLoading={isLoading} />
+        </div>
+
         {!isLoading && portfolioData && (
           <>
-            <ScrollDivider />
-            <Work portfolioData={{ work: portfolioData.work }} />
-            
-            <ScrollDivider />
-            <Skills skillsData={portfolioData.skills} />
-            
-            <ScrollDivider />
-            <Experience experienceData={portfolioData.experience} />
-            
-            <ScrollDivider />
-            <Background backgroundData={portfolioData.background} />
+            {/* PANEL 2: Work (Dark) */}
+            <div className="page-panel page-panel--dark">
+              <Work portfolioData={{ work: portfolioData.work }} />
+            </div>
+
+            {/* PANEL 3: Skills (Light) */}
+            <div className="page-panel page-panel--light">
+              <Skills skillsData={portfolioData.skills} />
+            </div>
+
+            {/* PANEL 4: Experience (Dark) */}
+            <div className="page-panel page-panel--dark">
+              <Experience experienceData={portfolioData.experience} />
+            </div>
+
+            {/* PANEL 5: Background (Light) */}
+            <div className="page-panel page-panel--light">
+              <Background backgroundData={portfolioData.background} />
+            </div>
+
+            {/* FOOTER (Dark) */}
+            <div className="page-panel page-panel--dark page-panel--footer">
+              <Footer footerData={portfolioData.footer} onSecretClick={handleAdminRedirect} />
+            </div>
           </>
         )}
-      </main>
-
-      {/* 5. Footer with secret admin route trigger */}
-      {!isLoading && portfolioData && (
-        <Footer footerData={portfolioData.footer} onSecretClick={handleAdminRedirect} />
-      )}
+      </div>
     </>
   );
 };
