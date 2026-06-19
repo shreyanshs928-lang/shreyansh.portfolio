@@ -129,6 +129,19 @@ export const Hero = ({ heroData, isLoading }) => {
     if (!isSupported || !heroRef.current) return;
 
     let animId;
+    let cachedOffsetTop = 0;
+    let cachedOffsetLeft = 0;
+
+    const updateOffsets = () => {
+      if (heroRef.current) {
+        const rect = heroRef.current.getBoundingClientRect();
+        cachedOffsetTop = rect.top + window.scrollY;
+        cachedOffsetLeft = rect.left + window.scrollX;
+      }
+    };
+
+    updateOffsets();
+    window.addEventListener('resize', updateOffsets);
 
     const updateSpotlight = () => {
       if (!spotlightRef.current || !heroRef.current) {
@@ -136,9 +149,10 @@ export const Hero = ({ heroData, isLoading }) => {
         return;
       }
 
-      const rect = heroRef.current.getBoundingClientRect();
-      const targetX = mouseCoords.current.rawX - rect.left;
-      const targetY = mouseCoords.current.rawY - rect.top;
+      // Viewport-relative offset calculated using cached absolute coordinates and scroll values
+      // This completely avoids getBoundingClientRect() inside the frame loop, eliminating layout thrashing
+      const targetX = mouseCoords.current.rawX - (cachedOffsetLeft - window.scrollX);
+      const targetY = mouseCoords.current.rawY - (cachedOffsetTop - window.scrollY);
 
       // Smooth lerp (12% catch-up factor)
       spotlightPos.current.x += (targetX - spotlightPos.current.x) * 0.12;
@@ -159,7 +173,10 @@ export const Hero = ({ heroData, isLoading }) => {
     };
 
     animId = requestAnimationFrame(updateSpotlight);
-    return () => cancelAnimationFrame(animId);
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', updateOffsets);
+    };
   }, [isSupported]);
 
   const handleCardMouseMove = (e) => {

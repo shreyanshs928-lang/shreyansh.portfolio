@@ -1562,7 +1562,6 @@ section {
   opacity: 0.12;
   filter: blur(130px);
   will-change: transform;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ambient-blob-1 {
@@ -1600,7 +1599,6 @@ section {
   background-size: 60px 60px;
   background-position: center center;
   will-change: transform;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Layer 3: Spotlight Layer */
@@ -1613,7 +1611,6 @@ section {
   pointer-events: none;
   z-index: 2;
   will-change: transform;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ambient-spotlight {
@@ -1781,7 +1778,6 @@ section {
   background: linear-gradient(to bottom, #8B5CF6, #F43F5E);
   clip-path: inset(0 0 calc(100% - var(--scroll-progress, 0) * 1%) 0);
   box-shadow: 0 0 8px 2px rgba(139, 92, 246, 0.5);
-  transition: clip-path 0.1s linear;
 }
 
 .scroll-progress-tip {
@@ -1794,7 +1790,6 @@ section {
   box-shadow: 0 0 10px 3px rgba(244, 63, 94, 0.8), 0 0 4px 1px #ffffff;
   top: calc(var(--scroll-progress, 0) * 1vh);
   transform: translateY(-50%);
-  transition: top 0.1s linear;
   z-index: 5;
 }
 

@@ -186,7 +186,7 @@ const PortfolioHome = () => {
         }
       }
 
-      setActiveSection(currentSection);
+      setActiveSection(prev => prev !== currentSection ? currentSection : prev);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
