@@ -20,41 +20,34 @@ export const MousePositionProvider = ({ children }) => {
       return;
     }
 
-    let hoverQuery = null;
-    let motionQuery = null;
+    let pointerQuery = null;
     try {
-      hoverQuery = window.matchMedia('(hover: hover)');
-      motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      pointerQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
     } catch (e) {
       console.warn('matchMedia check failed in MousePositionContext:', e);
     }
 
     const checkSupport = () => {
-      const hoverMatches = hoverQuery ? hoverQuery.matches : false;
-      const motionMatches = motionQuery ? motionQuery.matches : false;
-      setIsSupported(hoverMatches && !motionMatches);
+      const matches = pointerQuery ? pointerQuery.matches : false;
+      setIsSupported(matches);
     };
 
     checkSupport();
 
-    if (hoverQuery && motionQuery) {
-      if (hoverQuery.addEventListener) {
-        hoverQuery.addEventListener('change', checkSupport);
-        motionQuery.addEventListener('change', checkSupport);
-      } else if (hoverQuery.addListener) {
-        hoverQuery.addListener(checkSupport);
-        motionQuery.addListener(checkSupport);
+    if (pointerQuery) {
+      if (pointerQuery.addEventListener) {
+        pointerQuery.addEventListener('change', checkSupport);
+      } else if (pointerQuery.addListener) {
+        pointerQuery.addListener(checkSupport);
       }
     }
 
     return () => {
-      if (hoverQuery && motionQuery) {
-        if (hoverQuery.removeEventListener) {
-          hoverQuery.removeEventListener('change', checkSupport);
-          motionQuery.removeEventListener('change', checkSupport);
-        } else if (hoverQuery.removeListener) {
-          hoverQuery.removeListener(checkSupport);
-          motionQuery.removeListener(checkSupport);
+      if (pointerQuery) {
+        if (pointerQuery.removeEventListener) {
+          pointerQuery.removeEventListener('change', checkSupport);
+        } else if (pointerQuery.removeListener) {
+          pointerQuery.removeListener(checkSupport);
         }
       }
     };

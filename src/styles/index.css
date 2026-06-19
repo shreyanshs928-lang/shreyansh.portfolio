@@ -164,16 +164,16 @@ section {
 }
 
 .btn-primary {
-  background-color: var(--accent);
+  background-color: var(--accent-amber);
   color: var(--text-white);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--accent-amber);
 }
 
 .btn-primary:hover {
-  background-color: var(--accent-hover);
-  border-color: var(--accent-hover);
+  background-color: #ff9d66;
+  border-color: #ff9d66;
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 10px 20px rgba(255, 138, 76, 0.2);
 }
 
 .btn-secondary {
@@ -190,18 +190,19 @@ section {
 }
 
 .btn-gradient {
-  background: var(--accent-gradient);
+  background: var(--accent-amber);
   color: var(--text-white);
   border: none;
   border-radius: 9999px;
   padding: 0.75rem 2rem;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25);
+  box-shadow: 0 4px 15px rgba(255, 138, 76, 0.25);
   transition: var(--transition-fast);
 }
 
 .btn-gradient:hover {
+  background-color: #ff9d66;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.45);
+  box-shadow: 0 8px 25px rgba(255, 138, 76, 0.45);
   opacity: 0.95;
   color: var(--text-white);
 }
@@ -1622,7 +1623,8 @@ section {
   border-radius: 50%;
   pointer-events: none;
   background: radial-gradient(circle, var(--spotlight-color, rgba(139, 92, 246, 0.12)) 0%, transparent 70%);
-  will-change: transform;
+  will-change: transform, opacity, scale;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), scale 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 
@@ -2143,12 +2145,16 @@ section {
     #120A0E calc(var(--split-blend-position, 50%) + 7.5%)
   );
   color: var(--text-primary);
+  z-index: 1;
+  --glow-color: rgba(139, 92, 246, 0.15);
 }
 
 /* Light panel — clean editorial feel */
 .page-panel--light {
   background: #FFFFFF;
   color: #1A1A2E;
+  z-index: 2;
+  --glow-color: rgba(109, 40, 217, 0.12);
 }
 
 /* Hero panel — flush with viewport top */
@@ -2324,3 +2330,90 @@ section {
 .page-panel--footer .footer {
   padding-bottom: 3rem;
 }
+
+
+/* =============================================================
+   DIRECTIONAL 3D HOVER SYSTEM
+   ============================================================= */
+.directional-hover-element {
+  transform: perspective(1000px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  box-shadow: 
+    var(--shadow-x, 0px) var(--shadow-y, 0px) 50px rgba(0, 0, 0, 0.45),
+    calc(var(--shadow-x, 0px) * -0.4) calc(var(--shadow-y, 0px) * -0.4) 20px var(--glow-color, rgba(139, 92, 246, 0.12));
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+}
+
+.directional-hover-element.is-tracking {
+  transition: none !important;
+}
+
+/* =============================================================
+   LIGHT PANEL EDITORIAL SYSTEM
+   ============================================================= */
+.page-panel--light {
+  background: #F4F3F0 !important; /* warm off-white */
+  color: #1A1A1A !important;
+}
+
+.page-panel--light .section-eyebrow {
+  color: #6D28D9 !important; /* deep violet */
+}
+
+.page-panel--light .section-title,
+.page-panel--light .section-title-3d {
+  color: #1A1A1A !important;
+  text-shadow: none !important;
+}
+
+.page-panel--light p,
+.page-panel--light .section-desc,
+.page-panel--light .bg-note-text {
+  color: #5C5C5C !important;
+}
+
+/* Timelines and blocks on light panel */
+.page-panel--light .edu-block {
+  background: #EAE9E4 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.page-panel--light .edu-title,
+.page-panel--light .edu-inst,
+.page-panel--light .edu-year {
+  color: #1A1A1A !important;
+}
+
+.page-panel--light .achievement-text {
+  color: #1A1A1A !important;
+}
+
+.page-panel--light .achievement-icon {
+  color: #6D28D9 !important;
+}
+
+/* Glass cards and interactive buttons inside light panels */
+.page-panel--light .glass-card {
+  background: rgba(26, 26, 26, 0.03) !important;
+  border-color: rgba(26, 26, 26, 0.06) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+}
+
+.page-panel--light a:not(.btn-gradient):not(.btn-primary):not(.btn-secondary):not(.social-icon-btn):not(.logo),
+.page-panel--light .accent-link {
+  color: #6D28D9 !important; /* single deep violet tone */
+}
+
+.page-panel--light a:not(.btn-gradient):not(.btn-primary):not(.btn-secondary):not(.social-icon-btn):not(.logo):hover,
+.page-panel--light .accent-link:hover {
+  color: #4C1D95 !important;
+}
+
+.page-panel--light .card-tag {
+  color: #6D28D9 !important;
+  background: rgba(109, 40, 217, 0.07) !important;
+  border-color: rgba(109, 40, 217, 0.12) !important;
+}
+

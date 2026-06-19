@@ -92,7 +92,12 @@ const AnimatedStatCard = ({ value, label, delay }) => {
 
 export const Hero = ({ heroData, isLoading }) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const { setMagneticElement, triggerHover, triggerDefault } = useContext(CursorContext);
+  const { setMagneticElement, triggerHover, triggerDefault, cursorType } = useContext(CursorContext);
+  const cursorTypeRef = useRef(cursorType);
+
+  useEffect(() => {
+    cursorTypeRef.current = cursorType;
+  }, [cursorType]);
 
   useEffect(() => {
     if (!isLoading) {
@@ -118,6 +123,30 @@ export const Hero = ({ heroData, isLoading }) => {
 
   const { x, y, rawX, rawY, isSupported } = useMousePosition();
   const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0, glowX: 0, glowY: 0 });
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    try {
+      const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      setPrefersReducedMotion(motionQuery.matches);
+      
+      const handleChange = (e) => setPrefersReducedMotion(e.matches);
+      if (motionQuery.addEventListener) {
+        motionQuery.addEventListener('change', handleChange);
+      } else {
+        motionQuery.addListener(handleChange);
+      }
+      return () => {
+        if (motionQuery.removeEventListener) {
+          motionQuery.removeEventListener('change', handleChange);
+        } else {
+          motionQuery.removeListener(handleChange);
+        }
+      };
+    } catch (e) {
+      console.warn(e);
+    }
+  }, []);
 
   // Sync latest coordinates to ref to prevent animation frame teardowns
   useEffect(() => {
@@ -149,25 +178,39 @@ export const Hero = ({ heroData, isLoading }) => {
         return;
       }
 
+      const isHover = cursorTypeRef.current === 'hover';
       // Viewport-relative offset calculated using cached absolute coordinates and scroll values
       // This completely avoids getBoundingClientRect() inside the frame loop, eliminating layout thrashing
       const targetX = mouseCoords.current.rawX - (cachedOffsetLeft - window.scrollX);
       const targetY = mouseCoords.current.rawY - (cachedOffsetTop - window.scrollY);
 
-      // Smooth lerp (12% catch-up factor)
-      spotlightPos.current.x += (targetX - spotlightPos.current.x) * 0.12;
-      spotlightPos.current.y += (targetY - spotlightPos.current.y) * 0.12;
+      // Smooth lerp (12% catch-up factor, or 100% for reduced motion)
+      const lerpFactor = prefersReducedMotion ? 1.0 : 0.12;
+      spotlightPos.current.x += (targetX - spotlightPos.current.x) * lerpFactor;
+      spotlightPos.current.y += (targetY - spotlightPos.current.y) * lerpFactor;
 
       const spotlightEl = spotlightRef.current;
       spotlightEl.style.transform = `translate3d(${spotlightPos.current.x}px, ${spotlightPos.current.y}px, 0)`;
 
-      // Dynamic color interpolation: Violet (139, 92, 246) -> Amber (255, 138, 76)
+      // Dynamic color interpolation: Violet -> Amber
       const t = (mouseCoords.current.x + 1) / 2;
-      const r = Math.round(139 + (255 - 139) * t);
-      const g = Math.round(92 + (138 - 92) * t);
-      const b = Math.round(246 + (76 - 246) * t);
+      const rStart = isHover ? 168 : 139;
+      const rEnd = isHover ? 249 : 255;
+      const gStart = isHover ? 85 : 92;
+      const gEnd = isHover ? 115 : 138;
+      const bStart = isHover ? 247 : 246;
+      const bEnd = isHover ? 22 : 76;
 
-      spotlightEl.style.setProperty('--spotlight-color', `rgba(${r}, ${g}, ${b}, 0.12)`);
+      const r = Math.round(rStart + (rEnd - rStart) * t);
+      const g = Math.round(gStart + (gEnd - gStart) * t);
+      const b = Math.round(bStart + (bEnd - bStart) * t);
+
+      const opacity = isHover ? 0.38 : 0.13;
+      const scale = prefersReducedMotion ? 1.0 : (isHover ? 1.2 : 1.0);
+
+      spotlightEl.style.setProperty('--spotlight-color', `rgba(${r}, ${g}, ${b}, 1)`);
+      spotlightEl.style.opacity = opacity;
+      spotlightEl.style.scale = scale;
 
       animId = requestAnimationFrame(updateSpotlight);
     };
@@ -177,10 +220,10 @@ export const Hero = ({ heroData, isLoading }) => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', updateOffsets);
     };
-  }, [isSupported]);
+  }, [isSupported, prefersReducedMotion]);
 
   const handleCardMouseMove = (e) => {
-    if (!isSupported || !portraitRef.current) return;
+    if (!isSupported || prefersReducedMotion || !portraitRef.current) return;
 
     const rect = portraitRef.current.getBoundingClientRect();
     const cardX = e.clientX - rect.left;
@@ -306,7 +349,7 @@ export const Hero = ({ heroData, isLoading }) => {
         <div 
           className="ambient-blob-layer"
           style={{
-            transform: isSupported ? `translate3d(${deltaX * 0.05}px, ${deltaY * 0.05}px, 0)` : 'none'
+            transform: (isSupported && !prefersReducedMotion) ? `translate3d(${deltaX * 0.05}px, ${deltaY * 0.05}px, 0)` : 'none'
           }}
         >
           <div className="ambient-blob-1" />
@@ -317,7 +360,7 @@ export const Hero = ({ heroData, isLoading }) => {
         <div 
           className="ambient-grid-layer"
           style={{
-            transform: isSupported ? `translate3d(${deltaX * 0.12}px, ${deltaY * 0.12}px, 0)` : 'none'
+            transform: (isSupported && !prefersReducedMotion) ? `translate3d(${deltaX * 0.12}px, ${deltaY * 0.12}px, 0)` : 'none'
           }}
         />
 
@@ -325,7 +368,7 @@ export const Hero = ({ heroData, isLoading }) => {
         <div 
           className="ambient-spotlight-layer"
           style={{
-            transform: isSupported ? `translate3d(${deltaX * 0.25}px, ${deltaY * 0.25}px, 0)` : 'none'
+            transform: (isSupported && !prefersReducedMotion) ? `translate3d(${deltaX * 0.25}px, ${deltaY * 0.25}px, 0)` : 'none'
           }}
         >
           <div ref={spotlightRef} className="ambient-spotlight" />
@@ -507,7 +550,7 @@ export const Hero = ({ heroData, isLoading }) => {
               onMouseLeave={handleCardMouseLeave}
               className="relative w-full max-w-[320px] sm:max-w-[340px]"
               style={{
-                transform: isSupported ? `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)` : 'none',
+                transform: (isSupported && !prefersReducedMotion) ? `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)` : 'none',
                 transition: 'transform 0.3s ease-out'
               }}
             >
@@ -515,7 +558,7 @@ export const Hero = ({ heroData, isLoading }) => {
               <div 
                 className="ambient-glow-pulse"
                 style={{
-                  transform: isSupported ? `translate3d(${tilt.glowX}px, ${tilt.glowY}px, 0)` : 'none',
+                  transform: (isSupported && !prefersReducedMotion) ? `translate3d(${tilt.glowX}px, ${tilt.glowY}px, 0)` : 'none',
                   transition: 'transform 0.3s ease-out'
                 }}
               ></div>

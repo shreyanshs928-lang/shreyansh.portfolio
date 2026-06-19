@@ -159,7 +159,18 @@ export const defaultPortfolioData = {
     behanceUrl: 'https://behance.net',
     email: 'shreyansh@example.com',
     copyright: '© 2026 Shreyansh Singh · Made with intention'
-  }
+  },
+  workCarousel: [
+    { id: 'carousel-1', category: 'UI/UX Design', title: 'Aether Flight Control', description: 'Real-time telemetry and rocket flight control dashboard designed for the IIT Bombay Rocket Team.', thumbnailImage: 'svg:ui-2', link: 'https://behance.net', activeByDefault: true },
+    { id: 'carousel-2', category: 'Brand Identity', title: 'Alumination Identity', description: 'Complete brand guidelines, logo construction grids, and apparel designs for alumni relations.', thumbnailImage: 'svg:branding-1', link: 'https://behance.net', activeByDefault: false },
+    { id: 'carousel-3', category: 'Print & Layout', title: 'Aether Propulsion Journal', description: 'Modern typographic layout design and scientific typesetting for the annual research zine.', thumbnailImage: 'svg:print-1', link: 'https://behance.net', activeByDefault: false }
+  ],
+  featuredWorksTable: [
+    { id: 'table-1', title: "Mood Indigo '25 Reveal Campaign", category: 'Social Media', date: '2025-12', link: 'https://behance.net' },
+    { id: 'table-2', title: 'E-Summit Speaker Lineup Design', category: 'Digital Campaign', date: '2025-10', link: 'https://behance.net' },
+    { id: 'table-3', title: 'Inter-IIT Athletics Campaign Graphics', category: 'Social Media', date: '2025-09', link: 'https://behance.net' },
+    { id: 'table-4', title: 'Mood Indigo Annual Festival Guide', category: 'Print Zine', date: '2025-01', link: 'https://behance.net' }
+  ]
 };
 
 // --- DATA SEEDING HELPER ---
@@ -229,6 +240,20 @@ export const seedDefaultData = async () => {
     lastEdited: serverTimestamp()
   });
 
+  // 7. Work Carousel
+  const carouselRef = doc(db, 'portfolio', 'workCarousel');
+  batch.set(carouselRef, {
+    items: defaultPortfolioData.workCarousel,
+    lastEdited: serverTimestamp()
+  });
+
+  // 8. Featured Works Table
+  const tableRef = doc(db, 'portfolio', 'featuredWorksTable');
+  batch.set(tableRef, {
+    items: defaultPortfolioData.featuredWorksTable,
+    lastEdited: serverTimestamp()
+  });
+
   await batch.commit();
 
   // 7. Work subcollections (run sequentially to avoid overloading)
@@ -275,12 +300,14 @@ export const fetchPortfolioData = async () => {
     return fetchPortfolioData();
   }
 
-  const [aboutSnap, expSnap, skillsSnap, bgSnap, footerSnap] = await Promise.all([
+  const [aboutSnap, expSnap, skillsSnap, bgSnap, footerSnap, carouselSnap, tableSnap] = await Promise.all([
     getDoc(doc(db, 'portfolio', 'about')),
     getDoc(doc(db, 'portfolio', 'experience')),
     getDoc(doc(db, 'portfolio', 'skills')),
     getDoc(doc(db, 'portfolio', 'background')),
-    getDoc(doc(db, 'portfolio', 'footer'))
+    getDoc(doc(db, 'portfolio', 'footer')),
+    getDoc(doc(db, 'portfolio', 'workCarousel')),
+    getDoc(doc(db, 'portfolio', 'featuredWorksTable'))
   ]);
 
   // Fetch all 6 work subcollections
@@ -299,6 +326,12 @@ export const fetchPortfolioData = async () => {
     })
   );
 
+  const carouselItems = carouselSnap.exists() ? carouselSnap.data()?.items || [] : [];
+  carouselItems.lastEdited = carouselSnap.exists() ? carouselSnap.data()?.lastEdited : null;
+
+  const tableItems = tableSnap.exists() ? tableSnap.data()?.items || [] : [];
+  tableItems.lastEdited = tableSnap.exists() ? tableSnap.data()?.lastEdited : null;
+
   return {
     hero: heroSnap.data(),
     about: aboutSnap.data(),
@@ -306,7 +339,9 @@ export const fetchPortfolioData = async () => {
     skills: skillsSnap.data(),
     background: bgSnap.data(),
     footer: footerSnap.data(),
-    work: workData
+    work: workData,
+    workCarousel: carouselItems,
+    featuredWorksTable: tableItems
   };
 };
 
@@ -383,4 +418,20 @@ export const saveWorkProjectOrder = async (category, projects) => {
     });
   });
   await batch.commit();
+};
+
+export const saveWorkCarousel = async (items) => {
+  const ref = doc(db, 'portfolio', 'workCarousel');
+  await setDoc(ref, {
+    items,
+    lastEdited: serverTimestamp()
+  });
+};
+
+export const saveFeaturedWorksTable = async (items) => {
+  const ref = doc(db, 'portfolio', 'featuredWorksTable');
+  await setDoc(ref, {
+    items,
+    lastEdited: serverTimestamp()
+  });
 };

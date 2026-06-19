@@ -13,6 +13,8 @@ import {
   saveWorkProject,
   deleteWorkProject,
   saveWorkProjectOrder,
+  saveWorkCarousel,
+  saveFeaturedWorksTable,
   seedDefaultData
 } from '../../firebase/firestore';
 import { deleteImage } from '../../firebase/storage';
@@ -69,6 +71,8 @@ export default function Dashboard() {
   const [skillsForm, setSkillsForm] = useState(null);
   const [bgForm, setBgForm] = useState(null);
   const [footerForm, setFooterForm] = useState(null);
+  const [carouselForm, setCarouselForm] = useState(null);
+  const [tableForm, setTableForm] = useState(null);
 
   // 1. Initial Data Load
   const loadData = async () => {
@@ -190,6 +194,26 @@ export default function Dashboard() {
       const cat = activeTab.replace('work-', '');
       setWorkForm(payload.work[cat] || []);
     }
+
+    // Work Carousel
+    setCarouselForm((payload.workCarousel || []).map((item, idx) => ({
+      id: item.id || `carousel-${idx}-${Date.now()}`,
+      category: item.category || '',
+      title: item.title || '',
+      description: item.description || '',
+      thumbnailImage: item.thumbnailImage || '',
+      link: item.link || '',
+      activeByDefault: !!item.activeByDefault
+    })));
+
+    // Featured Works Table
+    setTableForm((payload.featuredWorksTable || []).map((item, idx) => ({
+      id: item.id || `table-${idx}-${Date.now()}`,
+      title: item.title || '',
+      category: item.category || '',
+      date: item.date || '',
+      link: item.link || ''
+    })));
   };
 
   // 3. Sensor setups for DnD-Kit reordering
@@ -219,6 +243,19 @@ export default function Dashboard() {
     if (!over || active.id === over.id) return;
 
     setExpForm((prev) => {
+      const oldIndex = prev.findIndex((item) => item.id === active.id);
+      const newIndex = prev.findIndex((item) => item.id === over.id);
+      const reordered = arrayMove(prev, oldIndex, newIndex);
+      setHasUnsavedChanges(true);
+      return reordered;
+    });
+  };
+
+  const handleDragEndCarousel = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    setCarouselForm((prev) => {
       const oldIndex = prev.findIndex((item) => item.id === active.id);
       const newIndex = prev.findIndex((item) => item.id === over.id);
       const reordered = arrayMove(prev, oldIndex, newIndex);
@@ -321,6 +358,28 @@ export default function Dashboard() {
         await saveExperience(payload);
       } 
       
+      else if (activeTab === 'work-carousel') {
+        const payload = carouselForm.map((item) => ({
+          category: (item.category || '').trim(),
+          title: (item.title || '').trim(),
+          description: (item.description || '').trim(),
+          thumbnailImage: item.thumbnailImage || '',
+          link: (item.link || '').trim(),
+          activeByDefault: !!item.activeByDefault
+        }));
+        await saveWorkCarousel(payload);
+      }
+
+      else if (activeTab === 'work-table') {
+        const payload = tableForm.map((item) => ({
+          title: (item.title || '').trim(),
+          category: (item.category || '').trim(),
+          date: (item.date || '').trim(),
+          link: (item.link || '').trim()
+        }));
+        await saveFeaturedWorksTable(payload);
+      }
+
       else if (activeTab.startsWith('work-')) {
         const cat = activeTab.replace('work-', '');
         // Writes updated ordering indices back to Firestore documents in batch
@@ -460,14 +519,11 @@ export default function Dashboard() {
   // Sidebar link details
   const sidebarLinks = [
     { id: 'hero', label: 'Hero Section' },
-    { id: 'work-social', label: 'Work: Campaigns' },
-    { id: 'work-print', label: 'Work: Print Editorial' },
-    { id: 'work-ui', label: 'Work: UI/UX Platform' },
-    { id: 'work-reels', label: 'Work: Motion Reels' },
-    { id: 'work-video', label: 'Work: Cinematic Vlog' },
-    { id: 'work-branding', label: 'Work: Branding Identity' },
-    { id: 'experience', label: 'Experience Timeline' },
+    { id: 'about', label: 'About Section' },
+    { id: 'work-carousel', label: 'Work: Carousel' },
+    { id: 'work-table', label: 'Work: Archive Table' },
     { id: 'skills', label: 'Skills & Tools' },
+    { id: 'experience', label: 'Experience Timeline' },
     { id: 'background', label: 'Background / Creed' },
     { id: 'footer', label: 'Footer / Contact' }
   ];
@@ -535,7 +591,11 @@ export default function Dashboard() {
                 <span>{link.label}</span>
                 {link.id.startsWith('work-') && (
                   <span className="text-[9px] bg-[#27272a] text-[#71717a] px-1.5 py-0.5 rounded font-mono">
-                    {data.work[link.id.replace('work-', '')]?.length || 0}
+                    {link.id === 'work-carousel' 
+                      ? (data.workCarousel?.length || 0) 
+                      : link.id === 'work-table' 
+                        ? (data.featuredWorksTable?.length || 0)
+                        : (data.work[link.id.replace('work-', '')]?.length || 0)}
                   </span>
                 )}
               </button>
@@ -964,7 +1024,7 @@ export default function Dashboard() {
             )}
 
             {/* WORK GRID SORTABLE EDITORS */}
-            {activeTab.startsWith('work-') && workForm && (
+            {activeTab.startsWith('work-') && activeTab !== 'work-carousel' && activeTab !== 'work-table' && workForm && (
               <div className="space-y-5">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-xs text-[#a1a1aa]">
@@ -1328,6 +1388,265 @@ export default function Dashboard() {
                 </div>
               </form>
             )}
+
+            {/* WORK CAROUSEL EDITOR */}
+            {activeTab === 'work-carousel' && carouselForm && (
+              <div className="space-y-5">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-xs text-[#a1a1aa]">
+                    Drag cards to reorder the carousel. Check "Active by default" to set the initial card.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCarouselForm((prev) => [
+                        ...(prev || []),
+                        {
+                          id: `carousel-${Date.now()}`,
+                          category: 'New Category',
+                          title: 'New Project',
+                          description: 'Description of the project...',
+                          thumbnailImage: '',
+                          link: '',
+                          activeByDefault: false
+                        }
+                      ]);
+                      setHasUnsavedChanges(true);
+                    }}
+                    className="flex items-center gap-1 text-xs bg-[#4f46e5]/10 border border-[#4f46e5]/30 hover:border-[#6366f1] text-[#6366f1] px-3.5 py-2 rounded transition-colors"
+                  >
+                    <Plus size={14} />
+                    <span>Add Slide</span>
+                  </button>
+                </div>
+
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndCarousel}>
+                  <SortableContext items={carouselForm.map((item) => item.id)} strategy={verticalListSortingStrategy}>
+                    {carouselForm.map((item, index) => (
+                      <SortableItem key={item.id} id={item.id}>
+                        <div className="space-y-4 grow">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="text-[10px] font-semibold text-[#71717a] uppercase tracking-wide">Category</label>
+                              <input
+                                type="text"
+                                className="w-full bg-[#09090b] border border-[#27272a] rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#6366f1]"
+                                value={item.category}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setCarouselForm(carouselForm.map((c) => c.id === item.id ? { ...c, category: val } : c));
+                                  setHasUnsavedChanges(true);
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] font-semibold text-[#71717a] uppercase tracking-wide">Title</label>
+                              <input
+                                type="text"
+                                className="w-full bg-[#09090b] border border-[#27272a] rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#6366f1]"
+                                value={item.title}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setCarouselForm(carouselForm.map((c) => c.id === item.id ? { ...c, title: val } : c));
+                                  setHasUnsavedChanges(true);
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-semibold text-[#71717a] uppercase tracking-wide">Description</label>
+                            <textarea
+                              className="w-full bg-[#09090b] border border-[#27272a] rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#6366f1] min-h-[60px]"
+                              value={item.description}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setCarouselForm(carouselForm.map((c) => c.id === item.id ? { ...c, description: val } : c));
+                                setHasUnsavedChanges(true);
+                              }}
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="text-[10px] font-semibold text-[#71717a] uppercase tracking-wide">Project Link</label>
+                              <input
+                                type="text"
+                                className="w-full bg-[#09090b] border border-[#27272a] rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#6366f1]"
+                                value={item.link}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setCarouselForm(carouselForm.map((c) => c.id === item.id ? { ...c, link: val } : c));
+                                  setHasUnsavedChanges(true);
+                                }}
+                              />
+                            </div>
+                            <div className="flex items-center gap-2 pt-4">
+                              <input
+                                type="checkbox"
+                                id={`default-${item.id}`}
+                                className="rounded bg-[#09090b] border border-[#27272a] text-[#6366f1] focus:ring-0"
+                                checked={item.activeByDefault}
+                                onChange={(e) => {
+                                  const checked = e.target.checked;
+                                  setCarouselForm(carouselForm.map((c) => ({
+                                    ...c,
+                                    activeByDefault: c.id === item.id ? checked : (checked ? false : c.activeByDefault)
+                                  })));
+                                  setHasUnsavedChanges(true);
+                                }}
+                              />
+                              <label htmlFor={`default-${item.id}`} className="text-xs font-semibold text-[#a1a1aa] cursor-pointer">
+                                Active by default (Featured)
+                              </label>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-semibold text-[#71717a] uppercase tracking-wide">Thumbnail Image</label>
+                            <ImageUploader
+                              section="workCarousel"
+                              value={item.thumbnailImage}
+                              onChange={(url) => {
+                                setCarouselForm(carouselForm.map((c) => c.id === item.id ? { ...c, thumbnailImage: url } : c));
+                                setHasUnsavedChanges(true);
+                              }}
+                              placeholder="svg:ui-2"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="shrink-0 flex items-center ml-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (window.confirm('Delete this carousel slide?')) {
+                                setCarouselForm(carouselForm.filter((c) => c.id !== item.id));
+                                setHasUnsavedChanges(true);
+                              }
+                            }}
+                            className="w-8 h-8 rounded border border-red-900/20 text-red-400 hover:bg-red-950/20 flex items-center justify-center transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </SortableItem>
+                    ))}
+                  </SortableContext>
+                </DndContext>
+              </div>
+            )}
+
+            {/* FEATURED WORKS TABLE EDITOR */}
+            {activeTab === 'work-table' && tableForm && (
+              <div className="space-y-5">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-xs text-[#a1a1aa]">
+                    Manage project entries for the Archive Directory table. Items are automatically sorted by date on the website.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTableForm((prev) => [
+                        ...(prev || []),
+                        {
+                          id: `table-${Date.now()}`,
+                          title: 'New Project Entry',
+                          category: 'Branding',
+                          date: new Date().toISOString().substring(0, 7), // YYYY-MM
+                          link: ''
+                        }
+                      ]);
+                      setHasUnsavedChanges(true);
+                    }}
+                    className="flex items-center gap-1 text-xs bg-[#4f46e5]/10 border border-[#4f46e5]/30 hover:border-[#6366f1] text-[#6366f1] px-3.5 py-2 rounded transition-colors"
+                  >
+                    <Plus size={14} />
+                    <span>Add Table Row</span>
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  {[...tableForm].sort((a, b) => new Date(b.date || '') - new Date(a.date || '')).map((item) => (
+                    <div key={item.id} className="flex gap-4 p-4 rounded-lg bg-[#18181b]/30 border border-[#27272a] items-start">
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 grow">
+                        <div>
+                          <label className="text-[10px] font-semibold text-[#71717a] uppercase tracking-wide">Project Title</label>
+                          <input
+                            type="text"
+                            required
+                            className="w-full bg-[#09090b] border border-[#27272a] rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#6366f1]"
+                            value={item.title}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setTableForm(tableForm.map((t) => t.id === item.id ? { ...t, title: val } : t));
+                              setHasUnsavedChanges(true);
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-[#71717a] uppercase tracking-wide">Category</label>
+                          <input
+                            type="text"
+                            required
+                            className="w-full bg-[#09090b] border border-[#27272a] rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#6366f1]"
+                            value={item.category}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setTableForm(tableForm.map((t) => t.id === item.id ? { ...t, category: val } : t));
+                              setHasUnsavedChanges(true);
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-[#71717a] uppercase tracking-wide">Date (YYYY-MM)</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="YYYY-MM"
+                            className="w-full bg-[#09090b] border border-[#27272a] rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#6366f1]"
+                            value={item.date}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setTableForm(tableForm.map((t) => t.id === item.id ? { ...t, date: val } : t));
+                              setHasUnsavedChanges(true);
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-[#71717a] uppercase tracking-wide">Link URL</label>
+                          <input
+                            type="text"
+                            className="w-full bg-[#09090b] border border-[#27272a] rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#6366f1]"
+                            value={item.link}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setTableForm(tableForm.map((t) => t.id === item.id ? { ...t, link: val } : t));
+                              setHasUnsavedChanges(true);
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="shrink-0 flex items-center pt-4">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm('Delete this table row?')) {
+                              setTableForm(tableForm.filter((t) => t.id !== item.id));
+                              setHasUnsavedChanges(true);
+                            }
+                          }}
+                          className="w-8 h-8 rounded border border-red-900/20 text-red-400 hover:bg-red-950/20 flex items-center justify-center transition-colors"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Save Status Notifications Overlay */}
@@ -1346,7 +1665,7 @@ export default function Dashboard() {
       </div>
 
       {/* Modal dialog for adding/editing work cards */}
-      {activeTab.startsWith('work-') && (
+      {activeTab.startsWith('work-') && activeTab !== 'work-carousel' && activeTab !== 'work-table' && (
         <ProjectModal
           isOpen={isModalOpen}
           onClose={() => {

@@ -3,10 +3,12 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-route
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CursorProvider } from './context/CursorContext';
 import { MousePositionProvider } from './context/MousePositionContext';
-import { Cursor } from './components/Cursor';
+import { Cursor, Spotlight } from './components/Cursor';
 import { Header } from './portfolio/components/Header';
 import { Hero } from './portfolio/components/Hero';
-import { Work } from './portfolio/components/WorkSection';
+import { About } from './portfolio/components/About';
+import { WorkCarousel } from './portfolio/components/WorkCarousel';
+import { FeaturedWorksTable } from './portfolio/components/FeaturedWorksTable';
 import { Skills } from './portfolio/components/Skills';
 import { Experience } from './portfolio/components/Experience';
 import { Background } from './portfolio/components/Background';
@@ -71,6 +73,7 @@ const PortfolioSkeleton = () => (
 const ScrollProgressBar = ({ activeSection, showLabel, sectionOffsets }) => {
   const sections = [
     { id: 'hero', name: 'Intro' },
+    { id: 'about', name: 'About' },
     { id: 'work', name: 'Projects' },
     { id: 'skills', name: 'Skills' },
     { id: 'experience', name: 'Experience' },
@@ -151,6 +154,7 @@ const PortfolioHome = () => {
   const [showLabel, setShowLabel] = useState(false);
   const [sectionOffsets, setSectionOffsets] = useState({
     hero: 0,
+    about: 20,
     work: 40,
     skills: 60,
     experience: 75,
@@ -173,7 +177,7 @@ const PortfolioHome = () => {
       document.documentElement.style.setProperty('--split-blend-position', `${blendPos.toFixed(2)}%`);
 
       // 3. Active Section Tracking
-      const sections = ['hero', 'work', 'skills', 'experience', 'background'];
+      const sections = ['hero', 'about', 'work', 'skills', 'experience', 'background'];
       let currentSection = 'hero';
 
       for (const sectionId of sections) {
@@ -211,7 +215,7 @@ const PortfolioHome = () => {
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       if (docHeight <= 0) return;
 
-      const sections = ['hero', 'work', 'skills', 'experience', 'background'];
+      const sections = ['hero', 'about', 'work', 'skills', 'experience', 'background'];
       const offsets = {};
       sections.forEach(id => {
         const el = document.getElementById(id);
@@ -307,22 +311,35 @@ const PortfolioHome = () => {
 
         {!isLoading && portfolioData && (
           <>
-            {/* PANEL 2: Work (Dark) */}
-            <div className="page-panel page-panel--dark">
-              <Work portfolioData={{ work: portfolioData.work }} />
+            {/* PANEL 2: About (Light) */}
+            <div className="page-panel page-panel--light">
+              <About profileData={portfolioData} />
             </div>
 
-            {/* PANEL 3: Skills (Light) */}
+            {/* PANEL 3: Work Carousel (Dark) */}
+            <div className="page-panel page-panel--dark">
+              <Spotlight />
+              <WorkCarousel carouselData={portfolioData.workCarousel} />
+            </div>
+
+            {/* PANEL 4: Featured Works Table (Light) */}
             <div className="page-panel page-panel--light">
+              <FeaturedWorksTable tableData={portfolioData.featuredWorksTable} />
+            </div>
+
+            {/* PANEL 5: Skills (Dark) */}
+            <div className="page-panel page-panel--dark">
+              <Spotlight />
               <Skills skillsData={portfolioData.skills} />
             </div>
 
-            {/* PANEL 4: Experience (Dark) */}
+            {/* PANEL 6: Experience (Dark) */}
             <div className="page-panel page-panel--dark">
+              <Spotlight />
               <Experience experienceData={portfolioData.experience} />
             </div>
 
-            {/* PANEL 5: Background (Light) */}
+            {/* PANEL 7: Background (Light) */}
             <div className="page-panel page-panel--light">
               <Background backgroundData={portfolioData.background} />
             </div>

@@ -1,45 +1,41 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useCallback } from 'react';
 
 export const CursorContext = createContext({
   cursorType: 'default',
   cursorLabel: '',
-  setCursorType: () => {},
-  setCursorLabel: () => {},
-  magneticElement: null,
+  hoveredElement: null,
+  triggerHover: () => {},
+  triggerDefault: () => {},
   setMagneticElement: () => {}
 });
 
 export const CursorProvider = ({ children }) => {
   const [cursorType, setCursorType] = useState('default');
   const [cursorLabel, setCursorLabel] = useState('');
-  const [magneticElement, setMagneticElement] = useState(null);
+  const [hoveredElement, setHoveredElement] = useState(null);
 
-  const triggerHover = (label = '') => {
+  const triggerHover = useCallback((label = '', element = null) => {
     setCursorType('hover');
     setCursorLabel(label);
-  };
+    setHoveredElement(element);
+  }, []);
 
-  const triggerDefault = () => {
+  const triggerDefault = useCallback(() => {
     setCursorType('default');
     setCursorLabel('');
-    setMagneticElement(null);
-  };
+    setHoveredElement(null);
+  }, []);
 
-  const triggerActive = () => {
-    setCursorType('active');
-  };
+  const setMagneticElement = useCallback(() => {}, []);
 
   return (
     <CursorContext.Provider value={{
       cursorType,
       cursorLabel,
-      setCursorType,
-      setCursorLabel,
-      magneticElement,
-      setMagneticElement,
+      hoveredElement,
       triggerHover,
       triggerDefault,
-      triggerActive
+      setMagneticElement
     }}>
       {children}
     </CursorContext.Provider>
