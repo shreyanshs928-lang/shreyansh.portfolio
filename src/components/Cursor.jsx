@@ -36,10 +36,10 @@ export const Spotlight = () => {
       className="global-ambient-spotlight"
       style={{
         position: 'fixed',
-        top: -300, // half of 600px to center it on 0,0
-        left: -300,
-        width: '600px',
-        height: '600px',
+        top: -200, // half of 400px to center it on 0,0
+        left: -200,
+        width: '400px',
+        height: '400px',
         borderRadius: '50%',
         pointerEvents: 'none',
         zIndex: 1,

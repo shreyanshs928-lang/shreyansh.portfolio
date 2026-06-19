@@ -1616,10 +1616,10 @@ section {
 
 .ambient-spotlight {
   position: absolute;
-  width: 600px;
-  height: 600px;
-  top: -300px;
-  left: -300px;
+  width: 400px;
+  height: 400px;
+  top: -200px;
+  left: -200px;
   border-radius: 50%;
   pointer-events: none;
   background: radial-gradient(circle, var(--spotlight-color, rgba(139, 92, 246, 0.12)) 0%, transparent 70%);
