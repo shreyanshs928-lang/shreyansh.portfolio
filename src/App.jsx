@@ -6,7 +6,6 @@ import { MousePositionProvider } from './context/MousePositionContext';
 import { Cursor, Spotlight } from './components/Cursor';
 import { Header } from './portfolio/components/Header';
 import { Hero } from './portfolio/components/Hero';
-import { About } from './portfolio/components/About';
 import { WorkCarousel } from './portfolio/components/WorkCarousel';
 import { FeaturedWorksTable } from './portfolio/components/FeaturedWorksTable';
 import { Skills } from './portfolio/components/Skills';
@@ -73,7 +72,6 @@ const PortfolioSkeleton = () => (
 const ScrollProgressBar = ({ activeSection, showLabel, sectionOffsets }) => {
   const sections = [
     { id: 'hero', name: 'Intro' },
-    { id: 'about', name: 'About' },
     { id: 'work', name: 'Projects' },
     { id: 'skills', name: 'Skills' },
     { id: 'experience', name: 'Experience' },
@@ -154,9 +152,8 @@ const PortfolioHome = () => {
   const [showLabel, setShowLabel] = useState(false);
   const [sectionOffsets, setSectionOffsets] = useState({
     hero: 0,
-    about: 20,
-    work: 40,
-    skills: 60,
+    work: 30,
+    skills: 55,
     experience: 75,
     background: 90
   });
@@ -177,7 +174,7 @@ const PortfolioHome = () => {
       document.documentElement.style.setProperty('--split-blend-position', `${blendPos.toFixed(2)}%`);
 
       // 3. Active Section Tracking
-      const sections = ['hero', 'about', 'work', 'skills', 'experience', 'background'];
+      const sections = ['hero', 'work', 'skills', 'experience', 'background'];
       let currentSection = 'hero';
 
       for (const sectionId of sections) {
@@ -215,7 +212,7 @@ const PortfolioHome = () => {
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       if (docHeight <= 0) return;
 
-      const sections = ['hero', 'about', 'work', 'skills', 'experience', 'background'];
+      const sections = ['hero', 'work', 'skills', 'experience', 'background'];
       const offsets = {};
       sections.forEach(id => {
         const el = document.getElementById(id);
@@ -311,12 +308,7 @@ const PortfolioHome = () => {
 
         {!isLoading && portfolioData && (
           <>
-            {/* PANEL 2: About (Light) */}
-            <div className="page-panel page-panel--light">
-              <About profileData={portfolioData} />
-            </div>
-
-            {/* PANEL 3: Work Carousel (Dark) */}
+            {/* PANEL 2: Work Carousel (Dark) */}
             <div className="page-panel page-panel--dark">
               <Spotlight />
               <WorkCarousel carouselData={portfolioData.workCarousel} />
