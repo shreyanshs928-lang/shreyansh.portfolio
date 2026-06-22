@@ -280,8 +280,11 @@ const PortfolioHome = () => {
       {isPastHero && <Header floating={true} />}
 
       <div className="page-panels-wrapper">
-        {/* PANEL 1: Hero (Dark) */}
-        <div ref={heroPanelRef} className="page-panel page-panel--dark page-panel--hero">
+        {/* PANEL 1: Hero + Work Carousel (Combined Dark Panel) */}
+        <div className="page-panel page-panel--dark page-panel--hero-combined" style={{ position: 'relative' }}>
+          {/* Target for header observer */}
+          <div ref={heroPanelRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh', pointerEvents: 'none' }} />
+
           {/* Organic SVG Filter for Blobs */}
           <svg style={{ position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }} aria-hidden="true">
             <filter id="organic-blob-filter">
@@ -304,17 +307,18 @@ const PortfolioHome = () => {
           <Header floating={false} />
 
           <Hero heroData={portfolioData?.hero} isLoading={isLoading} />
+
+          {!isLoading && portfolioData && (
+            <div className="hero-carousel-section" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', position: 'relative', paddingBottom: '2rem' }}>
+              <Spotlight />
+              <WorkCarousel carouselData={portfolioData.workCarousel} />
+            </div>
+          )}
         </div>
 
         {!isLoading && portfolioData && (
           <>
-            {/* PANEL 2: Work Carousel (Dark) */}
-            <div className="page-panel page-panel--dark">
-              <Spotlight />
-              <WorkCarousel carouselData={portfolioData.workCarousel} />
-            </div>
-
-            {/* PANEL 4: Featured Works Table (Light) */}
+            {/* PANEL 2: Featured Works Table (Light) */}
             <div className="page-panel page-panel--light">
               <FeaturedWorksTable tableData={portfolioData.featuredWorksTable} />
             </div>

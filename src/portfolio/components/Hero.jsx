@@ -121,9 +121,17 @@ export const Hero = ({ heroData, isLoading }) => {
   const spotlightPos = useRef({ x: 0, y: 0 });
   const mouseCoords = useRef({ rawX: 0, rawY: 0, x: 0 });
 
-  const { x, y, rawX, rawY, isSupported } = useMousePosition();
-  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0, glowX: 0, glowY: 0 });
+  const [isSupported, setIsSupported] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const blobLayerRef = useRef(null);
+  const gridLayerRef = useRef(null);
+  const spotlightLayerRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsSupported(window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+    }
+  }, []);
 
   useEffect(() => {
     try {
@@ -148,10 +156,22 @@ export const Hero = ({ heroData, isLoading }) => {
     }
   }, []);
 
-  // Sync latest coordinates to ref to prevent animation frame teardowns
+  // Sync latest coordinates to ref to prevent animation frame teardowns and context subscription renders
   useEffect(() => {
-    mouseCoords.current = { rawX, rawY, x };
-  }, [rawX, rawY, x]);
+    if (!isSupported) return;
+
+    const handleMouseMove = (e) => {
+      const w = window.innerWidth;
+      mouseCoords.current = {
+        rawX: e.clientX,
+        rawY: e.clientY,
+        x: w > 0 ? (e.clientX - w / 2) / (w / 2) : 0
+      };
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [isSupported]);
 
   // RequestAnimationFrame spotlight tracker loop
   useEffect(() => {
@@ -192,6 +212,22 @@ export const Hero = ({ heroData, isLoading }) => {
       const spotlightEl = spotlightRef.current;
       spotlightEl.style.transform = `translate3d(${spotlightPos.current.x}px, ${spotlightPos.current.y}px, 0)`;
 
+      // Parallax layers transform updates directly on DOM elements
+      if (!prefersReducedMotion) {
+        const deltaX = mouseCoords.current.rawX - window.innerWidth / 2;
+        const deltaY = mouseCoords.current.rawY - window.innerHeight / 2;
+
+        if (blobLayerRef.current) {
+          blobLayerRef.current.style.transform = `translate3d(${deltaX * 0.05}px, ${deltaY * 0.05}px, 0)`;
+        }
+        if (gridLayerRef.current) {
+          gridLayerRef.current.style.transform = `translate3d(${deltaX * 0.12}px, ${deltaY * 0.12}px, 0)`;
+        }
+        if (spotlightLayerRef.current) {
+          spotlightLayerRef.current.style.transform = `translate3d(${deltaX * 0.25}px, ${deltaY * 0.25}px, 0)`;
+        }
+      }
+
       // Dynamic color interpolation: Violet -> Amber
       const t = (mouseCoords.current.x + 1) / 2;
       const rStart = isHover ? 168 : 139;
@@ -225,7 +261,8 @@ export const Hero = ({ heroData, isLoading }) => {
   const handleCardMouseMove = (e) => {
     if (!isSupported || prefersReducedMotion || !portraitRef.current) return;
 
-    const rect = portraitRef.current.getBoundingClientRect();
+    const el = portraitRef.current;
+    const rect = el.getBoundingClientRect();
     const cardX = e.clientX - rect.left;
     const cardY = e.clientY - rect.top;
 
@@ -240,11 +277,23 @@ export const Hero = ({ heroData, isLoading }) => {
     const glowX = -normCardX * 12;
     const glowY = -normCardY * 12;
 
-    setTilt({ rotateX, rotateY, glowX, glowY });
+    el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    
+    const glowEl = el.querySelector('.ambient-glow-pulse');
+    if (glowEl) {
+      glowEl.style.transform = `translate3d(${glowX}px, ${glowY}px, 0)`;
+    }
   };
 
   const handleCardMouseLeave = () => {
-    setTilt({ rotateX: 0, rotateY: 0, glowX: 0, glowY: 0 });
+    if (!portraitRef.current) return;
+    const el = portraitRef.current;
+    el.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+    
+    const glowEl = el.querySelector('.ambient-glow-pulse');
+    if (glowEl) {
+      glowEl.style.transform = 'translate3d(0, 0, 0)';
+    }
   };
 
   if (isLoading) {
@@ -337,40 +386,21 @@ export const Hero = ({ heroData, isLoading }) => {
     { icon: <BehanceIcon />, url: socialLinksData.behance, label: 'Behance' },
     { icon: <Mail size={20} />, url: socialLinksData.email ? `mailto:${socialLinksData.email}` : null, label: 'Email' }
   ];
-
-  const deltaX = typeof window !== 'undefined' ? rawX - window.innerWidth / 2 : 0;
-  const deltaY = typeof window !== 'undefined' ? rawY - window.innerHeight / 2 : 0;
-
   return (
     <section ref={heroRef} id="hero" style={{ display: 'flex', alignItems: 'center', padding: '6rem 0 4rem 0', position: 'relative' }} className="section-grid-overlay">
       {/* 3D Parallax Ambient Background System */}
       <div className="ambient-lighting-container">
         {/* Layer 1 (5% Speed): Blurred Blobs */}
-        <div 
-          className="ambient-blob-layer"
-          style={{
-            transform: (isSupported && !prefersReducedMotion) ? `translate3d(${deltaX * 0.05}px, ${deltaY * 0.05}px, 0)` : 'none'
-          }}
-        >
+        <div className="ambient-blob-layer" ref={blobLayerRef}>
           <div className="ambient-blob-1" />
           <div className="ambient-blob-2" />
         </div>
 
         {/* Layer 2 (12% Speed): Geometric Grid */}
-        <div 
-          className="ambient-grid-layer"
-          style={{
-            transform: (isSupported && !prefersReducedMotion) ? `translate3d(${deltaX * 0.12}px, ${deltaY * 0.12}px, 0)` : 'none'
-          }}
-        />
+        <div className="ambient-grid-layer" ref={gridLayerRef} />
 
         {/* Layer 3 (25% Speed): Spotlight wrapper */}
-        <div 
-          className="ambient-spotlight-layer"
-          style={{
-            transform: (isSupported && !prefersReducedMotion) ? `translate3d(${deltaX * 0.25}px, ${deltaY * 0.25}px, 0)` : 'none'
-          }}
-        >
+        <div className="ambient-spotlight-layer" ref={spotlightLayerRef}>
           <div ref={spotlightRef} className="ambient-spotlight" />
         </div>
       </div>
@@ -550,7 +580,6 @@ export const Hero = ({ heroData, isLoading }) => {
               onMouseLeave={handleCardMouseLeave}
               className="relative w-full max-w-[320px] sm:max-w-[340px]"
               style={{
-                transform: (isSupported && !prefersReducedMotion) ? `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)` : 'none',
                 transition: 'transform 0.3s ease-out'
               }}
             >
@@ -558,7 +587,6 @@ export const Hero = ({ heroData, isLoading }) => {
               <div 
                 className="ambient-glow-pulse"
                 style={{
-                  transform: (isSupported && !prefersReducedMotion) ? `translate3d(${tilt.glowX}px, ${tilt.glowY}px, 0)` : 'none',
                   transition: 'transform 0.3s ease-out'
                 }}
               ></div>

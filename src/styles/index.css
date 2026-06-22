@@ -2158,7 +2158,8 @@ section {
 }
 
 /* Hero panel — flush with viewport top */
-.page-panel--hero {
+.page-panel--hero,
+.page-panel--hero-combined {
   border-radius: 0 0 32px 32px;
   min-height: 100vh;
 }
