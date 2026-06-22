@@ -185,7 +185,6 @@ export const WorkCard3D = ({ project, index, type }) => {
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [isInteractive, setIsInteractive] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const [willChange, setWillChange] = useState(false);
 
   // Schema Mapping with Fallback support for older DB fields
   const title = project.title || "";
@@ -252,7 +251,7 @@ export const WorkCard3D = ({ project, index, type }) => {
         scale: 1.04,
         y: -12,
         boxShadow: `0 24px 60px ${accentShadowColor}`,
-        transition: { duration: 0.2 }
+        transition: { duration: 0.15 }
       });
       return;
     }
@@ -269,7 +268,7 @@ export const WorkCard3D = ({ project, index, type }) => {
         scale: 1,
         y: 0,
         boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-        transition: { duration: 0.2 }
+        transition: { duration: 0.15 }
       });
       return;
     }
@@ -311,11 +310,11 @@ export const WorkCard3D = ({ project, index, type }) => {
       opacity: 1,
       boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
       transition: {
-        rotateY: { duration: 0.25, ease: [0.25, 1, 0.5, 1] },
-        opacity: { duration: 0.25, times: [0, 0.5, 1] },
-        scale: { duration: 0.2, ease: "easeOut" },
-        y: { duration: 0.2, ease: "easeOut" },
-        boxShadow: { duration: 0.2 }
+        rotateY: { duration: 0.18, ease: "easeOut" },
+        opacity: { duration: 0.18 },
+        scale: { duration: 0.15, ease: "easeOut" },
+        y: { duration: 0.15, ease: "easeOut" },
+        boxShadow: { duration: 0.18 }
       }
     },
     lifted: {
@@ -325,23 +324,23 @@ export const WorkCard3D = ({ project, index, type }) => {
       opacity: 1,
       boxShadow: "0 24px 60px rgba(0,0,0,0.55)",
       transition: {
-        scale: { duration: 0.15, ease: [0.34, 1.56, 0.64, 1] },
-        y: { duration: 0.15, ease: [0.34, 1.56, 0.64, 1] },
-        boxShadow: { duration: 0.15 }
+        scale: { duration: 0.12, ease: "easeOut" },
+        y: { duration: 0.12, ease: "easeOut" },
+        boxShadow: { duration: 0.12 }
       }
     },
     flipped: {
-      scale: [1, 1.04, 1.06, 1.04],
+      scale: 1.04,
       y: -12,
       rotateY: 180,
-      opacity: [1, 0.85, 1],
+      opacity: 1,
       boxShadow: `0 24px 60px ${accentShadowColor}`,
       transition: {
-        rotateY: { duration: 0.25, ease: [0.25, 1, 0.5, 1] },
-        opacity: { duration: 0.25, times: [0, 0.5, 1] },
+        rotateY: { duration: 0.18, ease: "easeOut" },
+        opacity: { duration: 0.18 },
         y: { duration: 0.15, ease: "easeOut" },
-        scale: { duration: 0.4, times: [0, 0.35, 0.7, 1], ease: "easeInOut" },
-        boxShadow: { delay: 0.2, duration: 0.2 }
+        scale: { duration: 0.15, ease: "easeOut" },
+        boxShadow: { duration: 0.18 }
       }
     }
   };
@@ -355,7 +354,6 @@ export const WorkCard3D = ({ project, index, type }) => {
       onBlur={handleBlur}
       onClick={handleCardClick}
       onMouseEnter={isInteractive && !isTouchDevice ? () => {
-        setWillChange(true);
         handleMouseEnter();
         triggerHover(type === 'video' || type === 'reels' ? 'Play' : 'View');
       } : undefined}
@@ -373,9 +371,8 @@ export const WorkCard3D = ({ project, index, type }) => {
         variants={variants}
         initial="rest"
         animate={controls}
-        onAnimationComplete={() => setWillChange(false)}
         style={{
-          willChange: willChange ? 'transform, box-shadow' : 'auto'
+          willChange: 'transform, box-shadow'
         }}
       >
         {/* FRONT FACE */}
