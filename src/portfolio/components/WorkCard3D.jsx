@@ -246,8 +246,8 @@ export const WorkCard3D = ({ project, index, type }) => {
 
   // Choreographed Hover Forward Sequence
   const handleMouseEnter = async () => {
+    setIsFlipped(true);
     if (prefersReducedMotion) {
-      setIsFlipped(true);
       await controls.start({
         scale: 1.04,
         y: -12,
@@ -257,19 +257,14 @@ export const WorkCard3D = ({ project, index, type }) => {
       return;
     }
 
-    setIsFlipped(true);
-    // Phase 1: Lift (0-150ms)
-    await controls.start("lifted");
-    // Phase 2: Hold (150-190ms, 40ms pause)
-    await new Promise((resolve) => setTimeout(resolve, 40));
-    // Phase 3 & 4: Rotate + Settle (190-590ms)
+    // Trigger lift and rotate concurrently
     await controls.start("flipped");
   };
 
   // Choreographed Hover Reverse Sequence
   const handleMouseLeave = async () => {
+    setIsFlipped(false);
     if (prefersReducedMotion) {
-      setIsFlipped(false);
       await controls.start({
         scale: 1,
         y: 0,
@@ -279,12 +274,7 @@ export const WorkCard3D = ({ project, index, type }) => {
       return;
     }
 
-    setIsFlipped(false);
-    // Rotate back to front
-    await controls.start("lifted");
-    // Brief 20ms hold
-    await new Promise((resolve) => setTimeout(resolve, 20));
-    // Settle down to rest
+    // Trigger rest transition instantly
     await controls.start("rest");
   };
 
@@ -323,9 +313,9 @@ export const WorkCard3D = ({ project, index, type }) => {
       transition: {
         rotateY: { duration: 0.25, ease: [0.25, 1, 0.5, 1] },
         opacity: { duration: 0.25, times: [0, 0.5, 1] },
-        scale: { duration: 0.15 },
-        y: { duration: 0.15 },
-        boxShadow: { duration: 0.15 }
+        scale: { duration: 0.2, ease: "easeOut" },
+        y: { duration: 0.2, ease: "easeOut" },
+        boxShadow: { duration: 0.2 }
       }
     },
     lifted: {
@@ -337,12 +327,11 @@ export const WorkCard3D = ({ project, index, type }) => {
       transition: {
         scale: { duration: 0.15, ease: [0.34, 1.56, 0.64, 1] },
         y: { duration: 0.15, ease: [0.34, 1.56, 0.64, 1] },
-        boxShadow: { duration: 0.15 },
-        rotateY: { duration: 0.25 }
+        boxShadow: { duration: 0.15 }
       }
     },
     flipped: {
-      scale: [1.04, 1.06, 1.04],
+      scale: [1, 1.04, 1.06, 1.04],
       y: -12,
       rotateY: 180,
       opacity: [1, 0.85, 1],
@@ -350,8 +339,9 @@ export const WorkCard3D = ({ project, index, type }) => {
       transition: {
         rotateY: { duration: 0.25, ease: [0.25, 1, 0.5, 1] },
         opacity: { duration: 0.25, times: [0, 0.5, 1] },
-        boxShadow: { delay: 0.25, duration: 0.15 },
-        scale: { delay: 0.25, duration: 0.15, ease: "easeInOut" }
+        y: { duration: 0.15, ease: "easeOut" },
+        scale: { duration: 0.4, times: [0, 0.35, 0.7, 1], ease: "easeInOut" },
+        boxShadow: { delay: 0.2, duration: 0.2 }
       }
     }
   };
