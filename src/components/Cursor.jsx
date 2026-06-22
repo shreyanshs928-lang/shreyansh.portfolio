@@ -36,10 +36,10 @@ export const Spotlight = () => {
       className="global-ambient-spotlight"
       style={{
         position: 'fixed',
-        top: -200, // half of 400px to center it on 0,0
-        left: -200,
-        width: '400px',
-        height: '400px',
+        top: -12.5, // half of 25px to center it on 0,0
+        left: -12.5,
+        width: '25px',
+        height: '25px',
         borderRadius: '50%',
         pointerEvents: 'none',
         zIndex: 1,
@@ -53,7 +53,7 @@ export const Spotlight = () => {
 };
 
 export const Cursor = () => {
-  const { cursorType, cursorLabel } = useContext(CursorContext);
+  const { cursorType, cursorLabel, triggerHover, triggerDefault } = useContext(CursorContext);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isMobile, setIsMobile] = useState(true);
   const [isClicked, setIsClicked] = useState(false);
@@ -111,14 +111,41 @@ export const Cursor = () => {
     const handleMouseDown = () => setIsClicked(true);
     const handleMouseUp = () => setIsClicked(false);
 
+    // Global listener to detect hover on any clickable element
+    const handleMouseOver = (e) => {
+      const target = e.target;
+      if (!target) return;
+      const clickable = target.closest('a, button, input[type="submit"], input[type="button"], [role="button"], .clickable, .btn, .social-icon-btn, .nav-link, .logo');
+      if (clickable) {
+        const label = clickable.getAttribute('data-cursor-label') || '';
+        triggerHover(label, clickable);
+      }
+    };
+
+    const handleMouseOut = (e) => {
+      const target = e.target;
+      const related = e.relatedTarget;
+      const clickable = target ? target.closest('a, button, input[type="submit"], input[type="button"], [role="button"], .clickable, .btn, .social-icon-btn, .nav-link, .logo') : null;
+      const relatedClickable = related ? related.closest('a, button, input[type="submit"], input[type="button"], [role="button"], .clickable, .btn, .social-icon-btn, .nav-link, .logo') : null;
+      
+      if (clickable && !relatedClickable) {
+        triggerDefault();
+      }
+    };
+
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mouseover', handleMouseOver);
+    window.addEventListener('mouseout', handleMouseOut);
+
     return () => {
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mouseover', handleMouseOver);
+      window.removeEventListener('mouseout', handleMouseOut);
       document.documentElement.classList.remove('custom-cursor-active');
     };
-  }, [isMobile, isAdminRoute]);
+  }, [isMobile, isAdminRoute, triggerHover, triggerDefault]);
 
   if (isMobile || isAdminRoute) return null;
 

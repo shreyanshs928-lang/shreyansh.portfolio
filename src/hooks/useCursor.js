@@ -9,7 +9,8 @@ export const useCursor = (label = '') => {
 
   const cursorHoverProps = useMemo(() => ({
     onMouseEnter: (e) => triggerHover(label, e.currentTarget),
-    onMouseLeave: triggerDefault
+    onMouseLeave: triggerDefault,
+    'data-cursor-label': label
   }), [label, triggerHover, triggerDefault]);
 
   return {
@@ -38,6 +39,8 @@ export const useDirectionalHover = (label = 'View') => {
     if (!isFinePointer) {
       return; // Touch devices fallback to native pointer/tap behaviors
     }
+
+    el.setAttribute('data-cursor-label', label);
 
     const handleMouseMove = (e) => {
       mouseCoords.current = { x: e.clientX, y: e.clientY };
