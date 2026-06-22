@@ -8,6 +8,7 @@ import { Header } from './portfolio/components/Header';
 import { Hero } from './portfolio/components/Hero';
 import { WorkCarousel } from './portfolio/components/WorkCarousel';
 import { FeaturedWorksTable } from './portfolio/components/FeaturedWorksTable';
+import { Work } from './portfolio/components/WorkSection';
 import { Skills } from './portfolio/components/Skills';
 import { Experience } from './portfolio/components/Experience';
 import { Background } from './portfolio/components/Background';
@@ -318,7 +319,13 @@ const PortfolioHome = () => {
 
         {!isLoading && portfolioData && (
           <>
-            {/* PANEL 2: Featured Works Table (Light) */}
+            {/* PANEL 2: Selected Works categories (Dark) */}
+            <div className="page-panel page-panel--dark">
+              <Spotlight />
+              <Work portfolioData={portfolioData} />
+            </div>
+
+            {/* PANEL 3: Featured Works Table (Light) */}
             <div className="page-panel page-panel--light">
               <FeaturedWorksTable tableData={portfolioData.featuredWorksTable} />
             </div>
