@@ -252,17 +252,17 @@ export const WorkCard3D = ({ project, index, type }) => {
         scale: 1.04,
         y: -12,
         boxShadow: `0 24px 60px ${accentShadowColor}`,
-        transition: { duration: 0.3 }
+        transition: { duration: 0.2 }
       });
       return;
     }
 
     setIsFlipped(true);
-    // Phase 1: Lift (0-200ms)
+    // Phase 1: Lift (0-150ms)
     await controls.start("lifted");
-    // Phase 2: Hold (200-350ms, 150ms pause)
-    await new Promise((resolve) => setTimeout(resolve, 150));
-    // Phase 3 & 4: Rotate + Settle (350-900ms)
+    // Phase 2: Hold (150-190ms, 40ms pause)
+    await new Promise((resolve) => setTimeout(resolve, 40));
+    // Phase 3 & 4: Rotate + Settle (190-590ms)
     await controls.start("flipped");
   };
 
@@ -274,7 +274,7 @@ export const WorkCard3D = ({ project, index, type }) => {
         scale: 1,
         y: 0,
         boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-        transition: { duration: 0.3 }
+        transition: { duration: 0.2 }
       });
       return;
     }
@@ -282,8 +282,8 @@ export const WorkCard3D = ({ project, index, type }) => {
     setIsFlipped(false);
     // Rotate back to front
     await controls.start("lifted");
-    // Brief 50ms hold
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    // Brief 20ms hold
+    await new Promise((resolve) => setTimeout(resolve, 20));
     // Settle down to rest
     await controls.start("rest");
   };
@@ -319,19 +319,26 @@ export const WorkCard3D = ({ project, index, type }) => {
       y: 0,
       rotateY: 0,
       opacity: 1,
-      boxShadow: "0 4px 12px rgba(0,0,0,0.3)"
+      boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+      transition: {
+        rotateY: { duration: 0.25, ease: [0.25, 1, 0.5, 1] },
+        opacity: { duration: 0.25, times: [0, 0.5, 1] },
+        scale: { duration: 0.15 },
+        y: { duration: 0.15 },
+        boxShadow: { duration: 0.15 }
+      }
     },
     lifted: {
       scale: 1.04,
       y: -12,
       rotateY: 0,
-      opacity: [1, 0.85, 1],
+      opacity: 1,
       boxShadow: "0 24px 60px rgba(0,0,0,0.55)",
       transition: {
-        rotateY: { duration: 0.35, ease: "easeIn" },
-        opacity: { duration: 0.35, times: [0, 0.5, 1] },
-        scale: { duration: 0.2, ease: [0.34, 1.56, 0.64, 1] },
-        boxShadow: { duration: 0.2 }
+        scale: { duration: 0.15, ease: [0.34, 1.56, 0.64, 1] },
+        y: { duration: 0.15, ease: [0.34, 1.56, 0.64, 1] },
+        boxShadow: { duration: 0.15 },
+        rotateY: { duration: 0.25 }
       }
     },
     flipped: {
@@ -341,10 +348,10 @@ export const WorkCard3D = ({ project, index, type }) => {
       opacity: [1, 0.85, 1],
       boxShadow: `0 24px 60px ${accentShadowColor}`,
       transition: {
-        rotateY: { delay: 0.15, duration: 0.35, ease: [0.45, 0, 0.55, 1] },
-        opacity: { delay: 0.15, duration: 0.35, times: [0, 0.5, 1] },
-        boxShadow: { delay: 0.5, duration: 0.2 },
-        scale: { delay: 0.5, duration: 0.2, ease: "easeInOut" }
+        rotateY: { duration: 0.25, ease: [0.25, 1, 0.5, 1] },
+        opacity: { duration: 0.25, times: [0, 0.5, 1] },
+        boxShadow: { delay: 0.25, duration: 0.15 },
+        scale: { delay: 0.25, duration: 0.15, ease: "easeInOut" }
       }
     }
   };
