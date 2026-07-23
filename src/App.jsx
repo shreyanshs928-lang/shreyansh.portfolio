@@ -34,6 +34,44 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+// React Error Boundary Component
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("Uncaught error caught by ErrorBoundary:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0D0D0D', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1.2rem', padding: '2rem', textAlign: 'center' }}>
+          <h2 className="display-font" style={{ color: '#ef4444', fontSize: '1.8rem', fontWeight: 'bold' }}>Something went wrong</h2>
+          <p style={{ color: '#a1a1aa', maxWidth: '500px', lineHeight: '1.6', fontSize: '0.95rem' }}>
+            {this.state.error?.message || "An unexpected error occurred while rendering the portfolio."}
+          </p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="btn btn-primary"
+            style={{ marginTop: '1rem', padding: '0.65rem 1.8rem', cursor: 'pointer' }}
+          >
+            Reload Page
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 // Simple clean loading fallbacks for Admin module loading
 const AdminLoadingScreen = () => (
   <div style={{ display: 'flex', width: '100vw', height: '100vh', backgroundColor: '#09090b', alignItems: 'center', justifyContent: 'center' }}>
@@ -369,7 +407,14 @@ export default function App() {
 
             <Routes>
               {/* Public Portfolio Route */}
-              <Route path="/" element={<PortfolioHome />} />
+              <Route
+                path="/"
+                element={
+                  <ErrorBoundary>
+                    <PortfolioHome />
+                  </ErrorBoundary>
+                }
+              />
 
               {/* Admin Login Route */}
               <Route

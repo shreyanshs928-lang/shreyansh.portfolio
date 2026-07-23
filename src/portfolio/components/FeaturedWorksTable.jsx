@@ -4,32 +4,33 @@ import { ArrowUpRight } from 'lucide-react';
 
 const TableRow = ({ item }) => {
   const { cursorHoverProps } = useCursor('Open');
+  const tItem = item || {};
   
   // Format date display (e.g. 2025-12 -> Dec 2025)
   const formatDate = (dateStr) => {
-    if (!dateStr) return '';
+    if (!dateStr || typeof dateStr !== 'string') return '';
     const [year, month] = dateStr.split('-');
     if (!month) return dateStr;
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const monthIndex = parseInt(month, 10) - 1;
-    return `${months[monthIndex]} ${year}`;
+    return months[monthIndex] ? `${months[monthIndex]} ${year}` : dateStr;
   };
 
   return (
     <tr 
       {...cursorHoverProps}
-      onClick={() => item.link && window.open(item.link, '_blank', 'noopener,noreferrer')}
+      onClick={() => tItem.link && window.open(tItem.link, '_blank', 'noopener,noreferrer')}
       style={{ cursor: 'pointer', transition: 'background-color 0.2s', borderBottom: '1px solid rgba(26, 26, 26, 0.08)' }}
       className="table-row-hover"
     >
       <td style={{ padding: '20px 24px', fontWeight: 600, color: '#1A1A1A', fontSize: '0.95rem' }}>
-        {item.title}
+        {tItem.title || ''}
       </td>
       <td style={{ padding: '20px 24px', color: '#5C5C5C', fontSize: '0.85rem' }}>
-        {item.category}
+        {tItem.category || ''}
       </td>
       <td style={{ padding: '20px 24px', color: '#5C5C5C', fontSize: '0.85rem', textAlign: 'right' }}>
-        {formatDate(item.date)}
+        {formatDate(tItem.date)}
       </td>
       <td style={{ padding: '20px 24px', width: '60px', textAlign: 'center' }}>
         <span style={{ color: '#6D28D9', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>

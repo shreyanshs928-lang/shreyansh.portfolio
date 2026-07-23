@@ -187,16 +187,17 @@ export const WorkCard3D = ({ project, index, type }) => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   // Schema Mapping with Fallback support for older DB fields
-  const title = project.title || "";
-  const categoryLabel = project.categoryLabel || project.tag || "Project";
-  const thumbnailImage = project.thumbnailImage || project.image || "";
-  const description = project.description || project.desc || "";
-  const organization = project.organization || project.org || "";
-  const projectLink = project.projectLink || project.link || "";
-  const caseStudyLink = project.caseStudyLink || project.caseStudyUrl || "";
-  const accentColor = project.accentColor || "#8B5CF6";
-  const tools = project.tools || [];
-  const date = project.date || "";
+  const p = project || {};
+  const title = p.title || "";
+  const categoryLabel = p.categoryLabel || p.tag || "Project";
+  const thumbnailImage = p.thumbnailImage || p.image || "";
+  const description = p.description || p.desc || "";
+  const organization = p.organization || p.org || "";
+  const projectLink = p.projectLink || p.link || "";
+  const caseStudyLink = p.caseStudyLink || p.caseStudyUrl || "";
+  const accentColor = p.accentColor || "#8B5CF6";
+  const tools = Array.isArray(p.tools) ? p.tools : [];
+  const date = p.date || "";
 
   // Helper to convert hex to rgba for tinted shadow glow
   const getAccentShadowColor = (hex) => {

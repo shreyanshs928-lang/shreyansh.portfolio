@@ -260,7 +260,7 @@ export const Hero = ({ heroData, isLoading }) => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', updateOffsets);
     };
-  }, [isSupported, prefersReducedMotion]);
+  }, [isSupported, prefersReducedMotion, isLoading]);
 
   const handleCardMouseMove = (e) => {
     if (!isSupported || prefersReducedMotion || !portraitRef.current) return;

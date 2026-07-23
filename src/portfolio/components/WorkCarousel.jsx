@@ -4,9 +4,10 @@ import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 
 const CarouselCard = ({ item, isFeatured }) => {
   const { ref, style } = useDirectionalHover('Open');
+  const cItem = item || {};
   
   // Use uploaded image or fallback to custom SVG vector placeholders
-  const isSvgPlaceholder = !item.thumbnailImage || item.thumbnailImage.startsWith('svg:');
+  const isSvgPlaceholder = !cItem.thumbnailImage || (typeof cItem.thumbnailImage === 'string' && cItem.thumbnailImage.startsWith('svg:'));
 
   const renderThumbnail = () => {
     if (isSvgPlaceholder) {
@@ -23,8 +24,8 @@ const CarouselCard = ({ item, isFeatured }) => {
     return (
       <div className="carousel-card-img-wrapper" style={{ height: '220px', overflow: 'hidden', position: 'relative' }}>
         <img 
-          src={item.thumbnailImage} 
-          alt={item.title} 
+          src={cItem.thumbnailImage} 
+          alt={cItem.title || 'Project Thumbnail'} 
           style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }} 
           className="carousel-card-img"
         />
@@ -50,19 +51,19 @@ const CarouselCard = ({ item, isFeatured }) => {
       <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', flexGrow: 1, justifyContent: 'space-between' }}>
         <div>
           <span style={{ color: 'var(--accent-violet)', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-            {item.category}
+            {cItem.category || 'Featured Work'}
           </span>
           <h3 className="display-font" style={{ fontSize: '1.25rem', color: 'var(--text-primary)', marginTop: '6px', marginBottom: '10px' }}>
-            {item.title}
+            {cItem.title}
           </h3>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: '20px' }}>
-            {item.description}
+            {cItem.description}
           </p>
         </div>
 
-        {item.link && (
+        {cItem.link && (
           <a 
-            href={item.link} 
+            href={cItem.link} 
             target="_blank" 
             rel="noopener noreferrer" 
             className="btn btn-primary" 
