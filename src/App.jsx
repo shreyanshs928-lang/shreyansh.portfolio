@@ -272,22 +272,6 @@ const PortfolioHome = () => {
     }
   }, [isLoading, portfolioData]);
 
-  if (error) {
-    return (
-      <div style={{ display: 'flex', height: '100vh', backgroundColor: '#0D0D0D', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1.2rem', padding: '2rem' }}>
-        <h2 className="display-font" style={{ color: '#ef4444', fontSize: '1.8rem', fontWeight: 'bold' }}>Connection Error</h2>
-        <p style={{ color: '#a1a1aa', maxWidth: '500px', textAlign: 'center', lineHeight: '1.6', fontSize: '0.95rem' }}>
-          {error.message || "Could not load portfolio contents. Make sure your database credentials and internet connection are correct."}
-        </p>
-      </div>
-    );
-  }
-
-  // Handle double click or click to redirect to admin
-  const handleAdminRedirect = () => {
-    navigate('/admin/dashboard');
-  };
-
   // Track whether user has scrolled past the Hero panel
   const heroPanelRef = useRef(null);
   const [isPastHero, setIsPastHero] = useState(false);
@@ -303,6 +287,22 @@ const PortfolioHome = () => {
     observer.observe(heroPanelRef.current);
     return () => observer.disconnect();
   }, [isLoading, portfolioData]);
+
+  // Handle double click or click to redirect to admin
+  const handleAdminRedirect = () => {
+    navigate('/admin/dashboard');
+  };
+
+  if (error) {
+    return (
+      <div style={{ display: 'flex', height: '100vh', backgroundColor: '#0D0D0D', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1.2rem', padding: '2rem' }}>
+        <h2 className="display-font" style={{ color: '#ef4444', fontSize: '1.8rem', fontWeight: 'bold' }}>Connection Error</h2>
+        <p style={{ color: '#a1a1aa', maxWidth: '500px', textAlign: 'center', lineHeight: '1.6', fontSize: '0.95rem' }}>
+          {error.message || "Could not load portfolio contents. Make sure your database credentials and internet connection are correct."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
