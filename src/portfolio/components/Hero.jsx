@@ -31,6 +31,10 @@ const AnimatedStatCard = ({ value, label, delay }) => {
 
   useEffect(() => {
     if (!isVisible) return;
+    if (!value || typeof value !== 'string') {
+      setDisplayValue(value || '');
+      return;
+    }
 
     const matches = value.match(/\d+/);
     if (!matches) {

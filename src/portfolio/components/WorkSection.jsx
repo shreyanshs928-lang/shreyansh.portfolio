@@ -52,6 +52,8 @@ export const Work = ({ portfolioData }) => {
   const sectionHeaderRef = useRef(null);
   const isHeaderRevealed = useFadeInOnScroll(sectionHeaderRef, { threshold: 0.15 });
 
+  const work = portfolioData?.work || {};
+
   return (
     <div id="work">
       {/* SECTION MAIN HEADER */}
@@ -71,7 +73,7 @@ export const Work = ({ portfolioData }) => {
         eyebrow="Social · Posts"
         title="Digital Campaigns"
         type="social"
-        projects={portfolioData.work.social}
+        projects={work.social || []}
       />
 
       {/* 4b. Print Media */}
@@ -80,7 +82,7 @@ export const Work = ({ portfolioData }) => {
         eyebrow="Print · Editorial"
         title="Editorial & Layouts"
         type="print"
-        projects={portfolioData.work.print}
+        projects={work.print || []}
       />
 
       {/* 4c. UI/UX Design */}
@@ -89,7 +91,7 @@ export const Work = ({ portfolioData }) => {
         eyebrow="UI · UX · Web"
         title="Digital Platforms"
         type="ui"
-        projects={portfolioData.work.ui}
+        projects={work.ui || []}
       />
 
       {/* 4d. Reels & Motion */}
@@ -98,7 +100,7 @@ export const Work = ({ portfolioData }) => {
         eyebrow="Reels · Motion"
         title="Short Form Motion"
         type="reels"
-        projects={portfolioData.work.reels}
+        projects={work.reels || []}
       />
 
       {/* 4e. Video Editing */}
@@ -107,7 +109,7 @@ export const Work = ({ portfolioData }) => {
         eyebrow="Video · Editing"
         title="Cinematics & Edits"
         type="video"
-        projects={portfolioData.work.video}
+        projects={work.video || []}
       />
 
       {/* 4f. Branding & Identity */}
@@ -116,7 +118,7 @@ export const Work = ({ portfolioData }) => {
         eyebrow="Brand · Identity"
         title="Identity Systems"
         type="branding"
-        projects={portfolioData.work.branding}
+        projects={work.branding || []}
       />
     </div>
   );

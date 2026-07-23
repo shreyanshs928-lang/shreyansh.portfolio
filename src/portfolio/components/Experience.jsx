@@ -26,7 +26,7 @@ export const Experience = ({ experienceData }) => {
             }}
           />
 
-          {experienceData.map((exp, idx) => (
+          {(Array.isArray(experienceData) ? experienceData : []).map((exp, idx) => (
             <article
               key={idx}
               className="experience-entry will-animate"
@@ -53,7 +53,7 @@ export const Experience = ({ experienceData }) => {
               </div>
 
               <ul className="experience-list">
-                {exp.points.map((pt, pIdx) => (
+                {(exp.points || []).map((pt, pIdx) => (
                   <li key={pIdx} className="experience-item">
                     {pt}
                   </li>

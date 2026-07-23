@@ -96,7 +96,8 @@ export const WorkCarousel = ({ carouselData }) => {
       el.addEventListener('scroll', checkScroll);
       checkScroll();
       // Snap to featured item on mount
-      const featuredIndex = carouselData.findIndex(item => item.activeByDefault);
+      const items = Array.isArray(carouselData) ? carouselData : [];
+      const featuredIndex = items.findIndex(item => item?.activeByDefault);
       if (featuredIndex !== -1) {
         const cardWidth = 350 + 24; // width + gap
         el.scrollTo({ left: featuredIndex * cardWidth, behavior: 'smooth' });
