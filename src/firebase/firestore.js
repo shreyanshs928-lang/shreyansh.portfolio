@@ -280,69 +280,103 @@ const withTimeout = (promise, ms = 6000) => {
   ]);
 };
 
+// Helper to format default portfolio data into exact payload shape
+const formatFallbackData = () => ({
+  hero: {
+    eyebrowText: defaultPortfolioData.profile.eyebrowText,
+    headlineLine1: defaultPortfolioData.profile.headlineLine1,
+    headlineLine2: defaultPortfolioData.profile.headlineLine2,
+    bioText: defaultPortfolioData.profile.bioText,
+    resumeLink: defaultPortfolioData.profile.resumeLink,
+    socialLinks: defaultPortfolioData.profile.socialLinks,
+    portraitImage: defaultPortfolioData.profile.portraitImage,
+    badgeText: defaultPortfolioData.profile.badgeText,
+    disciplineTags: defaultPortfolioData.disciplineTags,
+    stats: defaultPortfolioData.profile.stats
+  },
+  about: defaultPortfolioData.about,
+  experience: defaultPortfolioData.experience,
+  skills: defaultPortfolioData.skills,
+  background: defaultPortfolioData.background,
+  footer: defaultPortfolioData.footer,
+  work: defaultPortfolioData.work,
+  workCarousel: defaultPortfolioData.workCarousel,
+  featuredWorksTable: defaultPortfolioData.featuredWorksTable
+});
+
 // --- DATA ACCESS LAYER ---
 
 // Fetch full portfolio payload
 export const fetchPortfolioData = async () => {
-  // Check for missing/dummy environment variables to fail fast
-  const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
-  if (!projectId || projectId === "dummy-project-id") {
-    throw new Error("Firebase Environment Variables are not configured. Please add your VITE_FIREBASE_* environment variables in your Vercel project settings.");
+  try {
+    // Check for missing/dummy environment variables to fail fast
+    const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+    if (!projectId || projectId === "dummy-project-id") {
+      console.warn("Firebase Environment Variables are not configured. Using fallback default portfolio data.");
+      return formatFallbackData();
+    }
+
+    // Check if hero exists first with a timeout to prevent hanging
+    const heroSnap = await withTimeout(getDoc(doc(db, 'portfolio', 'hero')), 6000);
+    
+    if (!heroSnap.exists()) {
+      console.log('No database found. Autoseeding initial portfolio content...');
+      try {
+        await seedDefaultData();
+        return await fetchPortfolioData();
+      } catch (seedErr) {
+        console.warn("Seeding failed or permissions restricted. Using fallback default portfolio data.", seedErr);
+        return formatFallbackData();
+      }
+    }
+
+    const [aboutSnap, expSnap, skillsSnap, bgSnap, footerSnap, carouselSnap, tableSnap] = await Promise.all([
+      getDoc(doc(db, 'portfolio', 'about')),
+      getDoc(doc(db, 'portfolio', 'experience')),
+      getDoc(doc(db, 'portfolio', 'skills')),
+      getDoc(doc(db, 'portfolio', 'background')),
+      getDoc(doc(db, 'portfolio', 'footer')),
+      getDoc(doc(db, 'portfolio', 'workCarousel')),
+      getDoc(doc(db, 'portfolio', 'featuredWorksTable'))
+    ]);
+
+    // Fetch all 6 work subcollections
+    const categories = ['social', 'print', 'ui', 'reels', 'video', 'branding'];
+    const workData = {};
+
+    await Promise.all(
+      categories.map(async (cat) => {
+        const q = query(collection(db, 'portfolio', 'work', cat), orderBy('orderIndex', 'asc'));
+        const querySnap = await getDocs(q);
+        const list = [];
+        querySnap.forEach((doc) => {
+          list.push({ id: doc.id, ...doc.data() });
+        });
+        workData[cat] = list;
+      })
+    );
+
+    const carouselItems = carouselSnap.exists() ? carouselSnap.data()?.items || [] : [];
+    carouselItems.lastEdited = carouselSnap.exists() ? carouselSnap.data()?.lastEdited : null;
+
+    const tableItems = tableSnap.exists() ? tableSnap.data()?.items || [] : [];
+    tableItems.lastEdited = tableSnap.exists() ? tableSnap.data()?.lastEdited : null;
+
+    return {
+      hero: heroSnap.data() || formatFallbackData().hero,
+      about: aboutSnap.data() || formatFallbackData().about,
+      experience: expSnap.data()?.entries || formatFallbackData().experience,
+      skills: skillsSnap.data() || formatFallbackData().skills,
+      background: bgSnap.data() || formatFallbackData().background,
+      footer: footerSnap.data() || formatFallbackData().footer,
+      work: Object.keys(workData).length > 0 ? workData : formatFallbackData().work,
+      workCarousel: carouselItems.length > 0 ? carouselItems : formatFallbackData().workCarousel,
+      featuredWorksTable: tableItems.length > 0 ? tableItems : formatFallbackData().featuredWorksTable
+    };
+  } catch (err) {
+    console.warn("Firestore fetch encountered an error or permission restriction. Falling back to default portfolio data.", err);
+    return formatFallbackData();
   }
-
-  // Check if hero exists first with a timeout to prevent hanging
-  const heroSnap = await withTimeout(getDoc(doc(db, 'portfolio', 'hero')), 6000);
-  
-  if (!heroSnap.exists()) {
-    console.log('No database found. Autoseeding initial portfolio content...');
-    await seedDefaultData();
-    // Re-fetch hero after seeding
-    return fetchPortfolioData();
-  }
-
-  const [aboutSnap, expSnap, skillsSnap, bgSnap, footerSnap, carouselSnap, tableSnap] = await Promise.all([
-    getDoc(doc(db, 'portfolio', 'about')),
-    getDoc(doc(db, 'portfolio', 'experience')),
-    getDoc(doc(db, 'portfolio', 'skills')),
-    getDoc(doc(db, 'portfolio', 'background')),
-    getDoc(doc(db, 'portfolio', 'footer')),
-    getDoc(doc(db, 'portfolio', 'workCarousel')),
-    getDoc(doc(db, 'portfolio', 'featuredWorksTable'))
-  ]);
-
-  // Fetch all 6 work subcollections
-  const categories = ['social', 'print', 'ui', 'reels', 'video', 'branding'];
-  const workData = {};
-
-  await Promise.all(
-    categories.map(async (cat) => {
-      const q = query(collection(db, 'portfolio', 'work', cat), orderBy('orderIndex', 'asc'));
-      const querySnap = await getDocs(q);
-      const list = [];
-      querySnap.forEach((doc) => {
-        list.push({ id: doc.id, ...doc.data() });
-      });
-      workData[cat] = list;
-    })
-  );
-
-  const carouselItems = carouselSnap.exists() ? carouselSnap.data()?.items || [] : [];
-  carouselItems.lastEdited = carouselSnap.exists() ? carouselSnap.data()?.lastEdited : null;
-
-  const tableItems = tableSnap.exists() ? tableSnap.data()?.items || [] : [];
-  tableItems.lastEdited = tableSnap.exists() ? tableSnap.data()?.lastEdited : null;
-
-  return {
-    hero: heroSnap.data(),
-    about: aboutSnap.data(),
-    experience: expSnap.data()?.entries || [],
-    skills: skillsSnap.data(),
-    background: bgSnap.data(),
-    footer: footerSnap.data(),
-    work: workData,
-    workCarousel: carouselItems,
-    featuredWorksTable: tableItems
-  };
 };
 
 // --- ADMIN MUTATION MUTATORS ---

@@ -44,7 +44,7 @@ const placeholderSvgs = {
       <text x="525" y="320" fill="rgba(255,255,255,0.2)" fontFamily="Space Grotesk" fontSize="10">PAGE 13</text>
       <circle cx="430" cy="150" r="50" stroke="#4F46E5" strokeOpacity="0.3" strokeWidth="1"/>
       <line x1="430" y1="80" x2="430" y2="220" stroke="#4F46E5" strokeOpacity="0.2"/>
-      <line x1="360" y1="150" x2="500" y2="150" stroke="#4F46E5" stroke-opacity="0.2"/>
+      <line x1="360" y1="150" x2="500" y2="150" stroke="#4F46E5" strokeOpacity="0.2"/>
       <text x="60" y="80" fill="#FFFFFF" fontFamily="Space Grotesk" fontWeight="700" fontSize="18">01. PROPULSION</text>
       <rect x="60" y="105" width="200" height="8" fill="rgba(255,255,255,0.08)" rx="1"/>
       <rect x="60" y="120" width="170" height="8" fill="rgba(255,255,255,0.08)" rx="1"/>
