@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useDirectionalHover } from '../../hooks/useCursor';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 import ProjectImage from '../../components/ui/ProjectImage';
+import Carousel from '../../components/ui/Carousel';
 
 const CarouselCard = ({ item, isFeatured }) => {
   const { ref, style } = useDirectionalHover('Open');
@@ -21,8 +22,8 @@ const CarouselCard = ({ item, isFeatured }) => {
   return (
     <div 
       ref={ref}
-      style={{ ...style, display: 'flex', flexDirection: 'column', flex: '0 0 350px', background: 'var(--bg-elevated)', borderRadius: '20px', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.05)', userSelect: 'none' }}
-      className="carousel-card"
+      style={{ ...style, display: 'flex', flexDirection: 'column', background: 'var(--bg-elevated)', borderRadius: '20px', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.05)', userSelect: 'none' }}
+      className="carousel-card flex-shrink-0 w-[280px] md:w-[350px]"
     >
       <div style={{ position: 'relative' }}>
         {renderThumbnail()}
@@ -63,45 +64,6 @@ const CarouselCard = ({ item, isFeatured }) => {
 };
 
 export const WorkCarousel = ({ carouselData }) => {
-  const containerRef = useRef(null);
-  const scrollRef = useRef(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
-  const checkScroll = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setCanScrollLeft(scrollLeft > 5);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
-    }
-  };
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (el) {
-      el.addEventListener('scroll', checkScroll);
-      checkScroll();
-      // Snap to featured item on mount
-      const items = Array.isArray(carouselData) ? carouselData : [];
-      const featuredIndex = items.findIndex(item => item?.activeByDefault);
-      if (featuredIndex !== -1) {
-        const cardWidth = 350 + 24; // width + gap
-        el.scrollTo({ left: featuredIndex * cardWidth, behavior: 'smooth' });
-      }
-    }
-    return () => el?.removeEventListener('scroll', checkScroll);
-  }, [carouselData]);
-
-  const handleScroll = (direction) => {
-    if (scrollRef.current) {
-      const scrollAmount = 374; // card width + gap
-      scrollRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
-
   if (!carouselData || carouselData.length === 0) return null;
 
   return (
@@ -115,32 +77,9 @@ export const WorkCarousel = ({ carouselData }) => {
               Interact and explore a carousel of featured design systems, interfaces, and campaigns.
             </p>
           </div>
-
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <button 
-              onClick={() => handleScroll('left')} 
-              disabled={!canScrollLeft}
-              className={`carousel-nav-btn ${!canScrollLeft ? 'disabled' : ''}`}
-              style={{ width: '44px', height: '44px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', cursor: 'pointer', transition: 'all 0.3s' }}
-            >
-              <ArrowLeft size={18} />
-            </button>
-            <button 
-              onClick={() => handleScroll('right')} 
-              disabled={!canScrollRight}
-              className={`carousel-nav-btn ${!canScrollRight ? 'disabled' : ''}`}
-              style={{ width: '44px', height: '44px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', cursor: 'pointer', transition: 'all 0.3s' }}
-            >
-              <ArrowRight size={18} />
-            </button>
-          </div>
         </div>
 
-        <div 
-          ref={scrollRef}
-          className="carousel-track" 
-          style={{ display: 'flex', gap: '24px', overflowX: 'auto', paddingBottom: '20px', scrollSnapType: 'x mandatory', scrollbarWidth: 'none' }}
-        >
+        <Carousel className="w-full">
           {carouselData.map((item) => (
             <CarouselCard 
               key={item.id} 
@@ -148,7 +87,7 @@ export const WorkCarousel = ({ carouselData }) => {
               isFeatured={item.activeByDefault} 
             />
           ))}
-        </div>
+        </Carousel>
       </div>
     </section>
   );
