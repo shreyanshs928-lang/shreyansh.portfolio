@@ -2,6 +2,7 @@ import React, { useRef, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { useFadeInOnScroll } from '../../hooks/useFadeInOnScroll';
 import { CursorContext } from '../../context/CursorContext';
+import { gpuLayer } from '../../utils/motionProps';
 
 export const About = ({ profileData }) => {
   const containerRef = useRef(null);
@@ -101,6 +102,7 @@ export const About = ({ profileData }) => {
             
             {/* Framer motion staggered spring stat pills */}
             <motion.div
+              {...gpuLayer}
               className="about-stats"
               variants={statsContainerVariants}
               initial="hidden"
@@ -108,6 +110,7 @@ export const About = ({ profileData }) => {
             >
               {stats.map((stat, idx) => (
                 <motion.div
+                  {...gpuLayer}
                   key={idx}
                   className="stat-pill"
                   variants={statPillVariants}

@@ -6,6 +6,10 @@ export default {
   ],
   theme: {
     extend: {
+      backgroundColor: {
+        base: "#0a0a0f",
+        panel: "#12172a",
+      },
       colors: {
         accent: "var(--accent)",
         "accent-hover": "var(--accent-hover)",

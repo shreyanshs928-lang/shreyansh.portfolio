@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import { CursorContext } from '../../context/CursorContext';
+import { gpuLayer } from '../../utils/motionProps';
 
 // Vector SVG placeholders matching existing designs
 const placeholderSvgs = {
@@ -368,11 +369,13 @@ export const WorkCard3D = ({ project, index, type }) => {
       }}
     >
       <motion.div
+        {...gpuLayer}
         className="work-card-3d-inner"
         variants={variants}
         initial="rest"
         animate={controls}
         style={{
+          ...gpuLayer.style,
           willChange: 'transform, box-shadow'
         }}
       >
