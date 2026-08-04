@@ -86,6 +86,7 @@ export const About = ({ profileData }) => {
       ref={containerRef}
       id="about"
       className={`reveal-item ${isRevealed ? 'revealed' : ''} section-grid-overlay`}
+      style={{ position: 'relative', isolation: 'isolate', zIndex: 0 }}
     >
       <div className="container">
         <div className="about-grid glass-card p-8 md:p-12">

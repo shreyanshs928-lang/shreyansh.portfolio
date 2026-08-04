@@ -8,7 +8,7 @@ export const Experience = ({ experienceData }) => {
   const { setMagneticElement, triggerHover, triggerDefault } = useContext(CursorContext);
 
   return (
-    <section ref={sectionRef} id="experience" className="experience-section section-grid-overlay">
+    <section ref={sectionRef} id="experience" className="experience-section section-grid-overlay" style={{ position: 'relative', isolation: 'isolate', zIndex: 0 }}>
       <div className="container">
         <div className="section-header-reveal" style={{ marginBottom: '3.5rem' }}>
           <span className="section-eyebrow">Timeline</span>

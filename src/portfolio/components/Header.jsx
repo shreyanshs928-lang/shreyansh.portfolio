@@ -15,7 +15,7 @@ export const Header = ({ floating = false }) => {
   const headerClass = floating ? 'header header--floating' : 'header header--embedded';
 
   return (
-    <header className={headerClass} id="main-header">
+    <header className={headerClass} id="main-header" style={{ zIndex: 9999 }}>
       <div className="container header-container">
         <a
           href="#hero"

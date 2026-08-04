@@ -10,7 +10,7 @@ export const Skills = ({ skillsData }) => {
   const { tools = [], other = [] } = skillsData || {};
 
   return (
-    <section ref={sectionRef} id="skills" className="skills-section section-grid-overlay">
+    <section ref={sectionRef} id="skills" className="skills-section section-grid-overlay" style={{ position: 'relative', isolation: 'isolate', zIndex: 0 }}>
       <div className="container">
         <div className="section-header-reveal" style={{ marginBottom: '3.5rem' }}>
           <span className="section-eyebrow">Expertise</span>

@@ -329,7 +329,7 @@ export const Hero = ({ heroData, isLoading }) => {
     { icon: <Mail size={20} />, url: socialLinksData.email ? `mailto:${socialLinksData.email}` : null, label: 'Email' }
   ];
   return (
-    <section ref={heroRef} id="hero" style={{ display: 'flex', alignItems: 'center', padding: '6rem 0 4rem 0', position: 'relative' }} className="section-grid-overlay">
+    <section ref={heroRef} id="hero" style={{ display: 'flex', alignItems: 'center', padding: '6rem 0 4rem 0', position: 'relative', isolation: 'isolate', zIndex: 0 }} className="section-grid-overlay">
       {/* 3D Parallax Ambient Background System */}
       <div className="ambient-lighting-container">
         {/* Layer 1 (5% Speed): Blurred Blobs */}
