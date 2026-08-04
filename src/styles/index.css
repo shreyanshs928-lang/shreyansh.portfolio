@@ -2776,6 +2776,11 @@ section {
   filter: brightness(1.1);
 }
 
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
 /* Unified layout wrapper inside section grids */
 .work-grid-unified {
   display: flex;

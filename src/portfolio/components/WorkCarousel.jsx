@@ -1,35 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDirectionalHover } from '../../hooks/useCursor';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
+import ProjectImage from '../../components/ui/ProjectImage';
 
 const CarouselCard = ({ item, isFeatured }) => {
   const { ref, style } = useDirectionalHover('Open');
   const cItem = item || {};
-  
-  // Use uploaded image or fallback to custom SVG vector placeholders
-  const isSvgPlaceholder = !cItem.thumbnailImage || (typeof cItem.thumbnailImage === 'string' && cItem.thumbnailImage.startsWith('svg:'));
 
   const renderThumbnail = () => {
-    if (isSvgPlaceholder) {
-      return (
-        <div className="carousel-card-placeholder" style={{ background: '#171720', height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--accent-violet)" strokeWidth="1.5" opacity="0.4">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-            <circle cx="8.5" cy="8.5" r="1.5" />
-            <polyline points="21 15 16 10 5 21" />
-          </svg>
-        </div>
-      );
-    }
     return (
-      <div className="carousel-card-img-wrapper" style={{ height: '220px', overflow: 'hidden', position: 'relative' }}>
-        <img 
-          src={cItem.thumbnailImage} 
-          alt={cItem.title || 'Project Thumbnail'} 
-          style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }} 
-          className="carousel-card-img"
-        />
-      </div>
+      <ProjectImage
+        src={cItem.thumbnailImage}
+        alt={cItem.title || 'Project Thumbnail'}
+        category={cItem.category || 'Featured Work'}
+        aspectClass="h-[220px]"
+      />
     );
   };
 
