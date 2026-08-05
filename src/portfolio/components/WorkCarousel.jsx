@@ -22,8 +22,21 @@ const CarouselCard = ({ item, isFeatured }) => {
   return (
     <div 
       ref={ref}
-      style={{ ...style, display: 'flex', flexDirection: 'column', background: 'var(--bg-elevated)', borderRadius: '20px', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.05)', userSelect: 'none' }}
-      className="carousel-card flex-shrink-0 w-[280px] md:w-[350px]"
+      style={{
+        ...style,
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#12172a',
+        borderRadius: '20px',
+        overflow: 'hidden',
+        border: '1px solid rgba(255, 255, 255, 0.05)',
+        userSelect: 'none',
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden',
+        transform: 'translateZ(0)',
+        isolation: 'isolate'
+      }}
+      className="carousel-card flex-shrink-0 w-[300px] md:w-[350px]"
     >
       <div style={{ position: 'relative' }}>
         {renderThumbnail()}
@@ -67,7 +80,18 @@ export const WorkCarousel = ({ carouselData }) => {
   if (!carouselData || carouselData.length === 0) return null;
 
   return (
-    <section id="work" className="section-grid-overlay" style={{ padding: '5rem 0' }}>
+    <section
+      id="work"
+      data-section="selected-works"
+      className="section-grid-overlay relative w-full"
+      style={{
+        backgroundColor: '#0D1117',
+        isolation: 'isolate',
+        zIndex: 0,
+        minHeight: '600px',
+        padding: '5rem 0'
+      }}
+    >
       <div className="container">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem', flexWrap: 'wrap', gap: '1.5rem' }}>
           <div>

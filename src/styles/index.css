@@ -1,16 +1,59 @@
-html,
-body,
-#root {
-  background-color: #0a0a0f;
-  color-scheme: dark;
-  min-height: 100%;
+/* ============================================
+   REVERSE-SCROLL FLASH PREVENTION
+   Applied before Tailwind, before React, before JS
+   ============================================ */
+
+/* Lock browser canvas — eliminates white default */
+html {
+  background-color: #070B18 !important;
+  color-scheme: dark !important;
+  scroll-behavior: smooth;
   overflow-x: hidden;
 }
 
-* {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+body {
+  background-color: #070B18 !important;
+  min-height: 100vh;
+  min-height: 100dvh; /* dynamic viewport — prevents mobile bar jitter */
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
+
+#root {
+  background-color: #070B18;
+  min-height: 100vh;
+  min-height: 100dvh;
+  isolation: isolate; /* own stacking context — prevents z-index leaks */
+}
+
+/* 
+  GPU COMPOSITOR RULE:
+  Every element that gets will-change or transform applied 
+  MUST have an explicit background. This prevents transparent 
+  compositor layers rendering as white.
+*/
+[data-section],
+[data-panel],
+[data-card] {
+  background-color: #070B18; /* overridden per-component but never empty */
+}
+
+/* Prevent ALL backface flash on promoted layers */
+* {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Scrollbar — prevents white scrollbar flash on Chrome */
+::-webkit-scrollbar {
+  width: 6px;
+  background-color: #070B18;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #8B5CF6;
+  border-radius: 3px;
+}
+
 
 @tailwind base;
 @tailwind components;
