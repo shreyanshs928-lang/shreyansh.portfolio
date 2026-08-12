@@ -11,7 +11,17 @@ export const Background = ({ backgroundData }) => {
   const { degree, institution, year, philosophy, achievements = [] } = backgroundData || {};
 
   return (
-    <section ref={sectionRef} id="background" className="background-section section-grid-overlay" style={{ position: 'relative', isolation: 'isolate', zIndex: 0 }}>
+    <section 
+      ref={sectionRef} 
+      id="background" 
+      className="background-section section-grid-overlay" 
+      style={{ 
+        position: 'relative', 
+        isolation: 'isolate', 
+        zIndex: 0,
+        contain: 'paint'
+      }}
+    >
       <div className="container">
         <div className="section-header-reveal" style={{ marginBottom: '3.5rem' }}>
           <span className="section-eyebrow">Academic & Creed</span>

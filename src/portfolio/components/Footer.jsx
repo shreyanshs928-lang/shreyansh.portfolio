@@ -22,7 +22,17 @@ export const Footer = ({ footerData, onSecretClick }) => {
   );
 
   return (
-    <footer className="footer" id="contact" style={{ position: 'relative', isolation: 'isolate', zIndex: 0 }}>
+    <footer 
+      className="footer" 
+      id="contact" 
+      style={{ 
+        position: 'relative', 
+        isolation: 'isolate', 
+        zIndex: 0,
+        backgroundColor: '#070B18',
+        contain: 'paint'
+      }}
+    >
       <div className="container">
         <div className="footer-top">
           <div className="footer-brand">

@@ -6,11 +6,11 @@ export default {
   ],
   theme: {
     extend: {
-      backgroundColor: {
-        base: "#0a0a0f",
-        panel: "#12172a",
-      },
       colors: {
+        base:    "#070B18",
+        panel:   "#0D1117",
+        card:    "#12172a",
+        surface: "#1a1f35",
         accent: "var(--accent)",
         "accent-hover": "var(--accent-hover)",
         "bg-color": "var(--bg-color)",
@@ -19,6 +19,9 @@ export default {
         "text-white": "var(--text-white)",
         "text-main": "var(--text-main)",
         "text-muted": "var(--text-muted)",
+      },
+      minHeight: {
+        screen: ["100vh", "100dvh"],
       },
       fontFamily: {
         display: ["Space Grotesk", "sans-serif"],

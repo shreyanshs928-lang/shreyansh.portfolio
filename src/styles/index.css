@@ -4,25 +4,23 @@
    ============================================ */
 
 /* Lock browser canvas — eliminates white default */
-html {
+html,
+body,
+#__next,
+#root {
   background-color: #070B18 !important;
   color-scheme: dark !important;
-  scroll-behavior: smooth;
+  min-height: 100dvh;
   overflow-x: hidden;
 }
 
 body {
-  background-color: #070B18 !important;
-  min-height: 100vh;
-  min-height: 100dvh; /* dynamic viewport — prevents mobile bar jitter */
-  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
   -webkit-font-smoothing: antialiased;
 }
 
 #root {
-  background-color: #070B18;
-  min-height: 100vh;
-  min-height: 100dvh;
   isolation: isolate; /* own stacking context — prevents z-index leaks */
 }
 
@@ -42,16 +40,43 @@ body {
 * {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  box-sizing: border-box;
+}
+
+*::before,
+*::after {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Apply will-change on hover only via CSS — prevents GPU layer memory exhaustion */
+.project-card {
+  will-change: auto;
+}
+.project-card:hover {
+  will-change: transform;
 }
 
 /* Scrollbar — prevents white scrollbar flash on Chrome */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
   background-color: #070B18;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: #8B5CF6;
+  background: linear-gradient(to bottom, #8B5CF6, #FF8A4C);
   border-radius: 3px;
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%);  }
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  [data-nav], header.header--floating {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
 }
 
 

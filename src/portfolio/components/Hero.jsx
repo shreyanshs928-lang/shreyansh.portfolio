@@ -336,19 +336,35 @@ export const Hero = ({ heroData, isLoading }) => {
       data-section="hero"
       style={{
         display: 'flex',
-        alignItems: 'center',
-        padding: '6rem 0 4rem 0',
+        flexDirection: 'column',
+        justify: 'center',
+        position: 'relative',
+        width: '100%',
         minHeight: '100dvh',
         backgroundColor: '#070B18',
         isolation: 'isolate',
-        position: 'relative',
         zIndex: 0,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        contain: 'paint',
+        padding: '6rem 0 2rem 0'
       }}
       className="section-grid-overlay"
     >
       {/* 3D Parallax Ambient Background System */}
-      <div className="ambient-lighting-container">
+      <div 
+        className="ambient-lighting-container"
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: '#070B18',
+          zIndex: 0,
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
+          contain: 'paint'
+        }}
+      >
         {/* Layer 1 (5% Speed): Blurred Blobs */}
         <div className="ambient-blob-layer" ref={blobLayerRef}>
           <div className="ambient-blob-1" />
@@ -590,7 +606,17 @@ export const Hero = ({ heroData, isLoading }) => {
 
         {/* Dynamic Stats Row at bottom with countUp and staggered tilt */}
         {stats && stats.length > 0 && (
-          <div className="mt-12 pt-10 border-t border-[#27272a]/20 grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div 
+            className="mt-12 pt-8 border-t border-[#27272a]/20 grid grid-cols-2 md:grid-cols-4 gap-6"
+            style={{
+              position: 'relative',
+              zIndex: 1,
+              minHeight: '88px',
+              backgroundColor: '#070B18',
+              borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+              alignItems: 'center'
+            }}
+          >
             {stats.map((stat, idx) => (
               <AnimatedStatCard 
                 key={idx}

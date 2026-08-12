@@ -106,14 +106,24 @@ export const Carousel = ({ children, className = '' }) => {
           className="carousel-track flex gap-6"
           drag="x"
           dragConstraints={{ left: -dragLimit, right: 0 }}
-          dragElastic={0.08}
+          dragElastic={0.06}
+          dragMomentum={true}
+          dragTransition={{ bounceStiffness: 280, bounceDamping: 40, power: 0.18 }}
           animate={{ x: dragX }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           style={{
             display: 'flex',
             gap: '24px',
-            width: 'max-content',
-            willChange: 'transform'
+            padding: '0 24px',
+            cursor: 'grab',
+            backgroundColor: '#0D1117',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            willChange: 'transform',
+            contain: 'paint',
+            overscrollBehaviorX: 'contain',
+            touchAction: 'pan-y',
+            width: 'max-content'
           }}
         >
           {children}

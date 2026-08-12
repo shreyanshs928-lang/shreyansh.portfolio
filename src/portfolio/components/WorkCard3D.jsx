@@ -371,13 +371,15 @@ export const WorkCard3D = ({ project, index, type }) => {
     >
       <motion.div
         {...gpuLayer}
-        className="work-card-3d-inner"
+        className="work-card-3d-inner project-card"
         variants={variants}
         initial="rest"
         animate={controls}
         style={{
           ...gpuLayer.style,
-          willChange: 'transform, box-shadow'
+          backgroundColor: '#12172a',
+          contain: 'paint',
+          isolation: 'isolate'
         }}
       >
         {/* FRONT FACE */}

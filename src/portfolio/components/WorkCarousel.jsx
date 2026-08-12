@@ -34,9 +34,10 @@ const CarouselCard = ({ item, isFeatured }) => {
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
         transform: 'translateZ(0)',
-        isolation: 'isolate'
+        isolation: 'isolate',
+        contain: 'paint'
       }}
-      className="carousel-card flex-shrink-0 w-[300px] md:w-[350px]"
+      className="carousel-card project-card flex-shrink-0 w-[300px] md:w-[350px]"
     >
       <div style={{ position: 'relative' }}>
         {renderThumbnail()}
@@ -85,10 +86,14 @@ export const WorkCarousel = ({ carouselData }) => {
       data-section="selected-works"
       className="section-grid-overlay relative w-full"
       style={{
+        position: 'relative',
+        width: '100%',
         backgroundColor: '#0D1117',
         isolation: 'isolate',
         zIndex: 0,
-        minHeight: '600px',
+        minHeight: '560px',
+        contain: 'paint layout',
+        overflow: 'hidden',
         padding: '5rem 0'
       }}
     >
