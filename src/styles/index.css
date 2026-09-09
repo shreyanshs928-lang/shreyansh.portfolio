@@ -1739,7 +1739,7 @@ section {
 .organic-blob {
   position: absolute;
   pointer-events: none;
-  filter: blur(80px) url(#organic-blob-filter);
+  filter: blur(80px);
   mix-blend-mode: screen;
   will-change: transform, border-radius;
   opacity: 0.24;
@@ -2087,101 +2087,7 @@ section {
 }
 
 
-/* -------------------------------------------------------------
-   3D FLOATING BACKGROUND GEOMETRIC SHAPES
-   ------------------------------------------------------------- */
-.floating-shapes-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 2;
-}
 
-/* Cube wireframe */
-.cube-wrapper {
-  position: absolute;
-  top: 15%;
-  right: 15%;
-  perspective: 600px;
-}
-
-.cube-wireframe {
-  width: 100px;
-  height: 100px;
-  position: relative;
-  transform-style: preserve-3d;
-  animation: rotateCube 20s linear infinite;
-  opacity: 0.12;
-}
-
-.cube-wireframe .face {
-  position: absolute;
-  width: 100px;
-  height: 100px;
-  border: 1px solid var(--accent-violet);
-}
-
-.cube-wireframe .face.front  { transform: translateZ(50px); }
-.cube-wireframe .face.back   { transform: rotateY(180deg) translateZ(50px); }
-.cube-wireframe .face.left   { transform: rotateY(-90deg) translateZ(50px); }
-.cube-wireframe .face.right  { transform: rotateY(90deg) translateZ(50px); }
-.cube-wireframe .face.top    { transform: rotateX(90deg) translateZ(50px); }
-.cube-wireframe .face.bottom { transform: rotateX(-90deg) translateZ(50px); }
-
-@keyframes rotateCube {
-  0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-  100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
-}
-
-/* Torus approximation */
-.torus-shape {
-  position: absolute;
-  top: 25%;
-  left: 10%;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  border: 2px solid var(--accent-violet);
-  opacity: 0.08;
-  transform: rotateX(60deg) rotateY(30deg);
-  animation: spinTorus 18s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes spinTorus {
-  0% { transform: rotateX(60deg) rotateY(30deg) rotateZ(0deg); }
-  100% { transform: rotateX(60deg) rotateY(30deg) rotateZ(360deg); }
-}
-
-/* Scattered light dust particles */
-.dust-particle {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  pointer-events: none;
-  opacity: 0.4;
-}
-
-.dust-particle.violet { background-color: var(--accent-violet); }
-.dust-particle.amber { background-color: var(--accent-amber); }
-.dust-particle.white { background-color: #ffffff; }
-
-.dust-particle:nth-child(1) { top: 10%; left: 20%; animation: driftParticle1 8s ease-in-out infinite alternate; }
-.dust-particle:nth-child(2) { top: 40%; left: 80%; animation: driftParticle2 10s ease-in-out infinite alternate; }
-.dust-particle:nth-child(3) { top: 70%; left: 30%; animation: driftParticle3 9s ease-in-out infinite alternate; }
-.dust-particle:nth-child(4) { top: 30%; left: 60%; animation: driftParticle4 11s ease-in-out infinite alternate; }
-.dust-particle:nth-child(5) { top: 85%; left: 75%; animation: driftParticle5 7s ease-in-out infinite alternate; }
-
-@keyframes driftParticle1 { 0% { transform: translate(0, 0); } 100% { transform: translate(15px, 15px); } }
-@keyframes driftParticle2 { 0% { transform: translate(0, 0); } 100% { transform: translate(-20px, 10px); } }
-@keyframes driftParticle3 { 0% { transform: translate(0, 0); } 100% { transform: translate(10px, -15px); } }
-@keyframes driftParticle4 { 0% { transform: translate(0, 0); } 100% { transform: translate(-15px, -10px); } }
-@keyframes driftParticle5 { 0% { transform: translate(0, 0); } 100% { transform: translate(12px, -12px); } }
 
 /* Specular Inner Highlights on Portrait */
 .rotating-gradient-border {
@@ -2690,10 +2596,9 @@ section {
 
 /* Back face styling */
 .card-face-3d--back {
-  background: rgba(12, 8, 30, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(145deg, #13172c 0%, #090c18 100%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
   transform: rotateY(180deg);
   z-index: 1;
   padding: 24px;

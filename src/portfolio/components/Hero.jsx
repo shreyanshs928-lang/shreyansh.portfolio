@@ -71,18 +71,15 @@ const AnimatedStatCard = ({ value, label, delay }) => {
     return () => clearTimeout(timer);
   }, [isVisible, value, delay]);
 
-  const floatDelay = `${(delay % 1000) / 100}s`;
-
   return (
     <div 
       ref={cardRef}
-      className="flex flex-col text-left glass-card p-5 transition-all duration-1000"
+      className="flex flex-col text-left glass-card p-5"
       style={{
-        transform: isVisible ? 'rotateY(0deg)' : 'rotateY(15deg)',
+        transform: isVisible ? 'translateY(0)' : 'translateY(10px)',
         opacity: isVisible ? 1 : 0,
-        transitionDelay: `${delay}ms`,
-        animation: isVisible ? 'floatStatCard 3s ease-in-out infinite alternate' : 'none',
-        animationDelay: floatDelay
+        transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
+        transitionDelay: `${Math.min(delay, 200)}ms`
       }}
     >
       <span className="text-3xl md:text-4xl font-extrabold gradient-text display-font mb-1 tracking-tight">
@@ -386,31 +383,6 @@ export const Hero = ({ heroData, isLoading }) => {
         </div>
       </div>
 
-      {/* 3D Floating Background Geometric Shapes */}
-      <div className="floating-shapes-layer">
-        {/* Shape 1: Cube wireframe behind photo */}
-        <div className="cube-wrapper sm:right-[10%] lg:right-[15%] top-[20%]">
-          <div className="cube-wireframe">
-            <div className="face front"></div>
-            <div className="face back"></div>
-            <div className="face left"></div>
-            <div className="face right"></div>
-            <div className="face top"></div>
-            <div className="face bottom"></div>
-          </div>
-        </div>
-
-        {/* Shape 2: Tilted spinning Torus behind headline */}
-        <div className="torus-shape top-[20%] left-[5%]" />
-
-        {/* Shape 3: Scattered light dust particles */}
-        <div className="dust-particle violet" />
-        <div className="dust-particle amber" />
-        <div className="dust-particle white" />
-        <div className="dust-particle violet" />
-        <div className="dust-particle amber" />
-      </div>
-
       <div className="container hero-wrapper w-full relative z-10">
         {/* Main Split Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -422,8 +394,7 @@ export const Hero = ({ heroData, isLoading }) => {
               style={{
                 opacity: 1,
                 transform: 'translateY(0)',
-                transition: 'opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1)',
-                transitionDelay: '50ms'
+                transition: 'opacity 0.4s ease-out, transform 0.4s ease-out'
               }}
             >
               {eyebrowText}
@@ -441,10 +412,10 @@ export const Hero = ({ heroData, isLoading }) => {
             <p
               className="hero-subhead will-animate text-base md:text-lg text-zinc-400 font-sans leading-relaxed max-w-[620px] mb-8"
               style={{
-                opacity: 1,
-                transform: 'translateY(0)',
-                transition: 'opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1)',
-                transitionDelay: '500ms'
+                opacity: isLoaded ? 1 : 0,
+                transform: isLoaded ? 'translateY(0)' : 'translateY(12px)',
+                transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
+                transitionDelay: '80ms'
               }}
             >
               {bioText}
@@ -456,9 +427,9 @@ export const Hero = ({ heroData, isLoading }) => {
                 className="hero-tag-cloud will-animate"
                 style={{
                   opacity: isLoaded ? 1 : 0,
-                  transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
-                  transition: 'opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1)',
-                  transitionDelay: '550ms'
+                  transform: isLoaded ? 'translateY(0)' : 'translateY(12px)',
+                  transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
+                  transitionDelay: '120ms'
                 }}
               >
                 {/* Row 1: slightly left-offset */}
@@ -484,9 +455,9 @@ export const Hero = ({ heroData, isLoading }) => {
               className="hero-ctas will-animate flex items-center gap-5 flex-wrap"
               style={{
                 opacity: isLoaded ? 1 : 0,
-                transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
-                transition: 'opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1)',
-                transitionDelay: '650ms'
+                transform: isLoaded ? 'translateY(0)' : 'translateY(12px)',
+                transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
+                transitionDelay: '160ms'
               }}
             >
               <a
@@ -530,9 +501,9 @@ export const Hero = ({ heroData, isLoading }) => {
             className="lg:col-span-5 flex justify-center items-center relative will-animate"
             style={{
               opacity: isLoaded ? 1 : 0,
-              transform: isLoaded ? 'scale(1)' : 'scale(0.95)',
-              transition: 'opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1), transform 1.5s cubic-bezier(0.16, 1, 0.3, 1)',
-              transitionDelay: '200ms'
+              transform: isLoaded ? 'scale(1)' : 'scale(0.98)',
+              transition: 'opacity 0.5s ease-out, transform 0.5s ease-out',
+              transitionDelay: '80ms'
             }}
           >
             <div 
@@ -601,9 +572,9 @@ export const Hero = ({ heroData, isLoading }) => {
                   className="absolute -bottom-3 -right-3 bg-[#141416]/95 border border-[#8B5CF6]/30 px-4 py-2.5 rounded-full backdrop-blur-md shadow-2xl flex items-center gap-2 will-animate"
                   style={{
                     opacity: isLoaded ? 1 : 0,
-                    transform: isLoaded ? 'translateY(0) scale(1)' : 'translateY(15px) scale(0.9)',
-                    transition: 'opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1)',
-                    transitionDelay: '950ms'
+                    transform: isLoaded ? 'translateY(0) scale(1)' : 'translateY(8px) scale(0.95)',
+                    transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
+                    transitionDelay: '200ms'
                   }}
                 >
                   <span className="w-2 h-2 rounded-full bg-[#FF8A4C] animate-pulse"></span>

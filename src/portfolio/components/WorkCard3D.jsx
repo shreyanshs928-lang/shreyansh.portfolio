@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import { CursorContext } from '../../context/CursorContext';
-import { gpuLayer } from '../../utils/motionProps';
 import ProjectImage from '../../components/ui/ProjectImage';
 
 // Vector SVG placeholders matching existing designs
@@ -313,37 +312,35 @@ export const WorkCard3D = ({ project, index, type }) => {
       opacity: 1,
       boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
       transition: {
-        rotateY: { duration: 0.18, ease: "easeOut" },
-        opacity: { duration: 0.18 },
-        scale: { duration: 0.15, ease: "easeOut" },
-        y: { duration: 0.15, ease: "easeOut" },
-        boxShadow: { duration: 0.18 }
+        rotateY: { duration: 0.45, ease: [0.23, 1, 0.32, 1] },
+        scale: { duration: 0.3, ease: "easeOut" },
+        y: { duration: 0.3, ease: "easeOut" },
+        boxShadow: { duration: 0.35 }
       }
     },
     lifted: {
-      scale: 1.04,
-      y: -12,
+      scale: 1.03,
+      y: -8,
       rotateY: 0,
       opacity: 1,
-      boxShadow: "0 24px 60px rgba(0,0,0,0.55)",
+      boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
       transition: {
-        scale: { duration: 0.12, ease: "easeOut" },
-        y: { duration: 0.12, ease: "easeOut" },
-        boxShadow: { duration: 0.12 }
+        scale: { duration: 0.25, ease: "easeOut" },
+        y: { duration: 0.25, ease: "easeOut" },
+        boxShadow: { duration: 0.25 }
       }
     },
     flipped: {
-      scale: 1.04,
-      y: -12,
+      scale: 1.03,
+      y: -8,
       rotateY: 180,
       opacity: 1,
-      boxShadow: `0 24px 60px ${accentShadowColor}`,
+      boxShadow: `0 20px 50px ${accentShadowColor}`,
       transition: {
-        rotateY: { duration: 0.18, ease: "easeOut" },
-        opacity: { duration: 0.18 },
-        y: { duration: 0.15, ease: "easeOut" },
-        scale: { duration: 0.15, ease: "easeOut" },
-        boxShadow: { duration: 0.18 }
+        rotateY: { duration: 0.45, ease: [0.23, 1, 0.32, 1] },
+        y: { duration: 0.3, ease: "easeOut" },
+        scale: { duration: 0.3, ease: "easeOut" },
+        boxShadow: { duration: 0.35 }
       }
     }
   };
@@ -370,16 +367,16 @@ export const WorkCard3D = ({ project, index, type }) => {
       }}
     >
       <motion.div
-        {...gpuLayer}
         className="work-card-3d-inner project-card"
         variants={variants}
         initial="rest"
         animate={controls}
         style={{
-          ...gpuLayer.style,
-          backgroundColor: '#12172a',
-          contain: 'paint',
-          isolation: 'isolate'
+          transformStyle: 'preserve-3d',
+          WebkitTransformStyle: 'preserve-3d',
+          width: '100%',
+          height: '100%',
+          position: 'relative'
         }}
       >
         {/* FRONT FACE */}
@@ -387,7 +384,11 @@ export const WorkCard3D = ({ project, index, type }) => {
           className="card-face-3d card-face-3d--front"
           style={{
             opacity: prefersReducedMotion && isFlipped ? 0 : 1,
-            transition: prefersReducedMotion ? 'opacity 0.3s ease-in-out' : 'none'
+            transition: prefersReducedMotion ? 'opacity 0.3s ease-in-out' : 'none',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(0deg) translateZ(1px)',
+            WebkitTransform: 'rotateY(0deg) translateZ(1px)'
           }}
         >
           <ProjectImage 
@@ -420,7 +421,11 @@ export const WorkCard3D = ({ project, index, type }) => {
           style={{
             opacity: prefersReducedMotion && !isFlipped ? 0 : 1,
             pointerEvents: isFlipped ? 'auto' : 'none',
-            transition: prefersReducedMotion ? 'opacity 0.3s ease-in-out' : 'none'
+            transition: prefersReducedMotion ? 'opacity 0.3s ease-in-out' : 'none',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg) translateZ(1px)',
+            WebkitTransform: 'rotateY(180deg) translateZ(1px)'
           }}
         >
           <div className="accent-top-border" />
