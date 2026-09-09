@@ -1,9 +1,29 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { CursorContext } from '../../context/CursorContext';
 
-export const Header = ({ floating = false }) => {
+export const Header = ({ floating = false, isPastHero = true }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrollingDown, setIsScrollingDown] = useState(false);
+  const lastScrollY = useRef(0);
   const { setMagneticElement, triggerHover, triggerDefault } = useContext(CursorContext);
+
+  useEffect(() => {
+    if (!floating) return;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      // If scrolling down past 120px and delta > 6px, hide floating nav
+      if (currentScrollY > 120 && currentScrollY > lastScrollY.current + 6) {
+        setIsScrollingDown(true);
+      } else if (currentScrollY < lastScrollY.current - 6) {
+        setIsScrollingDown(false);
+      }
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [floating]);
 
   const navItems = [
     { label: 'Work', href: '#work' },
@@ -12,20 +32,21 @@ export const Header = ({ floating = false }) => {
     { label: 'Contact', href: '#contact' }
   ];
 
-  const headerClass = floating ? 'header header--floating' : 'header header--embedded';
+  const isHidden = floating && (!isPastHero || (isScrollingDown && !isMobileMenuOpen));
+  const headerClass = floating 
+    ? `header header--floating ${isHidden ? 'header--hidden' : ''}` 
+    : 'header header--embedded';
 
   return (
     <header 
       className={headerClass} 
-      id="main-header" 
+      id={floating ? 'floating-header' : 'main-header'} 
       data-nav="true"
       style={{ 
         zIndex: 9999,
         isolation: 'isolate',
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
-        transform: 'translateZ(0)',
-        WebkitTransform: 'translateZ(0)',
         contain: 'paint'
       }}
     >

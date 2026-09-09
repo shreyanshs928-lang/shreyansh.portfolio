@@ -27,7 +27,7 @@ export const defaultPortfolioData = {
       behance: "https://behance.net",
       email: "shreyansh@example.com"
     },
-    portraitImage: "svg:profile-placeholder",
+    portraitImage: "svg:avatar",
     badgeText: "Self-Taught Designer",
     stats: [
       { value: '2+', label: 'Years Designing' },
@@ -47,7 +47,7 @@ export const defaultPortfolioData = {
   ],
   about: {
     paragraph: 'I am a self-taught multidisciplinary designer currently studying Chemical Engineering at <strong>IIT Bombay</strong>. My design process is defined by high contrast grids, modern typographic rhythm, and clean execution. From branding campaigns for college festivals to telemetry dashboards for rockets, I design functional art.<br><br>I specialize in translating complex systems into clean interfaces and visual guides. For the last 2 years, I have built design architectures for festival teams, student groups, and independent clients.',
-    profilePhoto: 'svg:profile-placeholder',
+    profilePhoto: 'svg:avatar',
     stats: [
       '5+ Years Design Experience',
       '50+ Shipped Creative Projects',
@@ -281,7 +281,7 @@ const withTimeout = (promise, ms = 6000) => {
 };
 
 // Helper to format default portfolio data into exact payload shape
-const formatFallbackData = () => ({
+export const formatFallbackData = () => ({
   hero: {
     eyebrowText: defaultPortfolioData.profile.eyebrowText,
     headlineLine1: defaultPortfolioData.profile.headlineLine1,

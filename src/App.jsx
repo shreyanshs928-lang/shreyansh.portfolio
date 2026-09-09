@@ -315,8 +315,8 @@ const PortfolioHome = () => {
         />
       )}
 
-      {/* Floating header — visible after scrolling past hero */}
-      {isPastHero && <Header floating={true} />}
+      {/* Floating header — smoothly reveals after scrolling past hero */}
+      <Header floating={true} isPastHero={isPastHero} />
 
       <div className="page-panels-wrapper">
         {/* PANEL 1: Hero + Work Carousel (Combined Dark Panel) */}

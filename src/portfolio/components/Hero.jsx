@@ -301,11 +301,17 @@ export const Hero = ({ heroData, isLoading }) => {
   const eyebrowText = heroData?.eyebrowText || "Hey, I'm Shreyansh";
   const headlineLine1 = heroData?.headlineLine1 || "Multidisciplinary Designer +";
   const headlineLine2 = heroData?.headlineLine2 || "Chemical Engineer";
-  const bioText = heroData?.bioText || "";
-  const resumeLink = heroData?.resumeLink || "#";
-  const badgeText = heroData?.badgeText || "";
-  const portraitImage = heroData?.portraitImage || "";
-  const stats = heroData?.stats || [];
+  const bioText = heroData?.bioText || "I design across UI/UX, motion, print and social — blending an engineer's precision with a designer's instinct. Currently building creative systems at IIT Bombay.";
+  const resumeLink = heroData?.resumeLink || "https://drive.google.com/file/d/1Bypb7F4N-a477yBw4Oqg_xZpxq0V0f_B/view?usp=sharing";
+  const badgeText = heroData?.badgeText || "Self-Taught Designer";
+  const portraitImage = heroData?.portraitImage || "svg:avatar";
+  const fallbackStats = [
+    { value: '2+', label: 'Years Designing' },
+    { value: '10+', label: 'Projects Shipped' },
+    { value: '6', label: 'Disciplines' },
+    { value: "IIT Bombay '27", label: 'Student Core' }
+  ];
+  const stats = (heroData?.stats && heroData.stats.length > 0) ? heroData.stats : fallbackStats;
   const socialLinksData = heroData?.socialLinks || {};
 
   const fallbackTags = [
@@ -414,8 +420,8 @@ export const Hero = ({ heroData, isLoading }) => {
             <span 
               className="section-eyebrow will-animate"
               style={{
-                opacity: isLoaded ? 1 : 0,
-                transform: isLoaded ? 'translateY(0)' : 'translateY(15px)',
+                opacity: 1,
+                transform: 'translateY(0)',
                 transition: 'opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1)',
                 transitionDelay: '50ms'
               }}
@@ -424,39 +430,19 @@ export const Hero = ({ heroData, isLoading }) => {
             </span>
 
             <h1 className="display-font text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] text-white mb-6">
-              <span className="block overflow-hidden pb-1">
-                <span
-                  className="block will-animate"
-                  style={{
-                    transform: isLoaded ? 'translateY(0)' : 'translateY(100%)',
-                    opacity: isLoaded ? 1 : 0,
-                    transition: 'transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                    transitionDelay: '100ms'
-                  }}
-                >
-                  {headlineLine1}
-                </span>
+              <span className="block">
+                {headlineLine1}
               </span>
-              <span className="block overflow-hidden pb-1">
-                <span
-                  className="block gradient-text will-animate"
-                  style={{
-                    transform: isLoaded ? 'translateY(0)' : 'translateY(100%)',
-                    opacity: isLoaded ? 1 : 0,
-                    transition: 'transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                    transitionDelay: '300ms'
-                  }}
-                >
-                  {headlineLine2}
-                </span>
+              <span className="block gradient-text">
+                {headlineLine2}
               </span>
             </h1>
 
             <p
               className="hero-subhead will-animate text-base md:text-lg text-zinc-400 font-sans leading-relaxed max-w-[620px] mb-8"
               style={{
-                opacity: isLoaded ? 1 : 0,
-                transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
+                opacity: 1,
+                transform: 'translateY(0)',
                 transition: 'opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1)',
                 transitionDelay: '500ms'
               }}
@@ -576,10 +562,34 @@ export const Hero = ({ heroData, isLoading }) => {
                       className="w-full h-full object-cover rounded-[11px]" 
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[#8B5CF6] opacity-60 bg-[#121829] rounded-[11px]">
-                      <svg className="w-24 h-24 stroke-current" fill="none" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    <div className="w-full h-full relative flex flex-col items-center justify-center bg-gradient-to-br from-[#0c101c] via-[#070B18] to-[#121626] rounded-[11px] overflow-hidden p-6 select-none border border-white/[0.04]">
+                      {/* Concentric orbital rings and grid lines */}
+                      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40" viewBox="0 0 200 200" fill="none">
+                        <circle cx="100" cy="100" r="85" stroke="#8B5CF6" strokeWidth="0.75" strokeDasharray="3 3" />
+                        <circle cx="100" cy="100" r="60" stroke="#8B5CF6" strokeWidth="0.75" opacity="0.6" />
+                        <circle cx="100" cy="100" r="35" stroke="#FF8A4C" strokeWidth="0.75" strokeDasharray="4 4" opacity="0.7" />
+                        <line x1="100" y1="10" x2="100" y2="190" stroke="rgba(255,255,255,0.06)" strokeWidth="0.75" />
+                        <line x1="10" y1="100" x2="190" y2="100" stroke="rgba(255,255,255,0.06)" strokeWidth="0.75" />
+                        <circle cx="100" cy="15" r="2" fill="#8B5CF6" />
+                        <circle cx="100" cy="185" r="2" fill="#8B5CF6" />
+                        <circle cx="15" cy="100" r="2" fill="#FF8A4C" />
+                        <circle cx="185" cy="100" r="2" fill="#FF8A4C" />
                       </svg>
+
+                      {/* Centered Monogram / Minimal Geometric Avatar */}
+                      <div className="relative z-10 flex flex-col items-center justify-center">
+                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#8B5CF6]/20 via-[#161B2E] to-[#FF8A4C]/20 border border-white/10 flex items-center justify-center shadow-inner mb-3">
+                          <span className="display-font text-3xl font-extrabold tracking-wider gradient-text">
+                            SS
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-mono tracking-widest text-zinc-400 uppercase font-medium">
+                          SHREYANSH SINGH
+                        </span>
+                        <span className="text-[9px] font-mono tracking-wider text-[#8B5CF6]/80 mt-0.5">
+                          DESIGN × SYSTEMS
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>
