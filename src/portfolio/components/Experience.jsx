@@ -16,7 +16,7 @@ export const Experience = ({ experienceData }) => {
         position: 'relative', 
         isolation: 'isolate', 
         zIndex: 0,
-        backgroundColor: '#070B18',
+        backgroundColor: 'transparent',
         contain: 'paint'
       }}
     >

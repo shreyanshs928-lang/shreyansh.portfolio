@@ -23,7 +23,7 @@ const WorkSection = ({ id, eyebrow, title, desc, viewAllLink = "https://behance.
         position: 'relative', 
         isolation: 'isolate', 
         zIndex: 0,
-        backgroundColor: '#0D1117',
+        backgroundColor: 'transparent',
         contain: 'paint'
       }}
     >

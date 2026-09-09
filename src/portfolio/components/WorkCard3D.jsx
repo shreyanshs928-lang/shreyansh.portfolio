@@ -269,7 +269,7 @@ export const WorkCard3D = ({ project, index, type }) => {
       await controls.start({
         scale: 1,
         y: 0,
-        boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+        boxShadow: "0 12px 32px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08)",
         transition: { duration: 0.15 }
       });
       return;
@@ -310,7 +310,7 @@ export const WorkCard3D = ({ project, index, type }) => {
       y: 0,
       rotateY: 0,
       opacity: 1,
-      boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+      boxShadow: "0 12px 32px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08)",
       transition: {
         rotateY: { duration: 0.45, ease: [0.23, 1, 0.32, 1] },
         scale: { duration: 0.3, ease: "easeOut" },

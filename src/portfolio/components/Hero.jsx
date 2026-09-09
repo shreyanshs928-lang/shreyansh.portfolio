@@ -85,7 +85,7 @@ const AnimatedStatCard = ({ value, label, delay }) => {
       <span className="text-3xl md:text-4xl font-extrabold gradient-text display-font mb-1 tracking-tight">
         {displayValue}
       </span>
-      <span className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-widest font-bold font-sans">
+      <span className="text-[10px] md:text-xs text-slate-300 uppercase tracking-widest font-bold font-sans">
         {label}
       </span>
     </div>

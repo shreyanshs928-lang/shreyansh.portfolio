@@ -26,10 +26,11 @@ const CarouselCard = ({ item, isFeatured }) => {
         ...style,
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: '#12172a',
+        background: 'linear-gradient(180deg, #1C2442 0%, #111629 100%)',
         borderRadius: '20px',
         overflow: 'hidden',
-        border: '1px solid rgba(255, 255, 255, 0.05)',
+        border: '1px solid rgba(255, 255, 255, 0.16)',
+        boxShadow: '0 14px 36px -8px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
         userSelect: 'none',
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
@@ -50,13 +51,13 @@ const CarouselCard = ({ item, isFeatured }) => {
       
       <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', flexGrow: 1, justifyContent: 'space-between' }}>
         <div>
-          <span style={{ color: 'var(--accent-violet)', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+          <span style={{ color: '#A78BFA', fontSize: '10.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
             {cItem.category || 'Featured Work'}
           </span>
-          <h3 className="display-font" style={{ fontSize: '1.25rem', color: 'var(--text-primary)', marginTop: '6px', marginBottom: '10px' }}>
+          <h3 className="display-font" style={{ fontSize: '1.25rem', color: '#FFFFFF', marginTop: '6px', marginBottom: '10px', fontWeight: 700 }}>
             {cItem.title}
           </h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: '20px' }}>
+          <p style={{ color: '#CBD5E1', fontSize: '0.85rem', lineHeight: 1.55, marginBottom: '20px' }}>
             {cItem.description}
           </p>
         </div>
@@ -88,7 +89,7 @@ export const WorkCarousel = ({ carouselData }) => {
       style={{
         position: 'relative',
         width: '100%',
-        backgroundColor: '#0D1117',
+        backgroundColor: 'transparent',
         isolation: 'isolate',
         zIndex: 0,
         minHeight: '560px',
