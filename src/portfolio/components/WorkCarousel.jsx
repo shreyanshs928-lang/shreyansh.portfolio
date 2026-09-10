@@ -99,14 +99,12 @@ export const WorkCarousel = ({ carouselData }) => {
       }}
     >
       <div className="container">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem', flexWrap: 'wrap', gap: '1.5rem' }}>
-          <div>
-            <span className="section-eyebrow">Work</span>
-            <h2 className="section-title display-font section-title-3d">Selected Works</h2>
-            <p className="section-desc" style={{ marginBottom: 0 }}>
-              Interact and explore a carousel of featured design systems, interfaces, and campaigns.
-            </p>
-          </div>
+        <div className="section-header-fractal">
+          <span className="section-eyebrow">Work</span>
+          <h2 className="section-title display-font section-title-3d">Selected Works</h2>
+          <p className="section-desc" style={{ marginBottom: 0 }}>
+            Interact and explore a carousel of featured design systems, interfaces, and campaigns.
+          </p>
         </div>
 
         <Carousel className="w-full">

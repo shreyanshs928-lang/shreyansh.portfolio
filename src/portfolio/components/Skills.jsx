@@ -23,7 +23,7 @@ export const Skills = ({ skillsData }) => {
       }}
     >
       <div className="container">
-        <div className="section-header-reveal" style={{ marginBottom: '3.5rem' }}>
+        <div className="section-header-reveal section-header-fractal">
           <span className="section-eyebrow">Expertise</span>
           <h2 className="section-title display-font section-title-3d">Skills & Tools</h2>
         </div>
@@ -31,7 +31,9 @@ export const Skills = ({ skillsData }) => {
         <div className="skills-grid">
           {/* Column 1: Design Tools */}
           <div>
-            <h3 className="skills-column-title display-font">Design & Tech Stack</h3>
+            <div className="skills-column-header-fractal">
+              <h3 className="skills-column-title display-font" style={{ margin: 0 }}>Design & Tech Stack</h3>
+            </div>
             <div className="skills-pills glass-card p-6">
               {tools.map((tool, idx) => (
                 <div
@@ -56,7 +58,9 @@ export const Skills = ({ skillsData }) => {
 
           {/* Column 2: Other Skills / Disciplines */}
           <div>
-            <h3 className="skills-column-title display-font">Disciplines & Specialties</h3>
+            <div className="skills-column-header-fractal">
+              <h3 className="skills-column-title display-font" style={{ margin: 0 }}>Disciplines & Specialties</h3>
+            </div>
             <div className="skills-pills glass-card p-6">
               {other.map((skill, idx) => (
                 <div

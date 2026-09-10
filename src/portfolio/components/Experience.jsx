@@ -21,7 +21,7 @@ export const Experience = ({ experienceData }) => {
       }}
     >
       <div className="container">
-        <div className="section-header-reveal" style={{ marginBottom: '3.5rem' }}>
+        <div className="section-header-reveal section-header-fractal">
           <span className="section-eyebrow">Timeline</span>
           <h2 className="section-title display-font section-title-3d">Work Experience</h2>
         </div>

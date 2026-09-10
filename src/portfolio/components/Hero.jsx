@@ -387,8 +387,8 @@ export const Hero = ({ heroData, isLoading }) => {
         {/* Main Split Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
-          {/* Left Column: Text Content */}
-          <div className="lg:col-span-7 flex flex-col justify-center text-left">
+          {/* Left Column: Text Content with Fractal Glass Plate */}
+          <div className="lg:col-span-7 flex flex-col justify-center text-left hero-text-fractal-plate">
             <span 
               className="section-eyebrow will-animate"
               style={{
@@ -410,7 +410,7 @@ export const Hero = ({ heroData, isLoading }) => {
             </h1>
 
             <p
-              className="hero-subhead will-animate text-base md:text-lg text-zinc-400 font-sans leading-relaxed max-w-[620px] mb-8"
+              className="hero-subhead will-animate text-base md:text-lg text-slate-200 font-sans leading-relaxed max-w-[620px] mb-8"
               style={{
                 opacity: isLoaded ? 1 : 0,
                 transform: isLoaded ? 'translateY(0)' : 'translateY(12px)',

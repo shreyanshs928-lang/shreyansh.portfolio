@@ -28,10 +28,10 @@ const WorkSection = ({ id, eyebrow, title, desc, viewAllLink = "https://behance.
       }}
     >
       <div className="container">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div className="section-header-fractal section-header-fractal--split">
           <div>
-            <span className="section-eyebrow" style={{ color: 'var(--text-muted)' }}>{eyebrow}</span>
-            <h3 className="display-font" style={{ fontSize: '1.8rem', color: 'var(--text-white)' }}>{title}</h3>
+            <span className="section-eyebrow" style={{ color: '#A78BFA', marginBottom: '0.4rem' }}>{eyebrow}</span>
+            <h3 className="display-font" style={{ fontSize: '1.8rem', color: '#FFFFFF', margin: 0 }}>{title}</h3>
           </div>
           <a
             href={viewAllLink}
@@ -77,16 +77,18 @@ export const Work = ({ portfolioData }) => {
           position: 'relative', 
           isolation: 'isolate', 
           zIndex: 0,
-          backgroundColor: '#0D1117',
+          backgroundColor: 'transparent',
           contain: 'paint'
         }}
       >
         <div className="container">
-          <span className="section-eyebrow">Portfolio</span>
-          <h2 className="section-title display-font section-title-3d">Selected Works</h2>
-          <p className="section-desc" style={{ marginBottom: 0 }}>
-            A deep dive into cross-disciplinary projects shipped for real products, festivals, and campus teams.
-          </p>
+          <div className="section-header-fractal">
+            <span className="section-eyebrow">Portfolio</span>
+            <h2 className="section-title display-font section-title-3d">Selected Works</h2>
+            <p className="section-desc" style={{ marginBottom: 0 }}>
+              A deep dive into cross-disciplinary projects shipped for real products, festivals, and campus teams.
+            </p>
+          </div>
         </div>
       </section>
 

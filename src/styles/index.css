@@ -914,12 +914,44 @@ section {
 
 .experience-entry {
   position: relative;
-  padding-left: 3.5rem;
-  margin-bottom: 4.5rem;
+  padding: 28px 32px 28px 3.25rem;
+  margin-bottom: 2.25rem;
+  background: linear-gradient(
+    135deg,
+    rgba(20, 27, 52, 0.74) 0%,
+    rgba(12, 16, 32, 0.88) 100%
+  );
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 
+    0 16px 36px -8px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  overflow: hidden;
   opacity: 0;
   transform: translateX(30px);
   transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+              transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+}
+
+.experience-entry::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='expFractal'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23expFractal)'/%3E%3C/svg%3E");
+}
+
+.experience-entry > * {
+  position: relative;
+  z-index: 1;
 }
 
 .experience-entry.animate {
@@ -933,13 +965,14 @@ section {
 
 .experience-dot {
   position: absolute;
-  left: -4px;
-  top: 10px;
-  width: 9px;
-  height: 9px;
+  left: 20px;
+  top: 36px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background-color: var(--bg-color);
-  border: 2px solid var(--accent);
+  background-color: var(--accent);
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 10px var(--accent);
   transition: var(--transition-fast);
   z-index: 2;
 }
@@ -950,13 +983,21 @@ section {
 
 @keyframes pulse-dot {
   0% { transform: scale(1); }
-  50% { transform: scale(1.4); background-color: var(--accent); box-shadow: 0 0 10px var(--accent); }
+  50% { transform: scale(1.4); background-color: var(--accent); box-shadow: 0 0 14px var(--accent); }
   100% { transform: scale(1); }
+}
+
+.experience-entry:hover {
+  border-color: rgba(139, 92, 246, 0.45);
+  box-shadow: 
+    0 20px 48px -8px rgba(0, 0, 0, 0.7),
+    0 0 24px rgba(139, 92, 246, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 
 .experience-entry:hover .experience-dot {
   background-color: var(--accent);
-  box-shadow: 0 0 10px var(--accent);
+  box-shadow: 0 0 14px var(--accent);
   transform: scale(1.3);
 }
 
@@ -1687,7 +1728,7 @@ section {
   background: radial-gradient(circle, var(--accent-amber) 0%, transparent 70%);
 }
 
-/* Layer 2: Geometric Grid Pattern */
+/* Layer 2: Geometric Grid Pattern — masked to stay clear of hero text */
 .ambient-grid-layer {
   position: absolute;
   top: -15%;
@@ -1701,6 +1742,8 @@ section {
     linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
   background-size: 60px 60px;
   background-position: center center;
+  mask-image: radial-gradient(ellipse 70% 65% at 82% 50%, black 25%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 65% at 82% 50%, black 25%, transparent 80%);
   will-change: transform;
 }
 
@@ -1980,16 +2023,35 @@ section {
    TEXTURES & GLASSMORPHISM SYSTEM
    ------------------------------------------------------------- */
 .glass-card {
-  background: linear-gradient(145deg, rgba(26, 35, 62, 0.72) 0%, rgba(14, 19, 36, 0.85) 100%) !important;
-  backdrop-filter: blur(20px) saturate(130%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(130%) !important;
+  position: relative;
+  background: linear-gradient(145deg, rgba(24, 33, 60, 0.76) 0%, rgba(12, 17, 34, 0.88) 100%) !important;
+  backdrop-filter: blur(24px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(140%) !important;
   border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 12px 36px rgba(0, 0, 0, 0.5) !important;
-  border-radius: 16px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 14px 40px rgba(0, 0, 0, 0.55) !important;
+  border-radius: 20px !important;
   transition: border-color 0.3s, background 0.3s, transform 0.3s, box-shadow 0.3s;
+  overflow: hidden;
 }
 
-/* Grid overlay with light precision lines and silver micro-dots */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.065;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='glassFractal'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23glassFractal)'/%3E%3C/svg%3E");
+}
+
+.glass-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Grid overlay with light precision lines — masked away from top/text zones */
 .section-grid-overlay {
   position: relative;
 }
@@ -2004,15 +2066,16 @@ section {
   pointer-events: none;
   background-image: 
     /* Silver micro-dot intersection points */
-    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.22) 1.2px, transparent 1.2px),
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.16) 1.2px, transparent 1.2px),
     /* Precision linear grid lines */
-    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-  background-size: 36px 36px, 36px 36px, 36px 36px;
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 40px 40px, 40px 40px, 40px 40px;
   background-position: 0 0, 0 0, 0 0;
   background-attachment: local;
-  mask-image: radial-gradient(ellipse 85% 65% at 50% 45%, black 45%, rgba(0, 0, 0, 0.4) 75%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 45%, black 45%, rgba(0, 0, 0, 0.4) 75%, transparent 100%);
+  /* Mask out the grid from the top header regions where text sits */
+  mask-image: radial-gradient(ellipse 85% 60% at 50% 75%, black 20%, rgba(0, 0, 0, 0.25) 55%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 60% at 50% 75%, black 20%, rgba(0, 0, 0, 0.25) 55%, transparent 90%);
   z-index: 0;
 }
 
@@ -2030,6 +2093,153 @@ section {
   border-radius: inherit;
   mix-blend-mode: screen;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* -------------------------------------------------------------
+   FRACTAL GLASS SYSTEM FOR TEXT VISIBILITY
+   ------------------------------------------------------------- */
+.fractal-glass-plate,
+.section-header-fractal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px 32px;
+  border-radius: 24px;
+  background: linear-gradient(
+    135deg,
+    rgba(20, 27, 52, 0.78) 0%,
+    rgba(10, 14, 30, 0.90) 100%
+  );
+  backdrop-filter: blur(28px) saturate(150%);
+  -webkit-backdrop-filter: blur(28px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 
+    0 16px 40px -10px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 0 24px rgba(139, 92, 246, 0.05);
+  margin-bottom: 2.5rem;
+  max-width: fit-content;
+  overflow: hidden;
+}
+
+/* Tactile fractal micro-stipple refraction layer */
+.fractal-glass-plate::before,
+.section-header-fractal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.075;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='headerFractal'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23headerFractal)'/%3E%3C/svg%3E");
+}
+
+/* Specular top rim light */
+.fractal-glass-plate::after,
+.section-header-fractal::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 24px;
+  right: 24px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.fractal-glass-plate > *,
+.section-header-fractal > * {
+  position: relative;
+  z-index: 1;
+}
+
+.section-header-fractal--split {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 100%;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+/* Hero text fractal plate */
+.hero-text-fractal-plate {
+  position: relative;
+  padding: 36px 40px;
+  border-radius: 28px;
+  background: linear-gradient(
+    135deg,
+    rgba(18, 25, 48, 0.74) 0%,
+    rgba(10, 14, 28, 0.88) 100%
+  );
+  backdrop-filter: blur(32px) saturate(150%);
+  -webkit-backdrop-filter: blur(32px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 
+    0 24px 60px -12px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 0 30px rgba(139, 92, 246, 0.06);
+  overflow: hidden;
+}
+
+.hero-text-fractal-plate::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='heroFractal'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23heroFractal)'/%3E%3C/svg%3E");
+}
+
+.hero-text-fractal-plate::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 30px;
+  right: 30px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.hero-text-fractal-plate > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .hero-text-fractal-plate {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+  .section-header-fractal {
+    padding: 20px 22px;
+    border-radius: 18px;
+  }
+}
+
+/* Column titles in Skills */
+.skills-column-header-fractal {
+  position: relative;
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(22, 30, 56, 0.65) 0%, rgba(12, 16, 32, 0.75) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  margin-bottom: 1.25rem;
 }
 
 
@@ -2150,22 +2360,20 @@ section {
   position: relative;
 }
 
-/* Dark panel — carries the dual-tone gradient + atmospheric effects + premium light textures */
+/* Dark panel — carries the dual-tone gradient + atmospheric effects + top specular wash */
 .page-panel--dark {
   background: 
     /* Top specular ambient light wash */
     radial-gradient(ellipse 70% 30% at 50% 0%, rgba(255, 255, 255, 0.08) 0%, rgba(139, 92, 246, 0.06) 45%, transparent 75%),
     /* Secondary subtle corner light accent */
     radial-gradient(circle 600px at 90% 12%, rgba(255, 255, 255, 0.035) 0%, transparent 65%),
-    /* Micro silver dot matrix texture */
-    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.065) 1px, transparent 1px),
     /* Base dual-tone deep canvas */
     linear-gradient(
       to right,
       #070B18 calc(var(--split-blend-position, 50%) - 7.5%),
       #120A0E calc(var(--split-blend-position, 50%) + 7.5%)
     );
-  background-size: 100% 100%, 100% 100%, 28px 28px, 100% 100%;
+  background-size: 100% 100%, 100% 100%, 100% 100%;
   color: var(--text-primary);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 20px 50px rgba(0, 0, 0, 0.5);
@@ -2645,17 +2853,22 @@ section {
   background-color: var(--card-accent-color, #8B5CF6);
 }
 
-/* Dossier Grid Texture overlay */
+/* Remove grid texture overlay from behind card text */
 .card-face-3d--back .back-grid-overlay {
+  display: none !important;
+}
+
+/* Fractal glass texture on card back face */
+.card-face-3d--back::before {
+  content: '';
   position: absolute;
   inset: 0;
-  z-index: 1;
+  border-radius: inherit;
   pointer-events: none;
-  opacity: 0.04;
-  background-size: 20px 20px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  z-index: 1;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='backFractal'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23backFractal)'/%3E%3C/svg%3E");
 }
 
 /* Content wrapper on back */
