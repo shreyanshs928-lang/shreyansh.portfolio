@@ -4,7 +4,7 @@ import { CursorContext } from '../../context/CursorContext';
 import { WorkCard3D } from './WorkCard3D';
 
 // Section Component wrapper
-const WorkSection = ({ id, eyebrow, title, desc, viewAllLink = "https://behance.net", type, projects }) => {
+const WorkSection = ({ id, eyebrow, title, desc, viewAllLink = "https://behance.net", viewAllLabel, type, projects }) => {
   const sectionRef = useRef(null);
   const isRevealed = useFadeInOnScroll(sectionRef, { threshold: 0.1 });
   const { setMagneticElement, triggerHover, triggerDefault } = useContext(CursorContext);
@@ -44,7 +44,7 @@ const WorkSection = ({ id, eyebrow, title, desc, viewAllLink = "https://behance.
             }}
             onMouseLeave={triggerDefault}
           >
-            View All {title.split(' ')[0]} →
+            View All {viewAllLabel || title.split(' ')[0]} →
           </a>
         </div>
 
@@ -97,6 +97,7 @@ export const Work = ({ portfolioData }) => {
         id="work-social"
         eyebrow="Social · Posts"
         title="Digital Campaigns"
+        viewAllLabel="Campaigns"
         type="social"
         projects={work.social || []}
       />
@@ -106,6 +107,7 @@ export const Work = ({ portfolioData }) => {
         id="work-print"
         eyebrow="Print · Editorial"
         title="Editorial & Layouts"
+        viewAllLabel="Editorial"
         type="print"
         projects={work.print || []}
       />
@@ -115,6 +117,7 @@ export const Work = ({ portfolioData }) => {
         id="work-ui"
         eyebrow="UI · UX · Web"
         title="Digital Platforms"
+        viewAllLabel="Platforms"
         type="ui"
         projects={work.ui || []}
       />
@@ -124,6 +127,7 @@ export const Work = ({ portfolioData }) => {
         id="work-reels"
         eyebrow="Reels · Motion"
         title="Short Form Motion"
+        viewAllLabel="Motion"
         type="reels"
         projects={work.reels || []}
       />
@@ -133,6 +137,7 @@ export const Work = ({ portfolioData }) => {
         id="work-video"
         eyebrow="Video · Editing"
         title="Cinematics & Edits"
+        viewAllLabel="Videos"
         type="video"
         projects={work.video || []}
       />
@@ -142,6 +147,7 @@ export const Work = ({ portfolioData }) => {
         id="work-branding"
         eyebrow="Brand · Identity"
         title="Identity Systems"
+        viewAllLabel="Systems"
         type="branding"
         projects={work.branding || []}
       />

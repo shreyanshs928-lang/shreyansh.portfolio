@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { Shield, Lock, Mail, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Shield, Lock, Mail, Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
 
 export default function Login() {
   const { login, currentUser } = useContext(AuthContext);
@@ -120,6 +120,15 @@ export default function Login() {
             )}
           </button>
         </form>
+
+        <div className="mt-6 pt-5 border-t border-[#27272a]/60 text-center">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-xs font-medium text-[#a1a1aa] hover:text-white transition-colors"
+          >
+            <ArrowLeft size={14} /> Back to Portfolio
+          </Link>
+        </div>
       </div>
     </div>
   );

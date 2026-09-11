@@ -279,22 +279,18 @@ export const WorkCard3D = ({ project, index, type }) => {
     await controls.start("rest");
   };
 
-  // Click handler for touch devices
+  // Click/tap handler: toggles flip across desktop, tablet, and mobile devices
   const handleCardClick = () => {
-    if (isTouchDevice) {
-      if (isFlipped) {
-        handleMouseLeave();
-      } else {
-        handleMouseEnter();
-      }
+    if (isFlipped) {
+      handleMouseLeave();
+    } else {
+      handleMouseEnter();
     }
   };
 
   // Keyboard navigation handles
-  const handleFocus = (e) => {
-    if (!e.currentTarget.contains(e.relatedTarget)) {
-      handleMouseEnter();
-    }
+  const handleFocus = () => {
+    // Deliberate flip is handled via Enter/Space (onKeyDown), hover (onMouseEnter), or tap/click (onClick)
   };
 
   const handleBlur = (e) => {

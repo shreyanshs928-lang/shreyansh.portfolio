@@ -37,7 +37,9 @@ const AnimatedStatCard = ({ value, label, delay }) => {
       return;
     }
 
-    const matches = value.match(/\d+/);
+    // Only count-up animate values that start with a number (e.g. "1+", "6+", "3")
+    // Non-numeric labels (e.g. "IIT Bombay '27") should display immediately without rolling
+    const matches = value.match(/^\d+/);
     if (!matches) {
       setDisplayValue(value);
       return;
@@ -71,10 +73,12 @@ const AnimatedStatCard = ({ value, label, delay }) => {
     return () => clearTimeout(timer);
   }, [isVisible, value, delay]);
 
+  const isLongText = (value || '').length > 8;
+
   return (
     <div 
       ref={cardRef}
-      className="flex flex-col text-left glass-card p-5"
+      className="flex flex-col text-left glass-card p-4 sm:p-5 justify-between min-h-[90px]"
       style={{
         transform: isVisible ? 'translateY(0)' : 'translateY(10px)',
         opacity: isVisible ? 1 : 0,
@@ -82,7 +86,7 @@ const AnimatedStatCard = ({ value, label, delay }) => {
         transitionDelay: `${Math.min(delay, 200)}ms`
       }}
     >
-      <span className="text-3xl md:text-4xl font-extrabold gradient-text display-font mb-1 tracking-tight">
+      <span className={`${isLongText ? 'text-lg sm:text-xl md:text-2xl leading-snug' : 'text-3xl md:text-4xl leading-tight'} font-extrabold gradient-text display-font mb-1 tracking-tight break-words`}>
         {displayValue}
       </span>
       <span className="text-[10px] md:text-xs text-slate-300 uppercase tracking-widest font-bold font-sans">

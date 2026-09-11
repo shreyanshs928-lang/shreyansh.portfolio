@@ -42,6 +42,9 @@ export const Carousel = ({ children, className = '' }) => {
     setDragX((prev) => Math.max(-dragLimit, prev - 360));
   };
 
+  const isAtStart = dragX >= 0;
+  const isAtEnd = dragLimit === 0 || Math.abs(dragX) >= dragLimit - 10;
+
   return (
     <div className={`carousel-wrapper relative w-full ${className}`} style={{ width: '100%' }}>
       {/* Optional navigation arrows */}
@@ -51,6 +54,7 @@ export const Carousel = ({ children, className = '' }) => {
       >
         <button
           onClick={scrollLeft}
+          disabled={isAtStart}
           className="carousel-btn prev-btn"
           aria-label="Previous items"
           style={{
@@ -62,8 +66,10 @@ export const Carousel = ({ children, className = '' }) => {
             color: '#FFFFFF',
             display: 'flex',
             alignItems: 'center',
-            justify: 'center',
-            cursor: 'pointer',
+            justifyContent: 'center',
+            cursor: isAtStart ? 'not-allowed' : 'pointer',
+            opacity: isAtStart ? 0.35 : 1,
+            pointerEvents: isAtStart ? 'none' : 'auto',
             transition: 'all 0.2s ease'
           }}
         >
@@ -71,6 +77,7 @@ export const Carousel = ({ children, className = '' }) => {
         </button>
         <button
           onClick={scrollRight}
+          disabled={isAtEnd}
           className="carousel-btn next-btn"
           aria-label="Next items"
           style={{
@@ -82,8 +89,10 @@ export const Carousel = ({ children, className = '' }) => {
             color: '#FFFFFF',
             display: 'flex',
             alignItems: 'center',
-            justify: 'center',
-            cursor: 'pointer',
+            justifyContent: 'center',
+            cursor: isAtEnd ? 'not-allowed' : 'pointer',
+            opacity: isAtEnd ? 0.35 : 1,
+            pointerEvents: isAtEnd ? 'none' : 'auto',
             transition: 'all 0.2s ease'
           }}
         >
