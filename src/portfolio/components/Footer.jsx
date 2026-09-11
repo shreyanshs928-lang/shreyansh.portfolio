@@ -154,6 +154,32 @@ export const Footer = ({ footerData, onSecretClick }) => {
                   Experience
                 </a>
               </li>
+              <li>
+                <a
+                  href="#background"
+                  className="footer-nav-link"
+                  onMouseEnter={(e) => {
+                    setMagneticElement(e.currentTarget);
+                    triggerHover('Go');
+                  }}
+                  onMouseLeave={triggerDefault}
+                >
+                  Education
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#archives"
+                  className="footer-nav-link"
+                  onMouseEnter={(e) => {
+                    setMagneticElement(e.currentTarget);
+                    triggerHover('Go');
+                  }}
+                  onMouseLeave={triggerDefault}
+                >
+                  Archive
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -188,7 +214,16 @@ export const Footer = ({ footerData, onSecretClick }) => {
                 <span
                   className="secret-trigger"
                   id="secret-login-trigger"
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Admin console login"
                   onClick={onSecretClick}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onSecretClick();
+                    }
+                  }}
                   style={{
                     cursor: 'pointer',
                     color: 'var(--text-muted)',
@@ -205,7 +240,20 @@ export const Footer = ({ footerData, onSecretClick }) => {
                 {copyright.split('intention')[1]}
               </>
             ) : (
-              <span onClick={onSecretClick} style={{ cursor: 'pointer' }}>{copyright}</span>
+              <span 
+                role="button" 
+                tabIndex={0} 
+                onClick={onSecretClick} 
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSecretClick();
+                  }
+                }}
+                style={{ cursor: 'pointer' }}
+              >
+                {copyright}
+              </span>
             )}
           </p>
         </div>

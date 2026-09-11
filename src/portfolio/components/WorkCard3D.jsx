@@ -350,9 +350,17 @@ export const WorkCard3D = ({ project, index, type }) => {
       ref={cardRef}
       className="work-card-3d-wrapper"
       tabIndex={0}
+      role="button"
+      aria-expanded={isFlipped}
       onFocus={handleFocus}
       onBlur={handleBlur}
       onClick={handleCardClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCardClick();
+        }
+      }}
       onMouseEnter={isInteractive && !isTouchDevice ? () => {
         handleMouseEnter();
         triggerHover(type === 'video' || type === 'reels' ? 'Play' : 'View');
@@ -361,7 +369,7 @@ export const WorkCard3D = ({ project, index, type }) => {
         handleMouseLeave();
         triggerDefault();
       } : undefined}
-      aria-label={`Project card for ${title}. Hover or tap to see details.`}
+      aria-label={`Project card for ${title}. Press Enter or Space to flip and view details.`}
       style={{
         '--card-accent-color': accentColor
       }}
@@ -418,6 +426,7 @@ export const WorkCard3D = ({ project, index, type }) => {
         {/* BACK FACE */}
         <div 
           className="card-face-3d card-face-3d--back"
+          aria-hidden={!isFlipped}
           style={{
             opacity: prefersReducedMotion && !isFlipped ? 0 : 1,
             pointerEvents: isFlipped ? 'auto' : 'none',
@@ -460,6 +469,8 @@ export const WorkCard3D = ({ project, index, type }) => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="back-cta-btn"
+                  tabIndex={isFlipped ? 0 : -1}
+                  aria-label={`Open ${title} live project in new tab`}
                   onClick={(e) => e.stopPropagation()} // Stop click bubbling to toggle flip
                 >
                   View Project

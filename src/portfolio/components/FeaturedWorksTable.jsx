@@ -16,12 +16,32 @@ const TableRow = ({ item }) => {
     return months[monthIndex] ? `${months[monthIndex]} ${year}` : dateStr;
   };
 
+  const handleRowAction = () => {
+    if (tItem.link) {
+      window.open(tItem.link, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return (
     <tr 
       {...cursorHoverProps}
-      onClick={() => tItem.link && window.open(tItem.link, '_blank', 'noopener,noreferrer')}
-      style={{ cursor: 'pointer', transition: 'background-color 0.2s', borderBottom: '1px solid rgba(26, 26, 26, 0.08)' }}
-      className="table-row-hover"
+      tabIndex={tItem.link ? 0 : undefined}
+      role={tItem.link ? 'link' : undefined}
+      aria-label={tItem.link ? `Open ${tItem.title || 'project'} link in new tab` : undefined}
+      onClick={handleRowAction}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleRowAction();
+        }
+      }}
+      style={{ 
+        cursor: tItem.link ? 'pointer' : 'default', 
+        transition: 'background-color 0.2s', 
+        borderBottom: '1px solid rgba(26, 26, 26, 0.08)',
+        outline: 'none'
+      }}
+      className="table-row-hover focus-visible:bg-purple-50/50 focus-visible:ring-1 focus-visible:ring-purple-600"
     >
       <td style={{ padding: '20px 24px', fontWeight: 600, color: '#1A1A1A', fontSize: '0.95rem' }}>
         {tItem.title || ''}

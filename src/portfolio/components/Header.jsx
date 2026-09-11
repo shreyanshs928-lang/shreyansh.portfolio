@@ -65,7 +65,9 @@ export const Header = ({ floating = false, isPastHero = true }) => {
         
         <button
           className={`mobile-nav-toggle ${isMobileMenuOpen ? 'open' : ''}`}
-          aria-label="Toggle Navigation"
+          aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={isMobileMenuOpen}
+          aria-controls={floating ? 'floating-primary-nav' : 'main-primary-nav'}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           <span className="burger-line"></span>
@@ -73,8 +75,11 @@ export const Header = ({ floating = false, isPastHero = true }) => {
           <span className="burger-line"></span>
         </button>
 
-        <nav>
-          <ul className={`nav-list ${isMobileMenuOpen ? 'open' : ''}`}>
+        <nav aria-label="Primary Navigation">
+          <ul 
+            id={floating ? 'floating-primary-nav' : 'main-primary-nav'}
+            className={`nav-list ${isMobileMenuOpen ? 'open' : ''}`}
+          >
             {navItems.map((item) => (
               <li key={item.label}>
                 <a

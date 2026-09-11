@@ -66,7 +66,7 @@ export const Work = ({ portfolioData }) => {
   const work = portfolioData?.work || {};
 
   return (
-    <div id="work">
+    <div id="portfolio" data-section="portfolio">
       {/* SECTION MAIN HEADER */}
       <section 
         ref={sectionHeaderRef} 
@@ -83,8 +83,8 @@ export const Work = ({ portfolioData }) => {
       >
         <div className="container">
           <div className="section-header-fractal">
-            <span className="section-eyebrow">Portfolio</span>
-            <h2 className="section-title display-font section-title-3d">Selected Works</h2>
+            <span className="section-eyebrow">Disciplines</span>
+            <h2 className="section-title display-font section-title-3d">Featured Collections</h2>
             <p className="section-desc" style={{ marginBottom: 0 }}>
               A deep dive into cross-disciplinary projects shipped for real products, festivals, and campus teams.
             </p>

@@ -54,7 +54,7 @@ export const About = ({ profileData }) => {
           <circle cx="200" cy="200" r="120" fill="url(#svgGrad)" stroke="rgba(99, 102, 241, 0.2)" strokeWidth="1" strokeDasharray="4 4"/>
           <circle cx="200" cy="200" r="80" stroke="rgba(255, 255, 255, 0.05)" strokeWidth="1"/>
           <line x1="200" y1="40" x2="200" y2="360" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1"/>
-          <line x1="40" y1="200" x2="360" y2="200" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1"/>
+          <line x1="40" y1="200" x2="360" y2="200" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1"/>
           <rect x="195" y="75" width="10" height="10" fill="#4F46E5" />
           <rect x="195" y="315" width="10" height="10" fill="#4F46E5" />
           <rect x="75" y="195" width="10" height="10" fill="#4F46E5" />
