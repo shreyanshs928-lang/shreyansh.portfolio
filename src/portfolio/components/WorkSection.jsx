@@ -10,19 +10,24 @@ import {
   Sparkles, 
   Layers, 
   ExternalLink,
-  Table,
-  Eye
+  Eye,
+  ArrowUpRight
 } from 'lucide-react';
+import ProjectImage from '../../components/ui/ProjectImage';
 
-export const Work = ({ portfolioData }) => {
+export const Work = ({ portfolioData, activeCategory: externalCategory, onCategoryChange }) => {
   const sectionRef = useRef(null);
   const isRevealed = useFadeInOnScroll(sectionRef, { threshold: 0.05 });
   const { setMagneticElement, triggerHover, triggerDefault } = useContext(CursorContext);
 
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [internalCategory, setInternalCategory] = useState('all');
+  const activeCategory = externalCategory !== undefined ? externalCategory : internalCategory;
+  const setActiveCategory = onCategoryChange || setInternalCategory;
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'feed'
 
   // Flatten and normalize all projects from portfolioData.work
   const allProjects = useMemo(() => {
@@ -99,16 +104,43 @@ export const Work = ({ portfolioData }) => {
             </p>
           </div>
 
-          {/* Search Box */}
-          <div className="relative w-full sm:w-72">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-            <input
-              type="text"
-              placeholder="Search projects, tags..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-full text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all text-slate-800 placeholder-slate-400 shadow-sm"
-            />
+          {/* Controls: Search + View Switcher */}
+          <div className="flex items-center gap-3 w-full lg:w-auto">
+            {/* Search Box */}
+            <div className="relative flex-grow sm:w-72">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+              <input
+                type="text"
+                placeholder="Search projects, tags..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-4 py-2.5 rounded-full text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all text-slate-800 placeholder-slate-400 shadow-sm"
+              />
+            </div>
+
+            {/* View Mode Toggle: Grid vs Magazine Feed */}
+            <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-full border border-slate-200 shrink-0">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-full transition-all ${
+                  viewMode === 'grid' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-800'
+                }`}
+                aria-label="Grid View"
+                title="Bento Grid View"
+              >
+                <LayoutGrid size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode('feed')}
+                className={`p-2 rounded-full transition-all ${
+                  viewMode === 'feed' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-800'
+                }`}
+                aria-label="Feed View"
+                title="Magazine Feed View"
+              >
+                <SlidersHorizontal size={16} />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -130,7 +162,7 @@ export const Work = ({ portfolioData }) => {
           ))}
         </div>
 
-        {/* Projects Grid */}
+        {/* Projects Display: Grid or Feed */}
         {filteredProjects.length === 0 ? (
           <div className="p-16 text-center bg-slate-50 rounded-3xl border border-slate-200/80">
             <p className="text-slate-500 text-base mb-3 font-medium">
@@ -146,7 +178,7 @@ export const Work = ({ portfolioData }) => {
               Reset Filters
             </button>
           </div>
-        ) : (
+        ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProjects.map((project, idx) => (
               <WorkCard3D
@@ -156,6 +188,81 @@ export const Work = ({ portfolioData }) => {
                 onQuickView={handleOpenQuickView}
               />
             ))}
+          </div>
+        ) : (
+          /* Magazine Feed View */
+          <div className="space-y-6">
+            {filteredProjects.map((project) => {
+              const category = project.tag || project.category || 'Featured Work';
+              const tools = project.tools || (
+                category.includes('UI') ? ['Figma', 'Systems'] :
+                category.includes('Print') ? ['InDesign', 'Typography'] :
+                category.includes('Video') || category.includes('Reel') ? ['Premiere', 'After Effects'] :
+                ['Illustrator', 'Branding']
+              );
+
+              return (
+                <div
+                  key={project.id}
+                  onClick={() => handleOpenQuickView(project)}
+                  className="glass-card p-6 sm:p-8 bg-white flex flex-col md:flex-row items-center gap-8 cursor-pointer group hover:-translate-y-1 hover:shadow-xl transition-all"
+                >
+                  {/* Media Viewport */}
+                  <div className="w-full md:w-80 aspect-[16/10] rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 shrink-0 relative">
+                    <ProjectImage
+                      src={project.image || project.thumbnailImage}
+                      alt={project.title}
+                      category={category}
+                      aspectClass="w-full h-full"
+                    />
+                    <span className="absolute top-3 left-3 bg-white/95 text-slate-800 text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm uppercase">
+                      {category}
+                    </span>
+                  </div>
+
+                  {/* Content Info */}
+                  <div className="flex-grow space-y-3 w-full">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <h3 className="display-font text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                          {project.title}
+                        </h3>
+                        {project.org && (
+                          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                            {project.org}
+                          </span>
+                        )}
+                      </div>
+                      <ArrowUpRight size={18} className="text-slate-300 group-hover:text-indigo-600 transition-colors" />
+                    </div>
+
+                    <p className="text-sm text-slate-600 leading-relaxed max-w-2xl">
+                      {project.desc || project.description || `Design project crafted by Shreyansh Singh focusing on ${category} and clean visual execution.`}
+                    </p>
+
+                    <div className="flex flex-wrap items-center justify-between pt-3 border-t border-slate-100 gap-3">
+                      <div className="flex flex-wrap gap-1.5">
+                        {tools.map((t, i) => (
+                          <span key={i} className="text-xs font-medium px-2.5 py-1 rounded-md bg-slate-50 border border-slate-200 text-slate-600">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenQuickView(project);
+                        }}
+                        className="text-xs font-bold text-indigo-600 flex items-center gap-1 hover:underline"
+                      >
+                        <Eye size={14} /> Quick View Case Study
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
 

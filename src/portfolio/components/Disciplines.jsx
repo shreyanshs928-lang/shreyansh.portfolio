@@ -12,7 +12,7 @@ import {
   ArrowUpRight
 } from 'lucide-react';
 
-export const Disciplines = () => {
+export const Disciplines = ({ onSelectCategory }) => {
   const sectionRef = useRef(null);
   const isRevealed = useFadeInOnScroll(sectionRef, { threshold: 0.1 });
   const { setMagneticElement, triggerHover, triggerDefault } = useContext(CursorContext);
@@ -20,6 +20,7 @@ export const Disciplines = () => {
   const disciplineCards = [
     {
       id: 'ui-ux',
+      categoryTarget: 'ui',
       icon: <Activity className="text-indigo-600" size={26} />,
       title: 'UI/UX & Flight Telemetry',
       badge: 'Systems UI',
@@ -29,6 +30,7 @@ export const Disciplines = () => {
     },
     {
       id: 'brand',
+      categoryTarget: 'brand',
       icon: <Compass className="text-amber-500" size={26} />,
       title: 'Brand Systems & Visual Guides',
       badge: 'Identity',
@@ -38,7 +40,8 @@ export const Disciplines = () => {
     },
     {
       id: 'motion',
-      icon: <Video className="text-coral-500 text-rose-500" size={26} />,
+      categoryTarget: 'video',
+      icon: <Video className="text-rose-500" size={26} />,
       title: 'Motion & Cinematic Video',
       badge: 'Direction',
       desc: 'Directing festival teasers, kinetic typography trailers, and launch vlogs that hook viewers in the first 2 seconds.',
@@ -47,6 +50,7 @@ export const Disciplines = () => {
     },
     {
       id: 'print',
+      categoryTarget: 'print',
       icon: <BookOpen className="text-emerald-500" size={26} />,
       title: 'Editorial Layouts & Print Media',
       badge: 'Typography',
@@ -56,6 +60,7 @@ export const Disciplines = () => {
     },
     {
       id: 'social',
+      categoryTarget: 'social',
       icon: <Sparkles className="text-violet-500" size={26} />,
       title: 'High-Impact Digital Campaigns',
       badge: 'Social Media',
@@ -65,6 +70,7 @@ export const Disciplines = () => {
     },
     {
       id: 'engineering',
+      categoryTarget: 'about',
       icon: <Cpu className="text-cyan-600" size={26} />,
       title: 'Chemical Engineering × Logic',
       badge: 'Foundations',
@@ -73,6 +79,19 @@ export const Disciplines = () => {
       color: 'cyan'
     }
   ];
+
+  const handleCardClick = (target) => {
+    if (target === 'about') {
+      const el = document.getElementById('about');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      if (onSelectCategory) {
+        onSelectCategory(target);
+      }
+      const el = document.getElementById('work');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <section 
@@ -87,7 +106,7 @@ export const Disciplines = () => {
             <span className="section-eyebrow">Creative Matrix</span>
             <h2 className="section-title">The Six Disciplines</h2>
             <p className="section-desc">
-              How systematic engineering principles translate into versatile visual craft.
+              How systematic engineering principles translate into versatile visual craft. Click any card to filter projects.
             </p>
           </div>
           <div className="mt-4 md:mt-0">
@@ -99,10 +118,11 @@ export const Disciplines = () => {
 
         {/* 6-Card Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {disciplineCards.map((card, idx) => (
+          {disciplineCards.map((card) => (
             <div
               key={card.id}
-              className="glass-card p-6 sm:p-7 flex flex-col justify-between group hover:-translate-y-1.5 hover:shadow-xl transition-all"
+              onClick={() => handleCardClick(card.categoryTarget)}
+              className="glass-card p-6 sm:p-7 flex flex-col justify-between group hover:-translate-y-1.5 hover:shadow-xl transition-all cursor-pointer"
               onMouseEnter={(e) => {
                 setMagneticElement(e.currentTarget);
                 triggerHover(card.badge);
@@ -131,8 +151,8 @@ export const Disciplines = () => {
                 <span className="font-semibold text-slate-700 font-mono">
                   {card.highlight}
                 </span>
-                <span className="text-slate-400 group-hover:text-indigo-600 transition-colors">
-                  <ArrowUpRight size={14} />
+                <span className="text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all">
+                  <ArrowUpRight size={15} />
                 </span>
               </div>
             </div>
@@ -144,4 +164,3 @@ export const Disciplines = () => {
 };
 
 export default Disciplines;
-

@@ -129,6 +129,7 @@ const PortfolioHome = () => {
   const [activeSection, setActiveSection] = useState('hero');
   const [lastActiveSection, setLastActiveSection] = useState('');
   const [showLabel, setShowLabel] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [sectionOffsets, setSectionOffsets] = useState({
     hero: 0,
     work: 20,
@@ -273,11 +274,15 @@ const PortfolioHome = () => {
         )}
 
         {/* The 6 Disciplines Interactive Matrix */}
-        <Disciplines />
+        <Disciplines onSelectCategory={setSelectedCategory} />
 
         {/* Selected Works Portfolio Command Center */}
         {!isLoading && portfolioData && (
-          <Work portfolioData={portfolioData} />
+          <Work 
+            portfolioData={portfolioData} 
+            activeCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+          />
         )}
 
         {/* Project Directory Archive Table */}
