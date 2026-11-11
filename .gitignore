@@ -27,4 +27,6 @@ dist-ssr
 .agents/
 .codex/
 skills-lock.json
+graphify-out/
+
 

@@ -1,76 +1,55 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useDirectionalHover } from '../../hooks/useCursor';
-import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
+import React, { useState, useRef, useContext } from 'react';
+import { CursorContext } from '../../context/CursorContext';
+import { ArrowLeft, ArrowRight, ExternalLink, Sparkles } from 'lucide-react';
 import ProjectImage from '../../components/ui/ProjectImage';
-import Carousel from '../../components/ui/Carousel';
 
-const CarouselCard = ({ item, isFeatured }) => {
-  const { ref, style } = useDirectionalHover('Open');
+const CarouselCard = ({ item }) => {
   const cItem = item || {};
-
-  const renderThumbnail = () => {
-    return (
-      <ProjectImage
-        src={cItem.thumbnailImage}
-        alt={cItem.title || 'Project Thumbnail'}
-        category={cItem.category || 'Featured Work'}
-        aspectClass="h-[220px]"
-      />
-    );
-  };
+  const { setMagneticElement, triggerHover, triggerDefault } = useContext(CursorContext);
 
   return (
     <div 
-      ref={ref}
-      style={{
-        ...style,
-        display: 'flex',
-        flexDirection: 'column',
-        background: 'linear-gradient(180deg, #1C2442 0%, #111629 100%)',
-        borderRadius: '20px',
-        overflow: 'hidden',
-        border: '1px solid rgba(255, 255, 255, 0.16)',
-        boxShadow: '0 14px 36px -8px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-        userSelect: 'none',
-        backfaceVisibility: 'hidden',
-        WebkitBackfaceVisibility: 'hidden',
-        transform: 'translateZ(0)',
-        isolation: 'isolate',
-        contain: 'paint'
+      className="flex flex-col bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-[300px] sm:w-[360px] shrink-0"
+      onMouseEnter={(e) => {
+        setMagneticElement(e.currentTarget);
+        triggerHover('Featured');
       }}
-      className="carousel-card project-card flex-shrink-0 w-[300px] md:w-[350px]"
+      onMouseLeave={triggerDefault}
     >
-      <div style={{ position: 'relative' }}>
-        {renderThumbnail()}
-        {isFeatured && (
-          <span className="featured-badge" style={{ position: 'absolute', top: '16px', right: '16px', background: 'var(--accent-amber)', color: '#ffffff', fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '4px 10px', borderRadius: '20px', boxShadow: '0 4px 10px rgba(255, 138, 76, 0.3)' }}>
-            Featured
-          </span>
-        )}
+      <div className="relative aspect-[16/10] bg-slate-50 border-b border-slate-100">
+        <ProjectImage
+          src={cItem.thumbnailImage}
+          alt={cItem.title || 'Project'}
+          category={cItem.category || 'Featured Work'}
+          aspectClass="w-full h-full"
+        />
+        <span className="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">
+          Featured
+        </span>
       </div>
       
-      <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', flexGrow: 1, justifyContent: 'space-between' }}>
+      <div className="p-6 flex flex-col justify-between flex-grow">
         <div>
-          <span style={{ color: '#A78BFA', fontSize: '10.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-            {cItem.category || 'Featured Work'}
+          <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 block mb-1">
+            {cItem.category || 'Creative Project'}
           </span>
-          <h3 className="display-font" style={{ fontSize: '1.25rem', color: '#FFFFFF', marginTop: '6px', marginBottom: '10px', fontWeight: 700 }}>
+          <h3 className="display-font text-lg sm:text-xl font-bold text-slate-900 mb-2">
             {cItem.title}
           </h3>
-          <p style={{ color: '#CBD5E1', fontSize: '0.85rem', lineHeight: 1.55, marginBottom: '20px' }}>
+          <p className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-6 line-clamp-3">
             {cItem.description}
           </p>
         </div>
 
         {cItem.link && (
-          <a 
-            href={cItem.link} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="btn btn-primary" 
-            style={{ padding: '10px 16px', fontSize: '0.8rem', width: '100%', gap: '8px', borderRadius: '10px' }}
+          <a
+            href={cItem.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-primary text-xs py-2 px-4 rounded-xl w-full"
           >
-            Launch Project <ExternalLink size={14} />
+            <span>Launch Case Study</span>
+            <ExternalLink size={13} />
           </a>
         )}
       </div>
@@ -79,44 +58,62 @@ const CarouselCard = ({ item, isFeatured }) => {
 };
 
 export const WorkCarousel = ({ carouselData }) => {
-  if (!carouselData || carouselData.length === 0) return null;
+  const scrollRef = useRef(null);
+  const items = carouselData || [];
+
+  if (items.length === 0) return null;
+
+  const handleScroll = (direction) => {
+    if (!scrollRef.current) return;
+    const amount = direction === 'left' ? -380 : 380;
+    scrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+  };
 
   return (
-    <section
-      id="work"
-      data-section="selected-works"
-      className="section-grid-overlay relative w-full"
-      style={{
-        position: 'relative',
-        width: '100%',
-        backgroundColor: 'transparent',
-        isolation: 'isolate',
-        zIndex: 0,
-        minHeight: '560px',
-        contain: 'paint layout',
-        overflow: 'hidden',
-        padding: '5rem 0'
-      }}
-    >
-      <div className="container">
-        <div className="section-header-fractal">
-          <span className="section-eyebrow">Work</span>
-          <h2 className="section-title display-font section-title-3d">Selected Works</h2>
-          <p className="section-desc" style={{ marginBottom: 0 }}>
-            Interact and explore a carousel of featured design systems, interfaces, and campaigns.
+    <section className="bg-slate-50/60 py-16 border-b border-slate-200/80 overflow-hidden">
+      <div className="container mb-8 flex items-end justify-between">
+        <div>
+          <span className="section-eyebrow">Spotlight</span>
+          <h2 className="section-title text-2xl sm:text-3xl font-bold">Featured Highlights</h2>
+          <p className="section-desc text-sm">
+            Top cross-disciplinary releases shipped for student bodies, rocketry competitions, and festivals.
           </p>
         </div>
 
-        <Carousel className="w-full">
-          {carouselData.map((item) => (
-            <CarouselCard 
-              key={item.id} 
-              item={item} 
-              isFeatured={item.activeByDefault} 
-            />
+        {/* Navigation Arrows */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleScroll('left')}
+            className="w-10 h-10 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-700 hover:bg-slate-100 hover:text-indigo-600 transition-colors"
+            aria-label="Scroll left"
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <button
+            onClick={() => handleScroll('right')}
+            className="w-10 h-10 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-700 hover:bg-slate-100 hover:text-indigo-600 transition-colors"
+            aria-label="Scroll right"
+          >
+            <ArrowRight size={18} />
+          </button>
+        </div>
+      </div>
+
+      {/* Horizontal Scroll Track */}
+      <div className="container">
+        <div
+          ref={scrollRef}
+          className="flex gap-6 overflow-x-auto pb-6 scrollbar-none scroll-smooth snap-x"
+        >
+          {items.map((item) => (
+            <div key={item.id} className="snap-start">
+              <CarouselCard item={item} />
+            </div>
           ))}
-        </Carousel>
+        </div>
       </div>
     </section>
   );
 };
+
+export default WorkCarousel;

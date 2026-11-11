@@ -2,145 +2,98 @@ import React, { useRef, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { useFadeInOnScroll } from '../../hooks/useFadeInOnScroll';
 import { CursorContext } from '../../context/CursorContext';
+import { Sparkles, Award, Compass, HeartHandshake, CheckCircle2 } from 'lucide-react';
+import ProjectImage from '../../components/ui/ProjectImage';
 
-export const About = ({ profileData }) => {
+export const About = ({ aboutData, profileData }) => {
   const containerRef = useRef(null);
-  const isRevealed = useFadeInOnScroll(containerRef, { threshold: 0.15 });
+  const isRevealed = useFadeInOnScroll(containerRef, { threshold: 0.1 });
   const { setMagneticElement, triggerHover, triggerDefault } = useContext(CursorContext);
 
-  const paragraph = profileData?.about?.paragraph || "";
-  const profilePhoto = profileData?.about?.profilePhoto || "";
-  const stats = profileData?.about?.stats || [];
-
-  // Framer Motion spring physics for stat pills
-  const statsContainerVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.06
-      }
-    }
-  };
-
-  const statPillVariants = {
-    hidden: { scale: 0.8, opacity: 0 },
-    visible: {
-      scale: [0.8, 1.06, 1],
-      opacity: 1,
-      transition: {
-        type: 'spring',
-        damping: 15,
-        stiffness: 180,
-        duration: 0.6
-      }
-    }
-  };
-
-  const renderPhotoOrIllustration = () => {
-    if (!profilePhoto || profilePhoto.startsWith('svg:')) {
-      // Return custom SVG blueprint placeholder
-      return (
-        <svg width="100%" height="100%" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ background: '#131316' }}>
-          <defs>
-            <linearGradient id="svgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#4F46E5" stopOpacity="0.3"/>
-              <stop offset="100%" stopColor="#000000" stopOpacity="0"/>
-            </linearGradient>
-            <pattern id="gridPattern" width="20" height="20" patternUnits="userSpaceOnUse">
-              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="1"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#gridPattern)" />
-          <circle cx="200" cy="200" r="120" fill="url(#svgGrad)" stroke="rgba(99, 102, 241, 0.2)" strokeWidth="1" strokeDasharray="4 4"/>
-          <circle cx="200" cy="200" r="80" stroke="rgba(255, 255, 255, 0.05)" strokeWidth="1"/>
-          <line x1="200" y1="40" x2="200" y2="360" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1"/>
-          <line x1="40" y1="200" x2="360" y2="200" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1"/>
-          <rect x="195" y="75" width="10" height="10" fill="#4F46E5" />
-          <rect x="195" y="315" width="10" height="10" fill="#4F46E5" />
-          <rect x="75" y="195" width="10" height="10" fill="#4F46E5" />
-          <rect x="315" y="195" width="10" height="10" fill="#4F46E5" />
-          <path d="M 140 140 L 260 260 M 260 140 L 140 260" stroke="rgba(255,255,255,0.05)" strokeWidth="1.5"/>
-          <circle cx="140" cy="140" r="14" fill="#131316" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
-          <text x="135" y="145" fill="rgba(255,255,255,0.4)" fontFamily="sans-serif" fontSize="12">H</text>
-          <circle cx="260" cy="260" r="14" fill="#131316" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
-          <text x="254" y="265" fill="rgba(255,255,255,0.4)" fontFamily="sans-serif" fontSize="12">C</text>
-          <circle cx="200" cy="200" r="20" fill="#0B0B0C" stroke="#4F46E5" strokeWidth="2"/>
-          <text x="193" y="206" fill="#FFFFFF" fontFamily="Space Grotesk" fontWeight="bold" fontSize="18">S</text>
-        </svg>
-      );
-    } else {
-      // Render the uploaded photo
-      return (
-        <img
-          src={profilePhoto}
-          alt="Shreyansh Singh"
-          style={{ width: '100%', height: '100%', objectCover: 'cover', display: 'block', borderRadius: '4px' }}
-        />
-      );
-    }
-  };
+  const data = aboutData || profileData?.about || {};
+  const paragraph = data.paragraph || `I am a self-taught multidisciplinary designer currently studying Chemical Engineering at <strong>IIT Bombay</strong>. My design process is defined by high contrast grids, modern typographic rhythm, and clean execution. From branding campaigns for college festivals to telemetry dashboards for rockets, I design functional art.<br><br>I specialize in translating complex systems into clean interfaces and visual guides. For the last 2 years, I have built design architectures for festival teams, student groups, and independent clients.`;
+  const profilePhoto = data.profilePhoto || profileData?.profile?.portraitImage || "svg:avatar";
+  const stats = data.stats || [
+    '2+ Years Designing for Real Products',
+    '50+ Shipped Creative Projects & Assets',
+    '150k+ Festival Video Views Organically'
+  ];
 
   return (
     <section
       ref={containerRef}
       id="about"
-      className={`reveal-item ${isRevealed ? 'revealed' : ''} section-grid-overlay`}
-      style={{ position: 'relative', isolation: 'isolate', zIndex: 0 }}
+      className={`reveal-item ${isRevealed ? 'revealed' : ''} bg-white py-20 border-b border-slate-200/80`}
     >
       <div className="container">
-        <div className="about-grid glass-card p-8 md:p-12">
-          
-          <div className="about-left">
-            <span className="section-eyebrow">Brief</span>
-            <h2 className="section-title display-font section-title-3d">About Me</h2>
-            <p className="section-desc">Who I am and what drives my work.</p>
-            
-            <p
-              className="about-paragraph"
-              dangerouslySetInnerHTML={{ __html: paragraph }}
-            />
-            
-            {/* Framer motion staggered spring stat pills */}
-            <motion.div
-              className="about-stats"
-              variants={statsContainerVariants}
-              initial="hidden"
-              animate={isRevealed ? "visible" : "hidden"}
-            >
-              {stats.map((stat, idx) => (
-                <motion.div
-                  key={idx}
-                  className="stat-pill"
-                  variants={statPillVariants}
-                  onMouseEnter={(e) => {
-                    setMagneticElement(e.currentTarget);
-                    triggerHover('Read');
-                  }}
-                  onMouseLeave={triggerDefault}
-                >
-                  <span></span>
-                  {stat}
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          {/* Left Column: Creative Portrait / Blueprint Card */}
+          <div className="lg:col-span-5">
+            <div className="relative max-w-md mx-auto">
+              {/* Background Glow */}
+              <div className="absolute -inset-4 bg-gradient-to-tr from-indigo-500/10 via-amber-500/10 to-indigo-500/10 rounded-3xl filter blur-xl opacity-80" />
 
-          <div
-            className="about-right"
-            style={{
-              opacity: isRevealed ? 1 : 0,
-              transform: isRevealed ? 'translateX(0)' : 'translateX(30px)',
-              transition: 'opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
-              transitionDelay: '200ms'
-            }}
-          >
-            <div className="about-illustration">
-              {renderPhotoOrIllustration()}
+              <div className="relative bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden p-6 sm:p-8">
+                <div className="aspect-square w-full rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 mb-6">
+                  <ProjectImage
+                    src={profilePhoto}
+                    alt="Shreyansh Singh"
+                    category="Designer Portrait"
+                    aspectClass="w-full h-full"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                  <div>
+                    <h4 className="display-font text-lg font-bold text-slate-900">Shreyansh Singh</h4>
+                    <span className="text-xs text-slate-500 font-medium">IIT Bombay · Batch of '27</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full">
+                    Self-Taught
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-600 italic leading-relaxed pt-4">
+                  "I believe in learning by breaking things, shipping actual work, and designing at the intersection of engineering systems and creative aesthetics."
+                </p>
+              </div>
             </div>
           </div>
 
+          {/* Right Column: Story & Philosophy */}
+          <div className="lg:col-span-7 space-y-6">
+            <div>
+              <span className="section-eyebrow">Biography & Creed</span>
+              <h2 className="section-title">The Engineering × Design Matrix</h2>
+            </div>
+
+            <div
+              className="text-slate-600 text-sm sm:text-base leading-relaxed space-y-4"
+              dangerouslySetInnerHTML={{ __html: paragraph }}
+            />
+
+            {/* Key Accomplishments Checklist */}
+            <div className="pt-4 space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-800 block">
+                Core Milestones
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {stats.map((stat, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs font-semibold text-slate-700"
+                  >
+                    <CheckCircle2 size={16} className="text-indigo-600 shrink-0 mt-0.5" />
+                    <span>{stat}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   );
 };
+
+export default About;

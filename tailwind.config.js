@@ -7,10 +7,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        base:    "#070B18",
-        panel:   "#0D1117",
-        card:    "#12172a",
-        surface: "#1a1f35",
+        canvas: "#FAFAF9",
+        surface: "#FFFFFF",
+        "surface-subtle": "#F4F4F5",
+        brand: {
+          indigo: "#4F46E5",
+          violet: "#6366F1",
+          amber: "#F97316",
+          coral: "#FB7185",
+          mint: "#10B981"
+        },
+        base: "#070B18",
+        panel: "#0D1117",
+        card: "#12172a",
         accent: "var(--accent)",
         "accent-hover": "var(--accent-hover)",
         "bg-color": "var(--bg-color)",
@@ -25,12 +34,13 @@ export default {
       },
       fontFamily: {
         display: ["Space Grotesk", "sans-serif"],
+        heading: ["Plus Jakarta Sans", "sans-serif"],
         sans: ["Inter", "sans-serif"],
       }
     },
   },
   plugins: [],
   corePlugins: {
-    preflight: false, // Disables resets to avoid overriding custom portfolio CSS
+    preflight: false,
   }
 }

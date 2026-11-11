@@ -1,156 +1,199 @@
-import React, { useRef, useContext } from 'react';
+import React, { useState, useMemo, useRef, useContext } from 'react';
 import { useFadeInOnScroll } from '../../hooks/useFadeInOnScroll';
 import { CursorContext } from '../../context/CursorContext';
 import { WorkCard3D } from './WorkCard3D';
+import { ProjectCaseModal } from '../../components/ui/ProjectCaseModal';
+import { 
+  LayoutGrid, 
+  SlidersHorizontal, 
+  Search, 
+  Sparkles, 
+  Layers, 
+  ExternalLink,
+  Table,
+  Eye
+} from 'lucide-react';
 
-// Section Component wrapper
-const WorkSection = ({ id, eyebrow, title, desc, viewAllLink = "https://behance.net", viewAllLabel, type, projects }) => {
+export const Work = ({ portfolioData }) => {
   const sectionRef = useRef(null);
-  const isRevealed = useFadeInOnScroll(sectionRef, { threshold: 0.1 });
+  const isRevealed = useFadeInOnScroll(sectionRef, { threshold: 0.05 });
   const { setMagneticElement, triggerHover, triggerDefault } = useContext(CursorContext);
 
-  // Filter out draft visibility items
-  const publishedProjects = (projects || []).filter((p) => p.status !== 'draft');
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  if (publishedProjects.length === 0) return null;
+  // Flatten and normalize all projects from portfolioData.work
+  const allProjects = useMemo(() => {
+    const work = portfolioData?.work || {};
+    const items = [];
+
+    // 1. UI / UX
+    (work.ui || []).forEach(p => items.push({ ...p, categoryGroup: 'ui', displayCategory: 'UI/UX & Telemetry' }));
+    // 2. Branding
+    (work.branding || []).forEach(p => items.push({ ...p, categoryGroup: 'brand', displayCategory: 'Brand Systems' }));
+    // 3. Print
+    (work.print || []).forEach(p => items.push({ ...p, categoryGroup: 'print', displayCategory: 'Print & Editorial' }));
+    // 4. Video & Motion
+    (work.video || []).forEach(p => items.push({ ...p, categoryGroup: 'video', displayCategory: 'Motion & Video' }));
+    (work.reels || []).forEach(p => items.push({ ...p, categoryGroup: 'video', displayCategory: 'Motion & Video' }));
+    // 5. Social Media
+    (work.social || []).forEach(p => items.push({ ...p, categoryGroup: 'social', displayCategory: 'Digital Campaigns' }));
+
+    // Remove duplicates by id and filter out drafts
+    const unique = [];
+    const seen = new Set();
+    for (const item of items) {
+      if (item.status !== 'draft' && !seen.has(item.id)) {
+        seen.add(item.id);
+        unique.push(item);
+      }
+    }
+    return unique;
+  }, [portfolioData]);
+
+  // Categories definitions
+  const categories = [
+    { id: 'all', label: 'All Projects', count: allProjects.length },
+    { id: 'ui', label: 'UI/UX & Telemetry', count: allProjects.filter(p => p.categoryGroup === 'ui').length },
+    { id: 'brand', label: 'Brand Systems', count: allProjects.filter(p => p.categoryGroup === 'brand').length },
+    { id: 'video', label: 'Motion & Video', count: allProjects.filter(p => p.categoryGroup === 'video').length },
+    { id: 'print', label: 'Print & Editorial', count: allProjects.filter(p => p.categoryGroup === 'print').length },
+    { id: 'social', label: 'Digital Campaigns', count: allProjects.filter(p => p.categoryGroup === 'social').length },
+  ];
+
+  // Filtered projects
+  const filteredProjects = useMemo(() => {
+    return allProjects.filter((p) => {
+      const matchCat = activeCategory === 'all' || p.categoryGroup === activeCategory;
+      const q = searchQuery.toLowerCase().trim();
+      const matchSearch = !q || 
+        (p.title && p.title.toLowerCase().includes(q)) ||
+        (p.tag && p.tag.toLowerCase().includes(q)) ||
+        (p.desc && p.desc.toLowerCase().includes(q)) ||
+        (p.org && p.org.toLowerCase().includes(q));
+      return matchCat && matchSearch;
+    });
+  }, [allProjects, activeCategory, searchQuery]);
+
+  const handleOpenQuickView = (project) => {
+    setSelectedProject(project);
+    setIsModalOpen(true);
+  };
 
   return (
     <section 
       ref={sectionRef} 
-      id={id} 
-      className={`work-section reveal-item ${isRevealed ? 'revealed' : ''} section-grid-overlay`} 
-      style={{ 
-        position: 'relative', 
-        isolation: 'isolate', 
-        zIndex: 0,
-        backgroundColor: 'transparent',
-        contain: 'paint'
-      }}
+      id="work" 
+      className={`reveal-item ${isRevealed ? 'revealed' : ''} bg-white py-20 border-b border-slate-200/80`}
     >
       <div className="container">
-        <div className="section-header-fractal section-header-fractal--split">
+        {/* Section Header */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
           <div>
-            <span className="section-eyebrow" style={{ color: '#A78BFA', marginBottom: '0.4rem' }}>{eyebrow}</span>
-            <h3 className="display-font" style={{ fontSize: '1.8rem', color: '#FFFFFF', margin: 0 }}>{title}</h3>
+            <span className="section-eyebrow">Creative Portfolio</span>
+            <h2 className="section-title">Selected Works</h2>
+            <p className="section-desc">
+              A curated collection of mission-critical dashboards, brand systems, kinetic videos, and print publications.
+            </p>
+          </div>
+
+          {/* Search Box */}
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+            <input
+              type="text"
+              placeholder="Search projects, tags..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-4 py-2.5 rounded-full text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all text-slate-800 placeholder-slate-400 shadow-sm"
+            />
+          </div>
+        </div>
+
+        {/* Filter Pills Bar */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none">
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`filter-pill flex items-center gap-2 shrink-0 ${activeCategory === cat.id ? 'active' : ''}`}
+            >
+              <span>{cat.label}</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                activeCategory === cat.id ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+              }`}>
+                {cat.count}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Projects Grid */}
+        {filteredProjects.length === 0 ? (
+          <div className="p-16 text-center bg-slate-50 rounded-3xl border border-slate-200/80">
+            <p className="text-slate-500 text-base mb-3 font-medium">
+              No projects found matching your search.
+            </p>
+            <button
+              onClick={() => {
+                setActiveCategory('all');
+                setSearchQuery('');
+              }}
+              className="btn btn-secondary text-xs rounded-full"
+            >
+              Reset Filters
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredProjects.map((project, idx) => (
+              <WorkCard3D
+                key={project.id || idx}
+                project={project}
+                index={idx}
+                onQuickView={handleOpenQuickView}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Behance Callout Banner */}
+        <div className="mt-16 p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-indigo-400 block mb-1">
+              Want to see more comprehensive case studies?
+            </span>
+            <h3 className="display-font text-xl sm:text-2xl font-bold">
+              Explore 50+ Shipped Creative Works on Behance
+            </h3>
           </div>
           <a
-            href={viewAllLink}
-            className="view-all-link animate-draw-line"
+            href="https://behance.net"
             target="_blank"
             rel="noopener noreferrer"
+            className="btn btn-gradient px-6 py-3 rounded-full text-xs sm:text-sm font-bold shrink-0 flex items-center gap-2"
             onMouseEnter={(e) => {
               setMagneticElement(e.currentTarget);
-              triggerHover('Link');
+              triggerHover('Behance');
             }}
             onMouseLeave={triggerDefault}
           >
-            View All {viewAllLabel || title.split(' ')[0]} →
+            <span>Visit Behance Profile</span>
+            <ExternalLink size={15} />
           </a>
         </div>
-
-        <div className="work-grid-unified">
-          {publishedProjects.map((p, idx) => (
-            <WorkCard3D key={p.id} project={p} index={idx} type={type} />
-          ))}
-        </div>
       </div>
+
+      {/* Quickview Case Study Modal */}
+      <ProjectCaseModal
+        project={selectedProject}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </section>
   );
 };
 
-// Core Work Page Component
-export const Work = ({ portfolioData }) => {
-  const sectionHeaderRef = useRef(null);
-  const isHeaderRevealed = useFadeInOnScroll(sectionHeaderRef, { threshold: 0.15 });
-
-  const work = portfolioData?.work || {};
-
-  return (
-    <div id="portfolio" data-section="portfolio">
-      {/* SECTION MAIN HEADER */}
-      <section 
-        ref={sectionHeaderRef} 
-        className={`reveal-item ${isHeaderRevealed ? 'revealed' : ''} section-grid-overlay`} 
-        style={{ 
-          paddingBottom: '2rem', 
-          borderBottom: 'none', 
-          position: 'relative', 
-          isolation: 'isolate', 
-          zIndex: 0,
-          backgroundColor: 'transparent',
-          contain: 'paint'
-        }}
-      >
-        <div className="container">
-          <div className="section-header-fractal">
-            <span className="section-eyebrow">Disciplines</span>
-            <h2 className="section-title display-font section-title-3d">Featured Collections</h2>
-            <p className="section-desc" style={{ marginBottom: 0 }}>
-              A deep dive into cross-disciplinary projects shipped for real products, festivals, and campus teams.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 4a. Social Media Posts */}
-      <WorkSection
-        id="work-social"
-        eyebrow="Social · Posts"
-        title="Digital Campaigns"
-        viewAllLabel="Campaigns"
-        type="social"
-        projects={work.social || []}
-      />
-
-      {/* 4b. Print Media */}
-      <WorkSection
-        id="work-print"
-        eyebrow="Print · Editorial"
-        title="Editorial & Layouts"
-        viewAllLabel="Editorial"
-        type="print"
-        projects={work.print || []}
-      />
-
-      {/* 4c. UI/UX Design */}
-      <WorkSection
-        id="work-ui"
-        eyebrow="UI · UX · Web"
-        title="Digital Platforms"
-        viewAllLabel="Platforms"
-        type="ui"
-        projects={work.ui || []}
-      />
-
-      {/* 4d. Reels & Motion */}
-      <WorkSection
-        id="work-reels"
-        eyebrow="Reels · Motion"
-        title="Short Form Motion"
-        viewAllLabel="Motion"
-        type="reels"
-        projects={work.reels || []}
-      />
-
-      {/* 4e. Video Editing */}
-      <WorkSection
-        id="work-video"
-        eyebrow="Video · Editing"
-        title="Cinematics & Edits"
-        viewAllLabel="Videos"
-        type="video"
-        projects={work.video || []}
-      />
-
-      {/* 4f. Branding & Identity */}
-      <WorkSection
-        id="work-branding"
-        eyebrow="Brand · Identity"
-        title="Identity Systems"
-        viewAllLabel="Systems"
-        type="branding"
-        projects={work.branding || []}
-      />
-    </div>
-  );
-};
+export default Work;
