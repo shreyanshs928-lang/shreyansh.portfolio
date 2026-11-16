@@ -1,20 +1,14 @@
-import React, { useEffect, useState, useContext, useRef } from 'react';
-import { motion } from 'framer-motion';
+import React, { useContext, useState } from 'react';
 import { CursorContext } from '../../context/CursorContext';
 import { 
   ArrowDown, 
-  ArrowUpRight, 
   Download, 
   Linkedin, 
   Instagram, 
   Mail, 
-  Sparkles,
-  Layers,
-  Compass,
-  Cpu,
-  Palette
+  Camera, 
+  ArrowUpRight
 } from 'lucide-react';
-import ProjectImage from '../../components/ui/ProjectImage';
 
 // Behance custom SVG icon
 const BehanceIcon = ({ size = 18 }) => (
@@ -25,374 +19,233 @@ const BehanceIcon = ({ size = 18 }) => (
   </svg>
 );
 
-// Rolling Count-up Metric Card
-const MetricStatCard = ({ value, label, delay = 0 }) => {
-  const cardRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
-  const [displayValue, setDisplayValue] = useState("0");
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.1 }
-    );
-    if (cardRef.current) observer.observe(cardRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!isVisible) return;
-    if (!value || typeof value !== 'string') {
-      setDisplayValue(value || '');
-      return;
-    }
-    const matches = value.match(/^\d+/);
-    if (!matches) {
-      setDisplayValue(value);
-      return;
-    }
-    const endVal = parseInt(matches[0], 10);
-    const prefix = value.substring(0, value.indexOf(matches[0]));
-    const suffix = value.substring(value.indexOf(matches[0]) + matches[0].length);
-
-    let start = null;
-    const duration = 1200;
-    const step = (timestamp) => {
-      if (!start) start = timestamp;
-      const progress = Math.min((timestamp - start) / duration, 1);
-      const cur = Math.floor(progress * endVal);
-      setDisplayValue(`${prefix}${cur}${suffix}`);
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      } else {
-        setDisplayValue(value);
-      }
-    };
-    const timer = setTimeout(() => requestAnimationFrame(step), delay);
-    return () => clearTimeout(timer);
-  }, [isVisible, value, delay]);
-
-  return (
-    <div
-      ref={cardRef}
-      className="glass-card p-5 sm:p-6 flex flex-col justify-between hover:-translate-y-1 transition-all"
-    >
-      <span className="display-font text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-1">
-        {displayValue}
-      </span>
-      <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 font-sans">
-        {label}
-      </span>
-    </div>
-  );
-};
-
-export const Hero = ({ heroData, isLoading }) => {
+export const Hero = ({ heroData }) => {
   const { setMagneticElement, triggerHover, triggerDefault } = useContext(CursorContext);
-  const [activePreviewIndex, setActivePreviewIndex] = useState(0);
+  const [imageHover, setImageHover] = useState(false);
 
-  const eyebrow = heroData?.eyebrowText || "Hey, I'm Shreyansh";
-  const headline1 = heroData?.headlineLine1 || "Multidisciplinary Designer +";
-  const headline2 = heroData?.headlineLine2 || "Chemical Engineer";
-  const bio = heroData?.bioText || "I design across UI/UX, motion, print and social — blending an engineer's precision with a designer's instinct. Currently building creative systems at IIT Bombay.";
+  const bio = heroData?.bioText || "I design across UI/UX, motion, print, and social — blending an engineer's precision with a designer's instinct. Currently building creative systems and flight telemetry at IIT Bombay.";
   const resumeLink = heroData?.resumeLink || "https://drive.google.com/file/d/1Bypb7F4N-a477yBw4Oqg_xZpxq0V0f_B/view?usp=sharing";
   const social = heroData?.socialLinks || {};
-  const stats = heroData?.stats || [
-    { value: '2+', label: 'Years Designing' },
-    { value: '10+', label: 'Projects Shipped' },
-    { value: '6', label: 'Creative Disciplines' },
-    { value: "IIT Bombay '27", label: 'Student Core' }
-  ];
-
-  // Creative disciplines rotating list
-  const rotatingWords = [
-    "Mission Control UI",
-    "Brand Systems",
-    "Motion & 3D",
-    "Editorial Layouts",
-    "Digital Campaigns"
-  ];
-  const [currentWordIdx, setCurrentWordIdx] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentWordIdx((prev) => (prev + 1) % rotatingWords.length);
-    }, 2800);
-    return () => clearInterval(interval);
-  }, [rotatingWords.length]);
-
-  // Featured Hero Interactive Showcase Cards
-  const showcaseProjects = [
-    {
-      id: 'showcase-1',
-      title: 'Aether Flight Telemetry',
-      category: 'UI/UX & Systems',
-      subtitle: 'Real-time rocket mission control OS for IIT Bombay Rocket Team',
-      image: 'svg:ui-2',
-      badge: 'Flight Hardware'
-    },
-    {
-      id: 'showcase-2',
-      title: 'Alumination Identity',
-      category: 'Brand Architecture',
-      subtitle: 'Geometric grid guidelines & typography specs for 40,000+ alumni',
-      image: 'svg:branding-1',
-      badge: 'Identity System'
-    },
-    {
-      id: 'showcase-3',
-      title: 'Aether Propulsion Journal',
-      category: 'Editorial Print',
-      subtitle: 'Typesetting & technical layout design for annual rocketry zine',
-      image: 'svg:print-1',
-      badge: 'Print Publication'
-    }
-  ];
+  const portrait = heroData?.portraitImage;
+  const isCustomPhoto = portrait && !portrait.startsWith('svg:');
 
   return (
-    <section id="hero" className="relative pt-12 pb-20 md:pt-16 md:pb-28 overflow-hidden">
-      {/* Ambient background soft light orbs */}
-      <div 
-        className="ambient-orb"
-        style={{
-          top: '-10%',
-          right: '5%',
-          width: '500px',
-          height: '500px',
-          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, rgba(167, 139, 250, 0.05) 70%, transparent 100%)'
-        }}
-      />
-      <div 
-        className="ambient-orb"
-        style={{
-          bottom: '5%',
-          left: '-5%',
-          width: '450px',
-          height: '450px',
-          background: 'radial-gradient(circle, rgba(249, 115, 22, 0.12) 0%, rgba(251, 113, 133, 0.04) 70%, transparent 100%)',
-          animationDelay: '-6s'
-        }}
-      />
-
+    <section id="hero" className="relative pt-4 pb-16 md:pt-8 md:pb-24 overflow-hidden">
       <div className="container relative z-10">
-        {/* Top Status & Intro Pill */}
-        <div className="flex flex-wrap items-center gap-3 mb-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200/90 shadow-sm text-xs font-semibold text-slate-700">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Available for Q3/Q4 Creative Roles</span>
+        
+        {/* Availability & Location Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-8 border-b border-slate-200/60 mb-10">
+          <div className="flex items-center gap-2.5 text-xs font-semibold text-slate-700">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span>Available for select projects & summer 2026 roles</span>
           </div>
 
-          <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-bold text-indigo-600">
-            <Sparkles size={13} />
-            <span>IIT Bombay Chemical Engineering</span>
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+            <span>IIT Bombay · Mumbai, India</span>
+            <span>·</span>
+            <span>Chemical Eng. '27</span>
           </div>
         </div>
 
-        {/* Hero Grid: Left Content, Right Interactive Creative Showcase */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center mb-16">
-          {/* Left Column: Typography & Story */}
-          <div className="lg:col-span-7 space-y-6">
-            <h1 className="display-font text-4xl sm:text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.08]">
-              Designing systems for{' '}
-              <span className="gradient-text transition-all duration-300">
-                {rotatingWords[currentWordIdx]}
-              </span>
-              <br />
-              <span className="text-slate-800 font-bold">with chemical engineering precision.</span>
+        {/* Hero Main Composition: Big Name & Image Placeholder */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          
+          {/* Left Column: Big Name & Short Intro */}
+          <div className="lg:col-span-7 flex flex-col justify-center order-1">
+            {/* Big Name */}
+            <h1 className="display-font text-5xl sm:text-7xl md:text-8xl lg:text-[6.5rem] font-extrabold tracking-[-0.035em] text-slate-900 leading-[0.92] uppercase select-none">
+              Shreyansh<br />
+              <span className="text-slate-800">Singh</span>
             </h1>
 
-            <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl font-normal">
-              {bio}
-            </p>
+            {/* Short Intro placed directly at the bottom of the name */}
+            <div className="mt-7 space-y-6 max-w-xl">
+              <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
+                {bio}
+              </p>
 
-            {/* CTAs and Links */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <a
-                href="#work"
-                className="btn btn-primary px-6 py-3.5 text-sm rounded-full shadow-lg"
-                onMouseEnter={(e) => {
-                  setMagneticElement(e.currentTarget);
-                  triggerHover('Explore');
-                }}
-                onMouseLeave={triggerDefault}
-              >
-                <span>Explore Selected Works</span>
-                <ArrowDown size={16} />
-              </a>
-
-              {resumeLink && (
+              {/* Action Buttons & Social Links */}
+              <div className="flex flex-wrap items-center gap-3 pt-1">
                 <a
-                  href={resumeLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-secondary px-5 py-3.5 text-sm rounded-full"
+                  href="#work"
+                  className="btn btn-primary px-6 py-3.5 text-sm rounded-full shadow-md"
                   onMouseEnter={(e) => {
                     setMagneticElement(e.currentTarget);
-                    triggerHover('Resume');
+                    triggerHover('Explore');
                   }}
                   onMouseLeave={triggerDefault}
                 >
-                  <Download size={15} />
-                  <span>Resume</span>
+                  <span>Explore Selected Works</span>
+                  <ArrowDown size={15} />
                 </a>
-              )}
 
-              {/* Social Icon Pills */}
-              <div className="flex items-center gap-2 pl-2">
-                {social.behance && (
+                {resumeLink && (
                   <a
-                    href={social.behance}
+                    href={resumeLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="social-icon-btn"
-                    aria-label="Behance"
+                    className="btn btn-secondary px-5 py-3.5 text-sm rounded-full"
                     onMouseEnter={(e) => {
                       setMagneticElement(e.currentTarget);
-                      triggerHover('Behance');
+                      triggerHover('Resume');
                     }}
                     onMouseLeave={triggerDefault}
                   >
-                    <BehanceIcon size={18} />
+                    <Download size={15} />
+                    <span>Resume</span>
                   </a>
                 )}
-                {social.linkedin && (
-                  <a
-                    href={social.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="social-icon-btn"
-                    aria-label="LinkedIn"
-                    onMouseEnter={(e) => {
-                      setMagneticElement(e.currentTarget);
-                      triggerHover('LinkedIn');
-                    }}
-                    onMouseLeave={triggerDefault}
-                  >
-                    <Linkedin size={18} />
-                  </a>
-                )}
-                {social.instagram && (
-                  <a
-                    href={social.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="social-icon-btn"
-                    aria-label="Instagram"
-                    onMouseEnter={(e) => {
-                      setMagneticElement(e.currentTarget);
-                      triggerHover('Instagram');
-                    }}
-                    onMouseLeave={triggerDefault}
-                  >
-                    <Instagram size={18} />
-                  </a>
-                )}
-                {social.email && (
-                  <a
-                    href={`mailto:${social.email}`}
-                    className="social-icon-btn"
-                    aria-label="Email"
-                    onMouseEnter={(e) => {
-                      setMagneticElement(e.currentTarget);
-                      triggerHover('Email');
-                    }}
-                    onMouseLeave={triggerDefault}
-                  >
-                    <Mail size={18} />
-                  </a>
-                )}
-              </div>
-            </div>
-          </div>
 
-          {/* Right Column: Creative Interactive 3D Showcase Deck */}
-          <div className="lg:col-span-5 relative">
-            <div className="relative w-full max-w-lg mx-auto">
-              {/* Background Glow Frame */}
-              <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/10 via-amber-500/10 to-indigo-500/10 rounded-3xl filter blur-xl opacity-75" />
-
-              {/* Main Active Project Card */}
-              <div className="relative bg-white rounded-3xl border border-slate-200/90 shadow-2xl overflow-hidden transition-all duration-300">
-                <div className="p-4 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-red-400" />
-                    <span className="w-3 h-3 rounded-full bg-amber-400" />
-                    <span className="w-3 h-3 rounded-full bg-emerald-400" />
-                    <span className="text-xs font-bold text-slate-500 ml-2 font-mono">
-                      {showcaseProjects[activePreviewIndex].badge}
-                    </span>
-                  </div>
-                  <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full">
-                    {showcaseProjects[activePreviewIndex].category}
-                  </span>
-                </div>
-
-                {/* Media Image */}
-                <div className="aspect-[16/10] w-full bg-slate-50 overflow-hidden relative">
-                  <ProjectImage
-                    src={showcaseProjects[activePreviewIndex].image}
-                    alt={showcaseProjects[activePreviewIndex].title}
-                    category={showcaseProjects[activePreviewIndex].category}
-                    aspectClass="w-full h-full"
-                  />
-                </div>
-
-                {/* Card Footer Info */}
-                <div className="p-5">
-                  <h3 className="display-font text-lg font-bold text-slate-900 mb-1">
-                    {showcaseProjects[activePreviewIndex].title}
-                  </h3>
-                  <p className="text-xs text-slate-500 leading-relaxed mb-4">
-                    {showcaseProjects[activePreviewIndex].subtitle}
-                  </p>
-
-                  {/* Quick Select Buttons */}
-                  <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">
-                      Deck:
-                    </span>
-                    {showcaseProjects.map((p, idx) => (
-                      <button
-                        key={p.id}
-                        onClick={() => setActivePreviewIndex(idx)}
-                        className={`text-xs font-semibold px-2.5 py-1 rounded-md transition-all ${
-                          activePreviewIndex === idx
-                            ? 'bg-slate-900 text-white shadow-sm'
-                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                        }`}
-                      >
-                        0{idx + 1}
-                      </button>
-                    ))}
+                {/* Social Links */}
+                <div className="flex items-center gap-2 pl-2">
+                  {social.behance && (
                     <a
-                      href="#work"
-                      className="ml-auto text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+                      href={social.behance}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="social-icon-btn"
+                      aria-label="Behance"
+                      onMouseEnter={(e) => {
+                        setMagneticElement(e.currentTarget);
+                        triggerHover('Behance');
+                      }}
+                      onMouseLeave={triggerDefault}
                     >
-                      View All <ArrowUpRight size={13} />
+                      <BehanceIcon size={18} />
                     </a>
-                  </div>
+                  )}
+                  {social.linkedin && (
+                    <a
+                      href={social.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="social-icon-btn"
+                      aria-label="LinkedIn"
+                      onMouseEnter={(e) => {
+                        setMagneticElement(e.currentTarget);
+                        triggerHover('LinkedIn');
+                      }}
+                      onMouseLeave={triggerDefault}
+                    >
+                      <Linkedin size={18} />
+                    </a>
+                  )}
+                  {social.instagram && (
+                    <a
+                      href={social.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="social-icon-btn"
+                      aria-label="Instagram"
+                      onMouseEnter={(e) => {
+                        setMagneticElement(e.currentTarget);
+                        triggerHover('Instagram');
+                      }}
+                      onMouseLeave={triggerDefault}
+                    >
+                      <Instagram size={18} />
+                    </a>
+                  )}
+                  {social.email && (
+                    <a
+                      href={`mailto:${social.email}`}
+                      className="social-icon-btn"
+                      aria-label="Email"
+                      onMouseEnter={(e) => {
+                        setMagneticElement(e.currentTarget);
+                        triggerHover('Email');
+                      }}
+                      onMouseLeave={triggerDefault}
+                    >
+                      <Mail size={18} />
+                    </a>
+                  )}
                 </div>
+              </div>
+
+              {/* Disciplines Chips */}
+              <div className="pt-3 flex flex-wrap gap-2 text-xs text-slate-500 font-medium">
+                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700">UI/UX Systems</span>
+                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700">Flight Telemetry</span>
+                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700">Brand Identity</span>
+                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700">Motion & Video</span>
+                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700">Editorial Print</span>
               </div>
             </div>
           </div>
+
+          {/* Right Column: Prominent Image Placeholder */}
+          <div className="lg:col-span-5 order-2">
+            <div 
+              className="relative w-full max-w-sm sm:max-w-md mx-auto group"
+              onMouseEnter={() => setImageHover(true)}
+              onMouseLeave={() => setImageHover(false)}
+            >
+              {/* Image Frame with 4:5 Aspect Ratio */}
+              <div className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-slate-100 border border-slate-200/90 shadow-xl transition-all duration-300 group-hover:shadow-2xl">
+                
+                {isCustomPhoto ? (
+                  <img
+                    src={portrait}
+                    alt="Shreyansh Singh"
+                    className="w-full h-full object-cover grayscale contrast-[1.05] group-hover:grayscale-0 transition-all duration-500"
+                  />
+                ) : (
+                  /* Editorial Photo Placeholder Frame */
+                  <div className="relative w-full h-full flex flex-col justify-between p-5 sm:p-6 bg-gradient-to-b from-slate-50 via-slate-100 to-slate-200/70 text-slate-700">
+                    {/* Top Blueprint Header */}
+                    <div className="flex items-center justify-between text-xs font-mono text-slate-500 gap-2 mb-2">
+                      <span className="text-[10px] tracking-wider uppercase">PORTRAIT</span>
+                      <span className="px-2 py-0.5 rounded bg-white/90 border border-slate-200 text-[9px] font-bold tracking-wider shrink-0">
+                        4:5
+                      </span>
+                    </div>
+
+                    {/* Center Avatar / Silhouette Viewport */}
+                    <div className="my-auto flex flex-col items-center justify-center text-center p-4">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center mb-4 text-slate-400 group-hover:scale-105 transition-transform duration-300">
+                        <Camera size={32} strokeWidth={1.5} className="text-slate-500" />
+                      </div>
+                      <span className="display-font text-base sm:text-lg font-bold text-slate-900 mb-1">
+                        Shreyansh Singh
+                      </span>
+                      <span className="text-xs text-slate-500 max-w-[220px] leading-relaxed">
+                        Multidisciplinary Designer & Chemical Engineer
+                      </span>
+                    </div>
+
+                    {/* Bottom Metadata & Admin upload note */}
+                    <div className="pt-4 border-t border-slate-200/80 flex items-center justify-between text-[11px] text-slate-500">
+                      <span>IIT Bombay · Class of '27</span>
+                      <a 
+                        href="/admin/dashboard" 
+                        className="text-indigo-600 font-semibold hover:underline flex items-center gap-1"
+                      >
+                        <span>Upload photo</span>
+                        <ArrowUpRight size={12} />
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                {/* Hover Quick Edit Badge (links to admin) */}
+                <a
+                  href="/admin/dashboard"
+                  className="absolute bottom-4 right-4 z-20 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-slate-200 shadow-md text-xs font-bold text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1.5"
+                  title="Upload or change image in Admin Console"
+                >
+                  <Camera size={13} className="text-indigo-600" />
+                  <span>Update Photo</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        {/* Bottom Metrics Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 pt-4">
-          {stats.map((s, idx) => (
-            <MetricStatCard
-              key={idx}
-              value={s.value}
-              label={s.label}
-              delay={idx * 100}
-            />
-          ))}
-        </div>
       </div>
     </section>
   );
