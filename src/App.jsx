@@ -89,7 +89,6 @@ const ScrollProgressBar = ({ activeSection, showLabel, sectionOffsets }) => {
     { id: 'hero', name: 'Intro' },
     { id: 'work', name: 'Works' },
     { id: 'disciplines', name: 'Disciplines' },
-    { id: 'about', name: 'About' },
     { id: 'skills', name: 'Skills' },
     { id: 'experience', name: 'Timeline' },
     { id: 'background', name: 'Education' },
@@ -132,12 +131,11 @@ const PortfolioHome = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sectionOffsets, setSectionOffsets] = useState({
     hero: 0,
-    work: 20,
-    disciplines: 40,
-    about: 55,
-    skills: 70,
-    experience: 82,
-    background: 92,
+    work: 25,
+    disciplines: 45,
+    skills: 65,
+    experience: 78,
+    background: 90,
     contact: 98
   });
 
@@ -151,7 +149,7 @@ const PortfolioHome = () => {
 
       document.documentElement.style.setProperty('--scroll-progress', progressPercent.toFixed(2));
 
-      const sections = ['hero', 'work', 'disciplines', 'about', 'skills', 'experience', 'background', 'contact'];
+      const sections = ['hero', 'work', 'disciplines', 'skills', 'experience', 'background', 'contact'];
       let currentSection = 'hero';
 
       for (const sectionId of sections) {
@@ -189,7 +187,7 @@ const PortfolioHome = () => {
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       if (docHeight <= 0) return;
 
-      const sections = ['hero', 'work', 'disciplines', 'about', 'skills', 'experience', 'background', 'contact'];
+      const sections = ['hero', 'work', 'disciplines', 'skills', 'experience', 'background', 'contact'];
       const offsets = {};
       sections.forEach(id => {
         const el = document.getElementById(id);
@@ -265,7 +263,12 @@ const PortfolioHome = () => {
           
           <Header floating={false} />
 
-          <Hero heroData={portfolioData?.hero} isLoading={isLoading} />
+          <Hero 
+            heroData={portfolioData?.hero} 
+            aboutData={portfolioData?.about} 
+            profileData={portfolioData?.profile} 
+            isLoading={isLoading} 
+          />
         </div>
 
         {/* Featured Highlights Carousel */}
@@ -288,11 +291,6 @@ const PortfolioHome = () => {
         {/* Project Directory Archive Table */}
         {!isLoading && portfolioData?.featuredWorksTable && (
           <FeaturedWorksTable tableData={portfolioData.featuredWorksTable} />
-        )}
-
-        {/* About & The Engineering Creed */}
-        {!isLoading && portfolioData && (
-          <About aboutData={portfolioData.about} profileData={portfolioData.profile} />
         )}
 
         {/* Capabilities & Skills Stack */}

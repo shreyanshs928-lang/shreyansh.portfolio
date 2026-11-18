@@ -82,7 +82,7 @@ export const Disciplines = ({ onSelectCategory }) => {
 
   const handleCardClick = (target) => {
     if (target === 'about') {
-      const el = document.getElementById('about');
+      const el = document.getElementById('hero');
       if (el) el.scrollIntoView({ behavior: 'smooth' });
     } else {
       if (onSelectCategory) {

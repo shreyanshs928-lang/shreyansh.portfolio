@@ -33,9 +33,10 @@ export default {
         screen: ["100vh", "100dvh"],
       },
       fontFamily: {
-        display: ["Space Grotesk", "sans-serif"],
-        heading: ["Plus Jakarta Sans", "sans-serif"],
-        sans: ["Inter", "sans-serif"],
+        display: ["'Space Grotesk'", "sans-serif"],
+        heading: ["'Plus Jakarta Sans'", "sans-serif"],
+        sans: ["'Inter'", "sans-serif"],
+        mono: ["'JetBrains Mono'", "monospace"],
       }
     },
   },
